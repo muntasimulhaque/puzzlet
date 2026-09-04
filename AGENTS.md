@@ -275,6 +275,11 @@ console answers live in play-store/play-store-submission-guide.md.
   passwords in three more secrets. CI decodes, signs, verifies with
   keytool, and publishes the AAB + APK to the latest-build release. A lost
   keystore is an un-updatable app, so the vault file is sacred.
+- D-028 (2026-09-05): The shelf settles at eight scenes for launch:
+  sailboat, rocket, house, lighthouse, balloon, train, castle, fruit. A
+  fruit plate on a wooden table earns its keep by texture: every piece on
+  it differs from its neighbours. The capture set gains an eighth shot
+  (the fruit plate at sixteen pieces) for the same reason.
 
 ## Session log
 
@@ -315,6 +320,9 @@ console answers live in play-store/play-store-submission-guide.md.
   console answers, and the release flow. Privacy policy lives at
   docs/privacy.html, to be served once the owner enables GitHub Pages on
   the repo with the docs-folder root.
+- 2026-09-05: M4: three scenes, no code changes elsewhere. The gallery,
+  the capture set, and the listing text all update from one data file
+  (Scene.kt), which is the whole point of the vector scene language.
 - 2026-09-05: First emulator run failed with Unable to resolve activity for
   cmp=app.puzzlet.test/... The resolution order inside ActivityInvoker is:
   try the TARGET app package first, fall back to the test package, and the

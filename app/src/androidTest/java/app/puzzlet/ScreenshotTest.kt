@@ -166,6 +166,12 @@ class ScreenshotTest {
             PlayScreen(done, null, -1, 0L, noActions, {})
         }
 
+        // The fruit plate at sixteen pieces: nine placed, texture galore.
+        val fruit = buildGame(pane, "fruit", 4, 4, placed = (0..8).toSet())
+        shot("08_play_fruit") {
+            PlayScreen(fruit, null, -1, 0L, noActions, {})
+        }
+
         scenario.close()
     }
 

@@ -263,6 +263,6 @@ class PuzzleCoreTest {
                 if (shape is EllipseSpec) assertTrue(shape.rx > 0 && shape.ry > 0)
             }
         }
-        assertEquals(5, Scenes.all.size)
+        assertEquals(8, Scenes.all.size)
     }
 }

@@ -58,7 +58,7 @@ home with a soft knock and a little burst of light.
 How it plays:
 • Choose a picture from the shelf: a sailboat on the waves, a rocket in the
   night sky, a cottage on the hill, a lighthouse on the rocks, a balloon in
-  the morning.
+  the morning, a train on its track, a castle at dusk, a plate of fruit.
 • Choose how many pieces: 4, 6, 9, 12, 16, 20 or 24. Four is right for a
   third birthday; twenty-four will keep a five-year-old thinking.
 • Drag a piece anywhere near its place and it clicks in. The whole picture
