@@ -51,8 +51,24 @@ import app.puzzlet.core.Puzzle
 import app.puzzlet.core.SceneSpec
 import app.puzzlet.core.Scenes
 import app.puzzlet.core.Vec2
-import app.puzzlet.host.PuzzleHost
-import app.puzzlet.host.Screen
+
+/** The board sizing policy, one function so tests and captures agree. */
+fun boardSideFor(fieldW: Double, fieldH: Double, chunky: Boolean, capPx: Double): Double =
+    minOf(fieldW * 0.92, fieldH * (if (chunky) 0.60 else 0.78), capPx)
+
+/**
+ * What the play field needs from the world. No composable takes a ViewModel
+ * (the house rule): the activity wires these to the host, and the screenshot
+ * harness passes no-ops, which is what keeps captures flake-free.
+ */
+class PlayActions(
+    val onGrabAt: (Vec2, Double) -> Vec2?,
+    val onDragTo: (Vec2) -> Unit,
+    val onDrop: () -> Boolean,
+    val onLayout: (Area, Double) -> Unit,
+    val onRestart: () -> Unit,
+    val onBack: () -> Unit,
+)
 
 /**
  * The play field: one canvas, one gesture authority. A piece is the picture
@@ -60,18 +76,25 @@ import app.puzzlet.host.Screen
  * every size stays crisp.
  */
 @Composable
-fun PlayScreen(state: Screen.Playing, host: PuzzleHost, onBack: () -> Unit) {
+fun PlayScreen(
+    game: Puzzle,
+    draggedId: Int?,
+    pulseId: Int,
+    pulseAt: Long,
+    actions: PlayActions,
+    onBack: () -> Unit,
+) {
     BackHandler(onBack = onBack)
     var peek by remember { mutableStateOf(false) }
     val ghostAlpha by animateFloatAsState(if (peek) 0.45f else 0.13f, label = "ghost")
 
     Column(modifier = Modifier.fillMaxSize().background(PuzzletColors.Paper)) {
         PlayTopBar(
-            sceneId = state.game.sceneId,
+            sceneId = game.sceneId,
             peek = peek,
             onPeek = { peek = !peek },
             onBack = onBack,
-            onRestart = host::restart,
+            onRestart = actions.onRestart,
         )
         BoxWithConstraints(
             Modifier
@@ -81,16 +104,16 @@ fun PlayScreen(state: Screen.Playing, host: PuzzleHost, onBack: () -> Unit) {
             val density = LocalDensity.current
             val capPx = with(density) { 560.dp.toPx() }.toDouble()
             val hitRadiusPx = with(density) { 44.dp.toPx() }.toDouble()
-            // A few big pieces want more empty shore around the board.
-            val chunky = state.game.rows * state.game.cols <= 9
-            val boardSide = minOf(
-                constraints.maxWidth.toDouble() * 0.92,
-                constraints.maxHeight.toDouble() * (if (chunky) 0.60 else 0.78),
+            val chunky = game.rows * game.cols <= 9
+            val boardSide = boardSideFor(
+                constraints.maxWidth.toDouble(),
+                constraints.maxHeight.toDouble(),
+                chunky,
                 capPx,
             )
             val field = Area(0.0, 0.0, constraints.maxWidth.toDouble(), constraints.maxHeight.toDouble())
             LaunchedEffect(constraints.maxWidth, constraints.maxHeight) {
-                host.layout(field, boardSide)
+                actions.onLayout(field, boardSide)
             }
 
             val view = LocalView.current
@@ -98,15 +121,15 @@ fun PlayScreen(state: Screen.Playing, host: PuzzleHost, onBack: () -> Unit) {
 
             // One stable path per piece id, rebuilt only when the cut changes.
             val paths = remember(
-                state.game.rows, state.game.cols, state.game.seed,
+                game.rows, game.cols, game.seed,
                 constraints.maxWidth, constraints.maxHeight,
             ) {
-                state.game.pieces.associate { it.id to outlinePath(it.shape.segments) }
+                game.pieces.associate { it.id to outlinePath(it.shape.segments) }
             }
 
             val pulse = remember { Animatable(1f) }
-            LaunchedEffect(state.pulseAt) {
-                if (state.pulseId >= 0) {
+            LaunchedEffect(pulseAt) {
+                if (pulseId >= 0) {
                     pulse.snapTo(0f)
                     pulse.animateTo(1f, tween(380, easing = LinearOutSlowInEasing))
                 }
@@ -124,7 +147,7 @@ fun PlayScreen(state: Screen.Playing, host: PuzzleHost, onBack: () -> Unit) {
                     .pointerInput(Unit) {
                         detectDragGestures(
                             onDragStart = { pos ->
-                                val grabbed = host.grabAt(
+                                val grabbed = actions.onGrabAt(
                                     Vec2(pos.x.toDouble(), pos.y.toDouble()),
                                     hitRadiusPx,
                                 )
@@ -135,33 +158,33 @@ fun PlayScreen(state: Screen.Playing, host: PuzzleHost, onBack: () -> Unit) {
                                 }
                             },
                             onDrag = { change, _ ->
-                                host.dragTo(
+                                actions.onDragTo(
                                     Vec2(change.position.x.toDouble(), change.position.y.toDouble()) - grabOffset,
                                 )
                             },
                             onDragEnd = {
-                                if (host.drop()) {
+                                if (actions.onDrop()) {
                                     view.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
                                 }
                             },
-                            onDragCancel = { host.drop() },
+                            onDragCancel = { actions.onDrop() },
                         )
                     },
             ) {
                 drawBoard(
-                    game = state.game,
-                    scene = Scenes.byId(state.game.sceneId),
+                    game = game,
+                    scene = Scenes.byId(game.sceneId),
                     paths = paths,
                     ghostAlpha = ghostAlpha,
-                    dragId = host.draggedIdSnapshot(),
+                    dragId = draggedId,
                     ringAlpha = 0.30f + 0.35f * ring.value,
-                    pulseId = state.pulseId,
+                    pulseId = pulseId,
                     pulseT = pulse.value,
                 )
             }
 
-            if (state.game.completed) {
-                Celebration(state.game, onAgain = host::restart, onHome = onBack)
+            if (game.completed) {
+                Celebration(game, onAgain = actions.onRestart, onHome = onBack)
             }
         }
     }

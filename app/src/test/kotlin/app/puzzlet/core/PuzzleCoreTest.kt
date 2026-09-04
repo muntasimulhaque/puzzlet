@@ -207,6 +207,24 @@ class PuzzleCoreTest {
     }
 
     @Test
+    fun `restore re-seats saved pieces and keeps the rest on their scatter seats`() {
+        val p = restorePuzzle("sail", 3, 3, setOf(0, 4), Area(0.0, 0.0, 800.0, 800.0), 500.0, 3L)
+        assertEquals(2, p.placedCount)
+        assertFalse(p.completed)
+        assertTrue(p.piece(0)!!.placed)
+        assertTrue(p.piece(4)!!.placed)
+        assertFalse(p.piece(1)!!.placed)
+        assertEquals(p.piece(0)!!.home, p.piece(0)!!.current)
+        val fresh = createPuzzle("sail", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 3L)
+        for (piece in p.pieces.filter { !it.placed }) {
+            assertEquals(fresh.piece(piece.id)!!.current, piece.current)
+        }
+        // A full restore completes the picture.
+        val all = restorePuzzle("sail", 2, 2, (0 until 4).toSet(), Area(0.0, 0.0, 800.0, 800.0), 600.0, 3L)
+        assertTrue(all.completed)
+    }
+
+    @Test
     fun `pieceAt picks the topmost unplaced piece and never a placed one`() {
         var p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 9L)
         p = drag(p, 0, p.piece(0)!!.home)

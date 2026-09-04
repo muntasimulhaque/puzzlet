@@ -1,12 +1,15 @@
 package app.puzzlet.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -31,7 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.puzzlet.R
@@ -54,10 +61,15 @@ val DIFFICULTIES = listOf(
 /**
  * The picture menu. Cards are pure pictures: a child who cannot read can
  * choose everything. A small honey dot marks a picture with unfinished work
- * waiting (this session).
+ * waiting, and the sound switch sits where a parent's thumb falls.
  */
 @Composable
-fun Gallery(onChoose: (String) -> Unit, hasProgress: (String) -> Boolean) {
+fun Gallery(
+    onChoose: (String) -> Unit,
+    hasProgress: (String) -> Boolean,
+    muted: Boolean,
+    onToggleMute: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,7 +83,7 @@ fun Gallery(onChoose: (String) -> Unit, hasProgress: (String) -> Boolean) {
         ) {
             BrandMarkSmall()
             Spacer(Modifier.width(16.dp))
-            Column {
+            Column(Modifier.weight(1f)) {
                 Text(
                     text = stringResource(R.string.app_name),
                     style = MaterialTheme.typography.titleLarge,
@@ -82,6 +94,9 @@ fun Gallery(onChoose: (String) -> Unit, hasProgress: (String) -> Boolean) {
                     style = MaterialTheme.typography.bodyMedium,
                     color = PuzzletColors.Ink,
                 )
+            }
+            CircleButton(onClick = onToggleMute, background = PuzzletColors.Card) {
+                if (muted) SoundOffIcon(color = PuzzletColors.Ink) else SoundOnIcon(color = PuzzletColors.Ink)
             }
         }
         Spacer(Modifier.height(20.dp))
@@ -94,9 +109,7 @@ fun Gallery(onChoose: (String) -> Unit, hasProgress: (String) -> Boolean) {
             LazyVerticalGrid(
                 columns = GridCells.Fixed(columns),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(
-                    start = 20.dp, end = 20.dp, top = 4.dp, bottom = 28.dp,
-                ),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 28.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
@@ -219,9 +232,7 @@ private fun DifficultyButton(difficulty: Difficulty, onClick: () -> Unit) {
 /** The cut, drawn small: rows by cols tiles, the child's own preview. */
 @Composable
 private fun PieceGridIcon(rows: Int, cols: Int) {
-    androidx.compose.foundation.Canvas(
-        modifier = Modifier.size(44.dp),
-    ) {
+    Canvas(modifier = Modifier.size(44.dp)) {
         val side = size.width
         val gap = side * 0.045f
         val cell = (side - gap * (cols - 1)) / cols
@@ -229,8 +240,8 @@ private fun PieceGridIcon(rows: Int, cols: Int) {
         for (r in 0 until rows) for (c in 0 until cols) {
             drawRoundRect(
                 PuzzletColors.Teal,
-                topLeft = androidx.compose.ui.geometry.Offset(c * (cell + gap), r * (cellH + gap)),
-                size = androidx.compose.ui.geometry.Size(cell, cellH),
+                topLeft = Offset(c * (cell + gap), r * (cellH + gap)),
+                size = Size(cell, cellH),
                 cornerRadius = CornerRadius(cell * 0.24f),
             )
         }
@@ -247,10 +258,10 @@ fun BrandMarkSmall() {
             .background(PuzzletColors.Teal),
         contentAlignment = Alignment.Center,
     ) {
-        androidx.compose.foundation.Image(
-            painter = androidx.compose.ui.res.painterResource(R.mipmap.ic_launcher_foreground),
+        Image(
+            painter = painterResource(R.mipmap.ic_launcher_foreground),
             contentDescription = null,
-            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+            contentScale = ContentScale.Fit,
             modifier = Modifier.fillMaxSize(),
         )
     }

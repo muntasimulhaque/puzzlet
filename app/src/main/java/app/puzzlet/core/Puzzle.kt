@@ -218,6 +218,31 @@ fun scatterCenters(field: Area, board: Area, sizes: List<Vec2>, seed: Long): Lis
     return assigned
 }
 
+/**
+ * Rebuild a puzzle from saved progress: same seed, so unplaced pieces land
+ * back on their original scatter seats; placed pieces return to their slots.
+ */
+fun restorePuzzle(
+    sceneId: String,
+    rows: Int,
+    cols: Int,
+    placedIds: Set<Int>,
+    field: Area,
+    boardSide: Double,
+    seed: Long,
+): Puzzle {
+    val fresh = createPuzzle(sceneId, rows, cols, field, boardSide, seed)
+    val pieces = fresh.pieces.map { piece ->
+        if (piece.id in placedIds) piece.copy(placed = true, current = piece.home) else piece
+    }
+    val placedCount = pieces.count { it.placed }
+    return fresh.copy(
+        pieces = pieces,
+        placedCount = placedCount,
+        completed = pieces.isNotEmpty() && placedCount == pieces.size,
+    )
+}
+
 /** The topmost unplaced piece whose centre is within reach of [pos]. */
 fun pieceAt(p: Puzzle, pos: Vec2, hitRadius: Double): Piece? =
     p.pieces.lastOrNull { piece ->

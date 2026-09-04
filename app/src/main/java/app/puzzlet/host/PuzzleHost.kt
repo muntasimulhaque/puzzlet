@@ -1,15 +1,18 @@
 package app.puzzlet.host
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import app.puzzlet.core.Area
-import app.puzzlet.core.Piece
 import app.puzzlet.core.Puzzle
 import app.puzzlet.core.Vec2
 import app.puzzlet.core.createPuzzle
 import app.puzzlet.core.pieceAt
+import app.puzzlet.core.restorePuzzle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import app.puzzlet.core.drag as dragPiece
 import app.puzzlet.core.drop as dropPiece
 import app.puzzlet.core.grab as grabPiece
@@ -22,6 +25,8 @@ sealed interface Screen {
     data class Choose(val sceneId: String) : Screen
     data class Playing(
         val game: Puzzle,
+        /** The piece currently in hand, if any; the field draws it lifted. */
+        val draggedId: Int? = null,
         /** The piece that last clicked home, with the time it happened. */
         val pulseId: Int = -1,
         val pulseAt: Long = 0L,
@@ -30,16 +35,38 @@ sealed interface Screen {
 
 /**
  * The host performs what the domain decides. It owns which screen is up,
- * which piece is in hand, and the session's unfinished games (so backing out
- * of a picture and returning resumes it, never restarting it).
+ * which piece is in hand, the sound switch, and the one unfinished picture
+ * that survives both backing out and a process death.
  */
-class PuzzleHost : ViewModel() {
+class PuzzleHost(app: Application) : ViewModel() {
+
+    private val store = PuzzleStore(app)
+    private val soundBoard = SoundBoard(app)
 
     private val _screen = MutableStateFlow<Screen>(Screen.Home)
     val screen: StateFlow<Screen> = _screen.asStateFlow()
 
-    private var draggedId: Int? = null
+    private val _muted = MutableStateFlow(false)
+    val muted: StateFlow<Boolean> = _muted.asStateFlow()
+
     private val resumes = HashMap<String, Puzzle>()
+
+    init {
+        viewModelScope.launch {
+            _muted.value = store.loadMuted()
+            store.loadResume()?.let { snap ->
+                resumes[resumeKey(snap.sceneId, snap.rows, snap.cols)] = restorePuzzle(
+                    sceneId = snap.sceneId,
+                    rows = snap.rows,
+                    cols = snap.cols,
+                    placedIds = snap.placed,
+                    field = Area(0.0, 0.0, 1.0, 1.0),
+                    boardSide = 1.0,
+                    seed = seedFor(snap.sceneId, snap.rows, snap.cols),
+                )
+            }
+        }
+    }
 
     fun choose(sceneId: String) {
         draggedId = null
@@ -86,7 +113,8 @@ class PuzzleHost : ViewModel() {
         if (s !is Screen.Playing) return null
         val piece = pieceAt(s.game, pos, hitRadius) ?: return null
         draggedId = piece.id
-        _screen.value = s.copy(game = grabPiece(s.game, piece.id))
+        _screen.value = s.copy(game = grabPiece(s.game, piece.id), draggedId = piece.id)
+        sfx(Sfx.PICK)
         return piece.current
     }
 
@@ -106,10 +134,20 @@ class PuzzleHost : ViewModel() {
         if (s !is Screen.Playing || id == null) return false
         val game = dropPiece(s.game, id)
         val snapped = game.placedCount > s.game.placedCount
-        _screen.value = if (snapped) {
-            s.copy(game = game, pulseId = id, pulseAt = System.nanoTime())
+        _screen.value = s.copy(
+            game = game,
+            draggedId = null,
+            pulseId = if (snapped) id else s.pulseId,
+            pulseAt = if (snapped) System.nanoTime() else s.pulseAt,
+        )
+        if (snapped) {
+            sfx(Sfx.SNAP)
+            if (game.completed) {
+                sfx(Sfx.CHIME)
+                viewModelScope.launch { store.clearResume() }
+            }
         } else {
-            s.copy(game = game)
+            sfx(Sfx.DROP)
         }
         return snapped
     }
@@ -118,7 +156,13 @@ class PuzzleHost : ViewModel() {
         val s = _screen.value
         if (s is Screen.Playing) {
             resumes.remove(resumeKey(s.game))
-            _screen.value = s.copy(game = restartPuzzle(s.game), pulseId = -1, pulseAt = 0L)
+            viewModelScope.launch { store.clearResume() }
+            _screen.value = s.copy(
+                game = restartPuzzle(s.game),
+                draggedId = null,
+                pulseId = -1,
+                pulseAt = 0L,
+            )
         }
     }
 
@@ -127,7 +171,9 @@ class PuzzleHost : ViewModel() {
         val s = _screen.value
         if (s is Screen.Playing) {
             if (!s.game.completed && s.game.placedCount > 0) {
-                resumes[resumeKey(s.game)] = s.game
+                val key = resumeKey(s.game)
+                resumes[key] = s.game
+                viewModelScope.launch { store.saveResume(s.game) }
             }
             _screen.value = Screen.Choose(s.game.sceneId)
         } else {
@@ -136,19 +182,32 @@ class PuzzleHost : ViewModel() {
         draggedId = null
     }
 
-    fun hasProgress(sceneId: String): Boolean = resumes.keys.any { it.startsWith("$sceneId:") }
-
-    /** Snapshot for the draw pass: which piece is in hand right now. */
-    fun draggedIdSnapshot(): Int? {
+    /** Called from onStop: the shelf copy of an unfinished game goes to disk. */
+    fun persistNow() {
         val s = _screen.value
-        if (s !is Screen.Playing) return null
-        val id = draggedId ?: return null
-        return if (s.game.piece(id)?.placed == false) id else null
+        if (s is Screen.Playing && !s.game.completed && s.game.placedCount > 0) {
+            val key = resumeKey(s.game)
+            resumes[key] = s.game
+            viewModelScope.launch { store.saveResume(s.game) }
+        }
     }
 
-    fun currentPiece(id: Int): Piece? {
-        val s = _screen.value
-        return (s as? Screen.Playing)?.game?.piece(id)
+    fun toggleMuted() {
+        val next = !_muted.value
+        _muted.value = next
+        viewModelScope.launch { store.saveMuted(next) }
+    }
+
+    fun hasProgress(sceneId: String): Boolean = resumes.keys.any { it.startsWith("$sceneId:") }
+
+    private fun sfx(sfx: Sfx) {
+        if (!_muted.value) soundBoard.play(sfx)
+    }
+
+    private var draggedId: Int? = null
+
+    override fun onCleared() {
+        soundBoard.release()
     }
 }
 

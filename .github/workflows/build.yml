@@ -43,12 +43,10 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@48b5f213c81028ace310571dc5ec0fbbca0b2947 # v4.4.3
 
-      - name: Run unit tests, generator tests and lint
-        # :tools:test proves the icon generator is deterministic (same JVM,
-        # byte-identical). The committed-PNG pin (:tools:checkIcons) runs
-        # locally, because ImageIO output is not guaranteed byte-identical
-        # across JDK versions; see AGENTS.md, Build.
-        run: ./gradlew :app:testReleaseUnitTest :app:lintRelease :tools:test
+      - name: Run unit tests, generator tests, sound pinning and lint
+        # Pure-JVM engine + generator tests (no device needed), full lint,
+        # and the pin that refuses any hand-edited icon or sound asset.
+        run: ./gradlew :app:testReleaseUnitTest :app:lintRelease :tools:test :tools:checkIcons :tools:checkSounds
 
       - name: Build release APK
         # Unsigned until the keystore exists; the build itself gates R8 and

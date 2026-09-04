@@ -60,9 +60,19 @@ dependencies {
     // The host is a ViewModel; collectAsStateWithLifecycle needs its runtime.
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
+    // One small preference file for the sound switch and a saved picture.
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")
     implementation("androidx.compose.material3:material3")
 
     testImplementation("junit:junit:4.13.2")
+
+    // Instrumented (emulator) screenshot capture: a bare ComponentActivity
+    // hosts each state and PixelCopy grabs the window. No compose test rule,
+    // no Espresso, no injection machinery: rendering states and copying
+    // pixels needs none of it, so captures keep working on whatever image
+    // the app targets.
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
 }

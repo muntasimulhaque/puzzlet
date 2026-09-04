@@ -39,3 +39,19 @@ tasks.register<JavaExec>("checkIcons") {
     mainClass = "app.puzzlet.tools.MakeIconsKt"
     args = listOf(rootDir.absolutePath, "--check")
 }
+
+tasks.register<JavaExec>("makeSounds") {
+    group = "tools"
+    description = "Regenerate the four sound assets in app/src/main/res/raw."
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "app.puzzlet.tools.SoundGenKt"
+    args = listOf(rootDir.absolutePath)
+}
+
+tasks.register<JavaExec>("checkSounds") {
+    group = "tools"
+    description = "Verify the committed sound assets match a fresh regeneration."
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "app.puzzlet.tools.SoundGenKt"
+    args = listOf(rootDir.absolutePath, "--check")
+}

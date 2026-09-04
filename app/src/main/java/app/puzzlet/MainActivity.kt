@@ -11,12 +11,15 @@ import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import app.puzzlet.host.PuzzleHost
 import app.puzzlet.host.Screen
 import app.puzzlet.ui.DifficultyChooser
 import app.puzzlet.ui.Gallery
+import app.puzzlet.ui.PlayActions
 import app.puzzlet.ui.PlayScreen
 import app.puzzlet.ui.PuzzletTheme
 
@@ -25,12 +28,26 @@ private const val MAX_FONT_SCALE = 1.3f
 
 class MainActivity : ComponentActivity() {
 
+    private val host: PuzzleHost by lazy {
+        ViewModelProvider(
+            this,
+            viewModelFactory {
+                initializer {
+                    val app = checkNotNull(
+                        get(ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY),
+                    )
+                    PuzzleHost(app)
+                }
+            },
+        )[PuzzleHost::class.java]
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         keepBarsHidden()
         setContent {
-            val host: PuzzleHost = viewModel()
             val screen by host.screen.collectAsStateWithLifecycle()
+            val muted by host.muted.collectAsStateWithLifecycle()
             // A toy-box, not a document: text follows the system font setting,
             // but only so far. Past this cap the words stop fitting the fixed
             // play surfaces and begin to overlap them, which serves nobody, so
@@ -45,6 +62,8 @@ class MainActivity : ComponentActivity() {
                         Screen.Home -> Gallery(
                             onChoose = host::choose,
                             hasProgress = host::hasProgress,
+                            muted = muted,
+                            onToggleMute = host::toggleMuted,
                         )
                         is Screen.Choose -> DifficultyChooser(
                             sceneId = s.sceneId,
@@ -52,14 +71,38 @@ class MainActivity : ComponentActivity() {
                             onPlay = { rows, cols -> host.play(s.sceneId, rows, cols) },
                         )
                         is Screen.Playing -> PlayScreen(
-                            state = s,
-                            host = host,
+                            game = s.game,
+                            draggedId = s.draggedId,
+                            pulseId = s.pulseId,
+                            pulseAt = s.pulseAt,
+                            actions = playActions(),
                             onBack = host::backToChoose,
                         )
                     }
                 }
             }
         }
+    }
+
+    private fun playActions() = PlayActions(
+        onGrabAt = host::grabAt,
+        onDragTo = host::dragTo,
+        onDrop = host::drop,
+        onLayout = host::layout,
+        onRestart = host::restart,
+        onBack = host::backToChoose,
+    )
+
+    override fun onStart() {
+        super.onStart()
+        keepBarsHidden()
+    }
+
+    // The shelf copy of an unfinished game goes to disk here, so a process
+    // death mid-play costs at most the current picture's scattered piles.
+    override fun onStop() {
+        super.onStop()
+        host.persistNow()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
