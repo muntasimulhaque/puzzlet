@@ -66,25 +66,26 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 ## The game
 
-M0 is a brand screen by design: the mark, the name, the promise, nothing
-that pretends to play. The M1 target it must grow into without a rewrite:
+Scatter, drag, snap, celebrate. It is all live in M1: three pictures
+(sailboat, rocket, house), the ladder of 4, 6, 9, 12, 16, 20 and 24 pieces
+chosen with picture buttons, drag-and-snap with a generous tolerance, the
+faint ghost board always visible, a peek coin that strengthens it, a soft
+honey ring on the slot while a piece is held, and a ring-burst plus haptic
+tick when a piece clicks home. No timer, no score, no fail state, no reading
+required. Backing out mid-game keeps the progress for the session; the same
+picture reopens where it left off.
 
-Scatter, drag, snap, celebrate. Pieces rest around a board; the child drags
-each to its place; it clicks home with a spring, a soft thock, and a haptic
-tick. No timer, no score, no fail state, no reading required. A peek button
-shows a faint ghost of the picture; a stuck child gets a gentle highlight,
-never a correction. Finishing holds the artwork up proudly, with confetti.
-
-Difficulty lives inside each picture (roughly 4, 6, 9, 12, 16, 20, 24
-pieces), chosen with big picture buttons. Three stays chunky.
-
-Known gaps (honest, not faked): gameplay (M1), sound (M2), store listing
-art beyond the launcher icon (M3).
+Known gaps (honest, not faked): sound (M2), resume across process death
+(M2, DataStore), the screenshot capture workflow (M2), store listing art
+beyond the launcher icon (M3).
 
 ## Architecture
 
 ```
-app/      Compose UI, theme, the brand screen (gameplay lands in M1)
+core/     pure Kotlin, zero Android imports: cut, scenes, board rules
+host/     ViewModel: which screen, which piece in hand, session resumes
+ui/       Compose: gallery, difficulty chooser, play field, celebration
+theme     PuzzletColors + Baloo 2 typography; icons drawn as geometry
 tools/    offline asset generators: plain JVM Kotlin, Java2D, no libraries
 ```
 
@@ -94,9 +95,10 @@ regeneration. The in-app brand mark reuses the committed foreground PNG, so
 the icon has exactly one source of truth. New asset families follow the same
 make/check pattern; nothing hand-edited survives without a generator.
 
-M1 will split gameplay the house way: pure-Kotlin rules with zero Android
-imports, a host that performs them, and Compose that only renders. That
-split is premature for a brand screen and must not be faked early.
+The organising principle (inherited from the house): the rules are pure data
+and functions; Android is a player of those rules, not a participant. The
+play field renders through one Canvas; pieces are the scene clipped by their
+own outline, so there is not a single bitmap in gameplay.
 
 ## Forbidden
 
@@ -182,6 +184,35 @@ before handing them over, never assumed.
 - D-011 (2026-09-04): The toy-box is light-fixed: one warm paper world, no
   night variant, so launch never flashes dark before the first frame. A
   night scheme must earn its place with gameplay (M1).
+- D-012 (2026-09-04): Two lifecycle dependencies joined, house-pinned:
+  lifecycle-viewmodel-compose and lifecycle-runtime-compose, 2.8.7. The
+  host is a ViewModel; collectAsStateWithLifecycle needs its runtime.
+- D-013 (2026-09-04): Scenes are pure data (SceneSpec in core) rendered by
+  one DrawScope renderer at any size. Scene palettes are content constants
+  beside their shapes; UI chrome colors stay in PuzzletColors. Subjects:
+  sailboat, rocket, house; all inanimate, no faces, no eyes.
+- D-014 (2026-09-04): The play field is a single Canvas; piece outlines are
+  bezier paths remembered per piece id and rebuilt only when the cut
+  changes. No bitmaps in gameplay; everything stays vector and crisp.
+- D-015 (2026-09-04): Touches are forgiving by design: the hit test takes
+  the topmost unplaced piece within max(44dp, half piece diagonal) of the
+  finger. Snapping is absolute (a piece has exactly one home) with a
+  tolerance of 0.38 of the smaller cell side; a placed piece locks.
+- D-016 (2026-09-04): The ghost board is always visible at 0.13 alpha; the
+  peek coin strengthens it to 0.45. While a piece is held, its slot glows
+  honey. A snap answers with a ring burst and one haptic tick. No sounds
+  until M2; nothing pitches, nothing sings.
+- D-017 (2026-09-04): The ladder is fixed: 4, 6, 9, 12, 16, 20, 24 pieces.
+  Board side: min(0.92 x field width, 0.60 (chunky) or 0.78 x field height,
+  560dp). Scatter prefers the margins around the board and falls back onto
+  the ghost only when a small screen leaves no room; three passes with a
+  relaxing minimum distance keep it bounded.
+- D-018 (2026-09-04): Resume is in-memory for the session: backing out of a
+  started picture keeps it, the shelf dot marks it. Cross-process resume
+  arrives in M2 with DataStore.
+- D-019 (2026-09-04): Seeded determinism: same picture and difficulty means
+  the same cut, the same scatter, every time. Muscle memory and the ghost
+  board both depend on it; the seed derives from scene id plus ladder step.
 
 ## Session log
 
@@ -196,3 +227,13 @@ before handing them over, never assumed.
   CI; dispatched manually. First green run: 33904159523, 3m53s, artifact
   puzzlet-release-apk. The action SHAs are the house pins; GitHub's Node 20
   deprecation notices are noise until an action needs a deliberate bump.
+- 2026-09-04: M1 built and gated. Two debugging lessons worth keeping. (1)
+  When an elvis chain reports a nonsense common type (Any), check the two
+  operand types first: one flat edge template was a bare Cubic among lists,
+  and the mixed elvis poisoned everything downstream with cascades that
+  pointed far from the cause. (2) Scene math stays in Double end to end and
+  converts to Float only at the draw call: Kotlin has no Double.times(Float),
+  and mixing the two at multiplication sites produces a wall of confusing
+  mismatches. The engine's guard (closeAndCheck) earned its keep the same
+  day: it caught a double-shift bug in piece assembly before any human ever
+  saw a crooked piece.

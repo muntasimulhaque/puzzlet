@@ -17,6 +17,14 @@ object PuzzletColors {
     val Teal = Color(0xFF0C7A64)
     val Paper = Color(0xFFFAF6EF)
     val Ink = Color(0xFF1F2B28)
+    /** Ink at resting strength for outlines and shadows. */
+    val InkSoft = Color(0x1F1F2B28)
+    /** The celebration accent; it arrives with things worth celebrating. */
+    val Honey = Color(0xFFF0B429)
+    val Coral = Color(0xFFE4572E)
+    val Sky = Color(0xFF7FB8D4)
+    /** Card surfaces that sit a step above the paper ground. */
+    val Card = Color(0xFFFFFDF9)
 }
 
 // The display face: Baloo 2, bundled offline (OFL text lives in docs/).
@@ -33,6 +41,18 @@ private val BrandTypography = Typography(
         fontWeight = FontWeight.ExtraBold,
         fontSize = 64.sp,
         lineHeight = 70.sp,
+    ),
+    displayMedium = TextStyle(
+        fontFamily = Baloo,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 44.sp,
+        lineHeight = 50.sp,
+    ),
+    titleLarge = TextStyle(
+        fontFamily = Baloo,
+        fontWeight = FontWeight.Bold,
+        fontSize = 28.sp,
+        lineHeight = 34.sp,
     ),
     bodyLarge = TextStyle(
         fontWeight = FontWeight.Normal,

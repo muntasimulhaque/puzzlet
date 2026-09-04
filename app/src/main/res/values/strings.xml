@@ -2,4 +2,7 @@
 <resources>
     <string name="app_name">Puzzlet</string>
     <string name="tagline">A calm jigsaw puzzle for small hands.</string>
+    <string name="well_done">Well done!</string>
+    <string name="again">Again</string>
+    <string name="home">Home</string>
 </resources>

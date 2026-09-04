@@ -4,13 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import app.puzzlet.ui.BrandScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import app.puzzlet.host.PuzzleHost
+import app.puzzlet.host.Screen
+import app.puzzlet.ui.DifficultyChooser
+import app.puzzlet.ui.Gallery
+import app.puzzlet.ui.PlayScreen
 import app.puzzlet.ui.PuzzletTheme
 
 /** The most the toy-box lets system font scaling grow its words. */
@@ -22,6 +29,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         keepBarsHidden()
         setContent {
+            val host: PuzzleHost = viewModel()
+            val screen by host.screen.collectAsStateWithLifecycle()
             // A toy-box, not a document: text follows the system font setting,
             // but only so far. Past this cap the words stop fitting the fixed
             // play surfaces and begin to overlap them, which serves nobody, so
@@ -32,7 +41,22 @@ class MainActivity : ComponentActivity() {
             }
             CompositionLocalProvider(LocalDensity provides capped) {
                 PuzzletTheme {
-                    BrandScreen()
+                    when (val s = screen) {
+                        Screen.Home -> Gallery(
+                            onChoose = host::choose,
+                            hasProgress = host::hasProgress,
+                        )
+                        is Screen.Choose -> DifficultyChooser(
+                            sceneId = s.sceneId,
+                            onBack = host::home,
+                            onPlay = { rows, cols -> host.play(s.sceneId, rows, cols) },
+                        )
+                        is Screen.Playing -> PlayScreen(
+                            state = s,
+                            host = host,
+                            onBack = host::backToChoose,
+                        )
+                    }
                 }
             }
         }
