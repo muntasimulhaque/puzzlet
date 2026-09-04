@@ -12,12 +12,26 @@ android {
         applicationId = "app.puzzlet"
         minSdk = 24
         targetSdk = 37
-        versionCode = 1
-        versionName = "0.1"
+        versionCode = 2
+        versionName = "0.2"
 
         // Instrumented tests (the emulator screenshot capture, arriving with
         // M1 gameplay) use AndroidX's runner.
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        create("release") {
+            // Provided by CI (see .github/workflows/build.yml). Local builds
+            // without the keystore fall back to an unsigned release build.
+            val ksFile = file(System.getenv("KEYSTORE_FILE") ?: "signing.keystore")
+            if (ksFile.exists()) {
+                storeFile = ksFile
+                storePassword = System.getenv("KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("KEY_ALIAS")
+                keyPassword = System.getenv("KEY_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
@@ -31,6 +45,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            val ks = signingConfigs.getByName("release")
+            if (ks.storeFile?.exists() == true) {
+                signingConfig = ks
+            }
         }
     }
 

@@ -246,7 +246,9 @@ class PuzzleCoreTest {
         for (scene in Scenes.all) {
             assertTrue(scene.shapes.isNotEmpty())
             for (shape in scene.shapes) {
-                assertTrue("Bad alpha in ${scene.id}", shape.argb ushr 24 == 0xFFL)
+                // Translucency is allowed (light beams, halos); invisibility
+                // is not: anything under 25 percent alpha is a mistake.
+                assertTrue("Bad alpha in ${scene.id}", shape.argb ushr 24 >= 0x40L)
                 val pts: List<Vec2> = when (shape) {
                     is CircleSpec -> listOf(shape.center)
                     is EllipseSpec -> listOf(shape.center)
@@ -257,8 +259,10 @@ class PuzzleCoreTest {
                 for (p in pts) assertTrue("Non-finite in ${scene.id}", p.x.isFinite() && p.y.isFinite())
                 if (shape is CircleSpec) assertTrue(shape.radius > 0)
                 if (shape is RingSpec) assertTrue(shape.rx > shape.thickness)
+                if (shape is PolygonSpec) assertTrue(shape.points.size >= 3)
+                if (shape is EllipseSpec) assertTrue(shape.rx > 0 && shape.ry > 0)
             }
         }
-        assertEquals(3, Scenes.all.size)
+        assertEquals(5, Scenes.all.size)
     }
 }

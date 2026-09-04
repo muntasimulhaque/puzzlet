@@ -57,7 +57,7 @@ data class SceneSpec(
 
 object Scenes {
 
-    val all: List<SceneSpec> = listOf(sail(), rocket(), house())
+    val all: List<SceneSpec> = listOf(sail(), rocket(), house(), lighthouse(), balloon())
     fun byId(id: String): SceneSpec = all.first { it.id == id }
 
     // ---------------------------------------------------------------------
@@ -157,6 +157,106 @@ object Scenes {
             add(CircleSpec(Vec2(0.50, 0.40), 0.033, window))
         }
         return SceneSpec("rocket", shapes)
+    }
+
+    // ---------------------------------------------------------------------
+    // Lighthouse: dawn sky, scalloped sea, a striped tower on the rocks with
+    // its beams sweeping, and a tiny boat far off. No crew, no birds.
+    // ---------------------------------------------------------------------
+    private fun lighthouse(): SceneSpec {
+        val sky = 0xFFC9E4F0L
+        val sun = 0xFFF0B429L
+        val cloud = 0xFFFEFCF8L
+        val sea = 0xFF4A9DBEL
+        val seaLight = 0xFF6FBAD8L
+        val rock = 0xFF6E7F76L
+        val tower = 0xFFFEFCF8L
+        val band = 0xFFE4572EL
+        val beam = 0x66F0B429L
+        val lamp = 0xFFF6D06BL
+        val trim = 0xFF2E3A36L
+
+        val shapes = buildList<SceneShape> {
+            add(RoundRectSpec(0.0, 0.0, 1.0, 1.0, 0.0, sky))
+            add(CircleSpec(Vec2(0.14, 0.15), 0.075, sun))
+            addAll(cloud(Vec2(0.30, 0.22), 0.65, cloud))
+            addAll(cloud(Vec2(0.78, 0.12), 0.75, cloud))
+            // Light beams sweep from the lamp, wide and calm.
+            add(PolygonSpec(listOf(Vec2(0.72, 0.31), Vec2(0.24, 0.18), Vec2(0.24, 0.46)), beam))
+            add(PolygonSpec(listOf(Vec2(0.72, 0.31), Vec2(0.98, 0.14), Vec2(0.98, 0.44)), beam))
+            add(RoundRectSpec(0.0, 0.68, 1.0, 0.32, 0.0, sea))
+            for (x in 0..13) add(CircleSpec(Vec2(0.04 + x * 0.08, 0.68), 0.032, seaLight))
+            // The little boat far off, sails first, then a dot of hull.
+            add(PolygonSpec(listOf(Vec2(0.185, 0.74), Vec2(0.185, 0.83), Vec2(0.27, 0.83)), cloud))
+            add(PolygonSpec(listOf(Vec2(0.16, 0.83), Vec2(0.30, 0.83), Vec2(0.27, 0.88), Vec2(0.19, 0.88)), band))
+            // Rocks, then the tower rising from them.
+            add(PolygonSpec(
+                listOf(Vec2(0.58, 0.90), Vec2(0.66, 0.78), Vec2(0.80, 0.74), Vec2(0.98, 0.80), Vec2(1.0, 0.94), Vec2(1.0, 1.0), Vec2(0.60, 1.0)),
+                rock,
+            ))
+            add(PolygonSpec(listOf(Vec2(0.66, 0.78), Vec2(0.70, 0.34), Vec2(0.74, 0.34), Vec2(0.78, 0.78)), tower))
+            add(PolygonSpec(listOf(Vec2(0.674, 0.64), Vec2(0.686, 0.52), Vec2(0.754, 0.52), Vec2(0.766, 0.64)), band))
+            add(PolygonSpec(listOf(Vec2(0.684, 0.46), Vec2(0.693, 0.38), Vec2(0.747, 0.38), Vec2(0.756, 0.46)), band))
+            // Lamp room: rail, light, roof.
+            add(RoundRectSpec(0.695, 0.30, 0.05, 0.045, 0.006, trim))
+            add(CircleSpec(Vec2(0.72, 0.315), 0.028, lamp))
+            add(PolygonSpec(listOf(Vec2(0.688, 0.30), Vec2(0.752, 0.30), Vec2(0.72, 0.235)), band))
+        }
+        return SceneSpec("lighthouse", shapes)
+    }
+
+    // ---------------------------------------------------------------------
+    // Balloon: a warm morning sky, a striped balloon with its basket and
+    // ropes, a small companion far off, and a green hill with round trees.
+    // ---------------------------------------------------------------------
+    private fun balloon(): SceneSpec {
+        val sky = 0xFFF8DCC0L
+        val halo = 0x59F6D06BL
+        val sun = 0xFFF0B429L
+        val cloud = 0xFFFEFCF8L
+        val coral = 0xFFE4572EL
+        val honey = 0xFFF0B429L
+        val teal = 0xFF0C7A64L
+        val rope = 0xFF2E3A36L
+        val basket = 0xFFA67B5BL
+        val hill = 0xFF82C86EL
+        val hillBack = 0xFF68B055L
+        val leaf = 0xFF5FA054L
+        val leafB = 0xFF6FB863L
+        val trunk = 0xFF8F6A4BL
+
+        fun balloonShape(c: Vec2, r: Double, left: Long, mid: Long, right: Long): List<SceneShape> = listOf(
+            EllipseSpec(Vec2(c.x - r * 0.62, c.y), r * 0.66, r * 0.64, left),
+            EllipseSpec(Vec2(c.x + r * 0.62, c.y), r * 0.66, r * 0.64, right),
+            EllipseSpec(Vec2(c.x, c.y), r * 0.78, r * 0.92, mid),
+        )
+
+        val shapes = buildList<SceneShape> {
+            add(RoundRectSpec(0.0, 0.0, 1.0, 1.0, 0.0, sky))
+            add(CircleSpec(Vec2(0.82, 0.16), 0.115, halo))
+            add(CircleSpec(Vec2(0.82, 0.16), 0.080, sun))
+            addAll(cloud(Vec2(0.18, 0.16), 0.9, cloud))
+            addAll(cloud(Vec2(0.62, 0.34), 0.55, cloud))
+            addAll(cloud(Vec2(0.86, 0.55), 0.45, cloud))
+            // The little companion balloon, far away.
+            addAll(balloonShape(Vec2(0.80, 0.30), 0.055, teal, honey, teal))
+            add(RoundRectSpec(0.792, 0.365, 0.016, 0.014, 0.004, basket))
+            // The big balloon: envelope, skirt, ropes, basket.
+            addAll(balloonShape(Vec2(0.40, 0.32), 0.155, honey, coral, honey))
+            add(PolygonSpec(listOf(Vec2(0.36, 0.435), Vec2(0.44, 0.435), Vec2(0.425, 0.475), Vec2(0.375, 0.475)), coral))
+            add(RoundRectSpec(0.373, 0.475, 0.008, 0.055, 0.003, rope))
+            add(RoundRectSpec(0.419, 0.475, 0.008, 0.055, 0.003, rope))
+            add(RoundRectSpec(0.358, 0.53, 0.084, 0.06, 0.012, basket))
+            // The hill it drifts over, with round trees.
+            add(EllipseSpec(Vec2(0.14, 1.04), 0.60, 0.44, hillBack))
+            add(EllipseSpec(Vec2(0.72, 1.10), 0.78, 0.50, hill))
+            add(RoundRectSpec(0.24, 0.86, 0.026, 0.09, 0.008, trunk))
+            add(CircleSpec(Vec2(0.253, 0.82), 0.062, leaf))
+            add(CircleSpec(Vec2(0.212, 0.85), 0.042, leafB))
+            add(RoundRectSpec(0.62, 0.92, 0.022, 0.075, 0.007, trunk))
+            add(CircleSpec(Vec2(0.631, 0.885), 0.052, leafB))
+        }
+        return SceneSpec("balloon", shapes)
     }
 
     // ---------------------------------------------------------------------

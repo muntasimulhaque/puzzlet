@@ -55,3 +55,11 @@ tasks.register<JavaExec>("checkSounds") {
     mainClass = "app.puzzlet.tools.SoundGenKt"
     args = listOf(rootDir.absolutePath, "--check")
 }
+
+tasks.register<JavaExec>("makeArt") {
+    group = "tools"
+    description = "Regenerate the store art (feature graphic, store icon)."
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "app.puzzlet.tools.MakeArtKt"
+    args = listOf(rootDir.absolutePath)
+}
