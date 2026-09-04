@@ -284,3 +284,11 @@ before handing them over, never assumed.
   unplaced. Composables were re-seated to take state and callbacks (D-023)
   before the harness landed, which is the order to keep for every future
   screen: pure first, then photographed.
+- 2026-09-05: First emulator run failed with Unable to resolve activity for
+  cmp=app.puzzlet.test/... The resolution order inside ActivityInvoker is:
+  try the TARGET app package first, fall back to the test package, and the
+  error message shows whichever failed. The bare host activity must be
+  declared in app/src/debug/AndroidManifest.xml (the house pattern), where
+  it merges into the debug app and inherits Theme.Puzzlet; release never
+  sees it. The debug sourceset is now listed in screenshots.yml paths, so
+  harness-side fixes trigger their own capture run.

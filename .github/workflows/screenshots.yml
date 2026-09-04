@@ -11,6 +11,7 @@ on:
     branches: [main]
     paths:
       - "app/src/main/**"
+      - "app/src/debug/**"
       - "app/src/androidTest/**"
       - "app/build.gradle.kts"
       - ".github/workflows/screenshots.yml"
