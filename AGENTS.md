@@ -291,4 +291,7 @@ before handing them over, never assumed.
   declared in app/src/debug/AndroidManifest.xml (the house pattern), where
   it merges into the debug app and inherits Theme.Puzzlet; release never
   sees it. The debug sourceset is now listed in screenshots.yml paths, so
-  harness-side fixes trigger their own capture run.
+  harness-side fixes trigger their own capture run. The first full capture set (3 form factors x 7 scenes, 21 PNGs) is
+  committed under play-store/screenshots/; git status is the drift check:
+  refresh a capture, and a no-change run must come back byte-identical
+  apart from the celebration scene, which is mid-animation by design.
