@@ -141,7 +141,9 @@ determinism (`:tools:test`) and a release build. `:tools:checkIcons` is the
 local pinning gate: run it after any deliberate icon change and commit the
 regenerated PNGs in the same commit. Do not pre-check UI on a local
 emulator; add the screenshot capture workflow with M1 gameplay, pinned to
-API 35, the same image the house uses.
+API 35, the same image the house uses. A push that touches no listed path
+runs no CI at all; when a fix commit needs proof, dispatch manually
+(`gh workflow run build.yml --ref main`).
 
 ## Commits and releasing
 
@@ -186,3 +188,11 @@ before handing them over, never assumed.
 - 2026-09-04: Repo created, M0 scaffold (AGENTS.md first, Gradle project,
   theme seeds, brand screen, icon generator, CI). Baloo 2 bundled for the
   display face, OFL text in docs/. First push.
+- 2026-09-04: Two CI lessons from the first run. (1) Windows checkouts do
+  not carry the POSIX executable bit (core.filemode is false), so gradlew
+  entered the index as 100644 and the runner died on Permission denied;
+  fixed permanently with git update-index --chmod=+x. (2) A commit touching
+  only unlisted paths triggers no run, so a wrapper-only fix is invisible to
+  CI; dispatched manually. First green run: 33904159523, 3m53s, artifact
+  puzzlet-release-apk. The action SHAs are the house pins; GitHub's Node 20
+  deprecation notices are noise until an action needs a deliberate bump.
