@@ -1,0 +1,26 @@
+# Never commit Android release artifacts or signing credentials.
+*.aab
+*.apk
+*.keystore
+*.jks
+signing-key-info.txt
+
+# Android / Gradle build outputs
+.gradle/
+build/
+local.properties
+.kotlin/
+captures/
+
+# These archives can contain release artifacts or deployment copies.
+*.zip
+
+# Local editor and operating-system files.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Local landing spot for a signed AAB pulled from a future release.
+aab/
