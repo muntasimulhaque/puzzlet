@@ -51,19 +51,19 @@ object IconDesign {
     /** Store tile corner radius as a fraction of the tile. */
     const val STORE_CORNER_FRACTION = 0.19
 
-    /** The seam, unit space: boundary x, hero knob cy, socket cy. */
+    /**
+     * The seam, unit space: boundary x, hero knob cy, socket cy. Both
+     * knobs share one size, and the three gaps read equal: tile top to
+     * socket head, socket head to knob head, knob head to tile bottom.
+     */
     const val SEAM_X = 0.56
-    const val KNOB_Y = 0.50
-    const val SOCKET_Y = 0.24
-    // The knob, frozen from the approved green socket: narrow stem, round
-    // head. The white hero is this exact shape scaled by HERO, so the pair
-    // can never drift apart again.
-    // Green-approved bite numbers, frozen. The white hero below is this
-    // exact shape scaled by HERO, so the pair matches by construction.
+    const val KNOB_Y = 0.69
+    const val SOCKET_Y = 0.31
+    // Green-approved bite numbers, frozen. The white hero is this exact
+    // shape mirrored, congruent, so the pair matches by construction.
     const val BITE_W = 0.062
     const val BITE_D = 0.075
     const val BITE_R = 0.070
-    const val HERO = 1.64
 }
 
 /**
@@ -84,11 +84,11 @@ private fun biteUnit(): Area {
     return bite
 }
 
-/** The white hero: the green bite mirrored east at hero scale. Same shape. */
+/** The white hero: the green bite mirrored east, congruent. Same shape. */
 fun heroKnob(): Area {
     val d = IconDesign
     val t = AffineTransform.getTranslateInstance(d.SEAM_X, d.KNOB_Y)
-    t.concatenate(AffineTransform.getScaleInstance(-d.HERO, d.HERO))
+    t.concatenate(AffineTransform.getScaleInstance(-1.0, 1.0))
     return biteUnit().createTransformedArea(t)
 }
 

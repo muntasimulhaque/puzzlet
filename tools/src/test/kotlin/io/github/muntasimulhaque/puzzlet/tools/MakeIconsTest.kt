@@ -45,8 +45,18 @@ class MakeIconsTest {
     }
 
     /** Head centres derived from the generator consts, never hardcoded. */
-    private fun knobHeadX() = IconDesign.SEAM_X + (IconDesign.BITE_D + 0.015) * IconDesign.HERO
+    private fun knobHeadX() = IconDesign.SEAM_X + IconDesign.BITE_D + 0.015
     private fun socketHeadX() = IconDesign.SEAM_X - IconDesign.BITE_D - 0.015
+
+    @Test
+    fun `both knobs share one size and equal gaps to each other and the edges`() {
+        val d = IconDesign
+        val top = d.SOCKET_Y - d.BITE_R
+        val mid = d.KNOB_Y - d.SOCKET_Y - 2 * d.BITE_R
+        val bottom = 1.0 - d.KNOB_Y - d.BITE_R
+        assertEquals(top, mid, 1e-9)
+        assertEquals(mid, bottom, 1e-9)
+    }
 
     @Test
     fun `legacy tile carries the seam with knob and socket`() {

@@ -441,3 +441,5 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 - 2026-09-06: White hero is now the green bite mirrored east, exact head
   offset included, after the owner corrected me twice. Same shape by
   construction, green untouched.
+- 2026-09-06: Both knobs one size at scale 1.0, gaps pinned equal top,
+  middle, and bottom by a new test. No more hero scaling.
