@@ -451,3 +451,6 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   redesign, S icon finals, tray breathing, fresh captures. Notes 472
   chars, all gates green. 0.6 was superseded before submission, so its AAB
   never left the folder.
+- 2026-09-06: Version 0.7 submitted for closed testing review; the AAB was
+  deleted from play-store/aab/ per the folder rule, and the consumed icon
+  candidate sheets were removed. README brought current.

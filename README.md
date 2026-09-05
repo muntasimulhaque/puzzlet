@@ -4,14 +4,17 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 0.2 (versionCode 2) is cut and signed for the closed
-testing track. Eight pictures, each cut into 4 to 24 pieces: drag-and-snap
-with a forgiving touch, the faint ghost board, a peek coin, confetti at
-the finish, four synthesized sounds (no music) behind a sound switch, and
-one unfinished picture that survives process death. Store screenshots
-render in CI from the app's own states; the listing kit, the console
-answers and the signing flow are ready. See AGENTS.md for the working
-rules and the decision log.
+Status: release 0.7 (versionCode 7) is submitted for the closed testing
+track. Eight pictures, each cut into 4 to 24 pieces. The board starts
+blank so the child must think; a peek coin reveals the full picture. No
+drag hints, no mid game restart: pieces move by hand like a real puzzle,
+while the tray jumbles fresh every game and celebration deals a fresh one.
+The menu is pictures only, and every difficulty row shows its picture cut
+exactly as the game will cut it. Four synthesized sounds (no music)
+behind a sound switch, and one unfinished picture that survives process
+death. Store screenshots render in CI from the app's own states; the
+listing kit, the console answers and the signing flow are ready. See
+AGENTS.md for the working rules and the decision log.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
@@ -24,7 +27,7 @@ Eight pictures: sailboat, rocket, house, lighthouse, balloon, train,
 castle, fruit. All inanimate, no faces, no eyes, drawn as vectors in code.
 Each cuts into 4, 6, 9, 12, 16, 20 or 24 pieces. No timer, no score, no
 fail state, no reading required: drag a piece anywhere near its place and
-it clicks home.
+it clicks home with a spring, a soft knock and a haptic tick.
 
 ## Build
 
