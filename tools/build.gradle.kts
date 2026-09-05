@@ -64,3 +64,11 @@ tasks.register<JavaExec>("makeArt") {
     mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeArtKt"
     args = listOf(rootDir.absolutePath)
 }
+
+tasks.register<JavaExec>("makeCandidates") {
+    group = "tools"
+    description = "Render owner candidate takes under play-store/candidates."
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeCandidatesKt"
+    args = listOf(rootDir.absolutePath)
+}
