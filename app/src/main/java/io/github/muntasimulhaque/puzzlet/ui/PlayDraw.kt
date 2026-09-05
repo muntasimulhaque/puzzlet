@@ -64,16 +64,16 @@ internal fun DrawScope.drawBoard(
         size = Size(tray.w.toFloat(), tray.h.toFloat()),
     )
     drawLine(
-        PuzzletColors.Ink.copy(alpha = 0.05f),
+        PuzzletColors.Ink.copy(alpha = 0.08f),
         start = Offset(0f, tray.maxY.toFloat()),
         end = Offset(tray.w.toFloat(), tray.maxY.toFloat()),
         strokeWidth = 1.dp.toPx(),
     )
 
-    // The mat: a quiet frame, so the board reads as a place.
+    // The mat: a clear frame, so the board reads as a place to fill.
     val mat = 8.dp.toPx()
     drawRoundRect(
-        PuzzletColors.Ink.copy(alpha = 0.10f),
+        PuzzletColors.Ink.copy(alpha = 0.18f),
         topLeft = Offset((board.x - mat).toFloat(), (board.y - mat).toFloat()),
         size = Size((board.w + 2 * mat).toFloat(), (board.h + 2 * mat).toFloat()),
         cornerRadius = CornerRadius(10.dp.toPx()),
@@ -116,8 +116,8 @@ internal fun DrawScope.drawBoard(
             scene = scene,
             board = board,
             scale = game.trayScale.toFloat(),
-            shadowAlpha = 0.10f,
-            outlineAlpha = 0.20f,
+            shadowAlpha = 0.16f,
+            outlineAlpha = 0.28f,
         )
     }
 
@@ -177,8 +177,8 @@ internal fun DrawScope.drawBoard(
                 scene = scene,
                 board = board,
                 scale = liftV,
-                shadowAlpha = 0.22f,
-                outlineAlpha = 0.20f,
+                shadowAlpha = 0.24f,
+                outlineAlpha = 0.28f,
             )
         }
     }
@@ -222,6 +222,9 @@ internal fun DrawScope.drawPiece(
                 drawScene(scene, board.w)
             }
         }
+        // A paper halo first, so pale pieces pop on tray and board,
+        // then the ink edge that reads as the cut.
+        drawPath(path, PuzzletColors.Card, style = Stroke(3.2.dp.toPx()))
         drawPath(path, PuzzletColors.Ink.copy(alpha = outlineAlpha), style = Stroke(1.6.dp.toPx()))
     }
 }

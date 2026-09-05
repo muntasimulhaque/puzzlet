@@ -105,10 +105,16 @@ fun PlayScreen(
             var grabOffset by remember { mutableStateOf(Vec2(0.0, 0.0)) }
             val trayScale by rememberUpdatedState(game.trayScale)
 
-            // One stable path per piece id, rebuilt only when the cut changes.
+            // One stable path per piece id, rebuilt when the cut changes.
+            // The board size is the key: the first game is a 1x1 placeholder
+            // that layout() immediately reshapes, and the cut (hence every
+            // outline) grows with the board. Remembering only rows, cols,
+            // seed and constraints kept the tiny placeholder outlines after
+            // the reshape, which left the tray looking empty on device
+            // while captures (built already sized) looked fine.
             val paths = remember(
                 game.rows, game.cols, game.seed,
-                constraints.maxWidth, constraints.maxHeight,
+                game.board.w, game.board.h,
             ) {
                 game.pieces.associate { it.id to outlinePath(it.shape.segments) }
             }

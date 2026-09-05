@@ -195,6 +195,18 @@ class PuzzleCoreTest {
     }
 
     @Test
+    fun `relayout from the 1x1 placeholder grows into the real field`() {
+        val tiny = createPuzzle("castle", 2, 2, Area(0.0, 0.0, 1.0, 1.0), 1e6, 9L)
+        assertTrue(tiny.board.w < 2.0)
+        val field = Area(0.0, 0.0, 1080.0, 1752.0)
+        val grown = relayout(tiny, field, 1470.0)
+        val fresh = createPuzzle("castle", 2, 2, field, 1470.0, 9L)
+        assertEquals(fresh.board.w, grown.board.w, 1e-9)
+        assertEquals(fresh.pieces.map { it.shape.size }, grown.pieces.map { it.shape.size })
+        assertEquals(fresh.pieces.map { it.current }, grown.pieces.map { it.current })
+    }
+
+    @Test
     fun `restart clears progress and re-seats the tray`() {
         var p = createPuzzle("house", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 5L)
         p = drag(p, 0, p.piece(0)!!.home)
