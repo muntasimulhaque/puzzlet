@@ -2,10 +2,12 @@ package app.puzzlet.tools
 
 import java.awt.Color
 import java.awt.Graphics2D
+import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.geom.AffineTransform
 import java.awt.geom.Area
 import java.awt.geom.Ellipse2D
+import java.awt.geom.Path2D
 import java.awt.geom.Rectangle2D
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
@@ -17,19 +19,23 @@ import kotlin.system.exitProcess
 /**
  * The launcher icon, drawn from code so every PNG has exactly one author.
  *
- * Design (AGENTS.md, Design seeds): a lagoon-teal tile with a warm-paper
- * jigsaw piece. One glyph, one geometry, rendered three ways: the legacy
- * tile for API 24-25, the adaptive foreground for API 26+, and a white
- * monochrome sibling for Android 13+ themed icons. The app's brand screen
- * reuses the committed foreground PNG, so the mark has one source of truth.
+ * Design (the owner's, D-030): ONE jigsaw piece reaching out in all four
+ * directions, top, right, bottom, left: four identical arms offering
+ * friendship. Perfect symmetry keeps the mark calm, kills any double
+ * meaning outright, and reads as a puzzle at any size. Rendered three ways:
+ * the legacy tile for API 24-25, the adaptive foreground for API 26+, and a
+ * white monochrome sibling for Android 13+ themed icons. The app's brand
+ * mark reuses the committed foreground PNG, one source of truth.
  *
  * Colors here mirror app/src/main/res/values/colors.xml. Change both
  * together, then run makeIcons and commit the regenerated PNGs.
  */
 object IconDesign {
     const val TEAL: Int = 0xFF0C7A64.toInt()
+    const val TEAL_DEEP: Int = 0xFF085949.toInt()
     const val PAPER: Int = 0xFFFAF6EF.toInt()
     const val WHITE: Int = 0xFFFFFFFF.toInt()
+    const val HONEY: Int = 0xFFF0B429.toInt()
 
     /** The densities the house ships, in scale order. */
     val DENSITY_DIRS = arrayOf("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")
@@ -39,59 +45,75 @@ object IconDesign {
     const val LEGACY_DP = 48.0
     /** Adaptive layer canvas, dp (the 108 dp full-bleed square). */
     const val ADAPTIVE_DP = 108.0
-    /** Glyph box inside the adaptive canvas; fits the 66 dp safe circle. */
-    const val ADAPTIVE_GLYPH_DP = 44.0
-    /** Glyph box as a fraction of the legacy tile. */
-    const val LEGACY_GLYPH_FRACTION = 0.60
+    /** Piece span inside the adaptive canvas; far inside the 66 dp circle. */
+    const val ADAPTIVE_SPAN_DP = 44.0
+    /** Piece span as a fraction of the legacy tile. */
+    const val LEGACY_SPAN_FRACTION = 0.66
     /** Legacy tile corner radius as a fraction of the tile. */
     const val LEGACY_CORNER_FRACTION = 0.22
 }
 
 /**
- * The jigsaw piece, in a unit box: a rounded body with a knob on top, a knob
- * on the right and a blank notch in the bottom, one flat edge. The necks are
- * narrower than the knobs, which is what makes it read as a puzzle piece
- * rather than a sticker.
+ * The friendship piece, in a unit box centred at (0.5, 0.5): a rounded
+ * square body with four identical necked knobs, one per side, reaching
+ * outward. The piece spans 0.70 of the box, knob tip to knob tip.
  */
-fun puzzlePiece(): Area {
-    val body = Area(RoundRectangle2D.Double(0.16, 0.32, 0.52, 0.52, 0.10, 0.10))
-    val topNeck = Area(Rectangle2D.Double(0.37, 0.20, 0.10, 0.13))
-    val topKnob = Area(Ellipse2D.Double(0.305, 0.07, 0.23, 0.23))
-    val rightNeck = Area(Rectangle2D.Double(0.67, 0.53, 0.13, 0.10))
-    val rightKnob = Area(Ellipse2D.Double(0.70, 0.465, 0.23, 0.23))
-    val bottomNotch = Area(Ellipse2D.Double(0.305, 0.725, 0.23, 0.23))
-    val piece = Area(body)
-    piece.add(topNeck)
-    piece.add(topKnob)
-    piece.add(rightNeck)
-    piece.add(rightKnob)
-    piece.subtract(bottomNotch)
-    return piece
+fun brandPiece(): Area {
+    val body = Area(RoundRectangle2D.Double(0.28, 0.28, 0.44, 0.44, 0.09, 0.09))
+    // Each knob: a neck crossing the body edge plus a round head beyond it.
+    // Top (bump up), right, bottom, left: the same four arms.
+    body.add(Area(Rectangle2D.Double(0.474, 0.18, 0.052, 0.12)))
+    body.add(Area(Ellipse2D.Double(0.44, 0.15, 0.12, 0.12)))
+    body.add(Area(Rectangle2D.Double(0.70, 0.474, 0.12, 0.052)))
+    body.add(Area(Ellipse2D.Double(0.73, 0.44, 0.12, 0.12)))
+    body.add(Area(Rectangle2D.Double(0.474, 0.70, 0.052, 0.12)))
+    body.add(Area(Ellipse2D.Double(0.44, 0.73, 0.12, 0.12)))
+    body.add(Area(Rectangle2D.Double(0.18, 0.474, 0.12, 0.052)))
+    body.add(Area(Ellipse2D.Double(0.15, 0.44, 0.12, 0.12)))
+    return body
 }
 
-/** The legacy tile: teal rounded square, paper glyph, for API 24-25 launchers. */
+internal const val BRAND_SPAN = 0.70
+
+/** Draw the piece scaled to [span], centred at (cx, cy), in [argb]. */
+fun paintBrandPiece(g: Graphics2D, cx: Double, cy: Double, span: Double, argb: Int) {
+    val piece = brandPiece()
+    val scale = span / BRAND_SPAN
+    g.transform(AffineTransform(scale, 0.0, 0.0, scale, cx - 0.5 * scale, cy - 0.5 * scale))
+    g.color = Color(argb, true)
+    g.fill(piece)
+    g.transform(AffineTransform(1.0 / scale, 0.0, 0.0, 1.0 / scale, -(cx - 0.5 * scale), -(cy - 0.5 * scale)))
+}
+
+/** The legacy tile: teal rounded square, paper piece, for API 24-25 launchers. */
 fun legacyIcon(sizePx: Int): BufferedImage {
     val image = BufferedImage(sizePx, sizePx, BufferedImage.TYPE_INT_ARGB)
     val g = begin(image)
     g.color = Color(IconDesign.TEAL, true)
     // Java2D arc dimensions are the corner ellipse DIAMETER; the design
     // fraction is the radius, so double it. This keeps the tile identical to
-    // the brand tile in Brand.kt (RoundedCornerShape(percent = 22)).
+    // the brand tile in Gallery.kt (RoundedCornerShape(percent = 22)).
     val d = sizePx * IconDesign.LEGACY_CORNER_FRACTION * 2.0
     g.fill(RoundRectangle2D.Double(0.0, 0.0, sizePx.toDouble(), sizePx.toDouble(), d, d))
-    paintGlyph(g, sizePx.toDouble(), IconDesign.LEGACY_GLYPH_FRACTION, IconDesign.PAPER)
+    paintBrandPiece(g, sizePx / 2.0, sizePx / 2.0, sizePx * IconDesign.LEGACY_SPAN_FRACTION, IconDesign.PAPER)
     g.dispose()
     return image
 }
 
 /**
- * One adaptive layer: transparent canvas, glyph only. Used for the
+ * One adaptive layer: transparent canvas, piece only. Used for the
  * foreground (paper) and the monochrome sibling (white).
  */
-fun adaptiveLayer(sizePx: Int, glyphArgb: Int): BufferedImage {
+fun adaptiveLayer(sizePx: Int, pieceArgb: Int): BufferedImage {
     val image = BufferedImage(sizePx, sizePx, BufferedImage.TYPE_INT_ARGB)
     val g = begin(image)
-    paintGlyph(g, sizePx.toDouble(), IconDesign.ADAPTIVE_GLYPH_DP / IconDesign.ADAPTIVE_DP, glyphArgb)
+    paintBrandPiece(
+        g,
+        sizePx / 2.0,
+        sizePx / 2.0,
+        sizePx * IconDesign.ADAPTIVE_SPAN_DP / IconDesign.ADAPTIVE_DP,
+        pieceArgb,
+    )
     g.dispose()
     return image
 }
@@ -103,19 +125,6 @@ private fun begin(image: BufferedImage): Graphics2D {
     g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
     g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY)
     return g
-}
-
-/** Draw the piece scaled and centered into a square of [canvas] units. */
-private fun paintGlyph(g: Graphics2D, canvas: Double, glyphFraction: Double, argb: Int) {
-    val piece = puzzlePiece()
-    val bounds = piece.bounds2D
-    val box = canvas * glyphFraction
-    val scale = box / maxOf(bounds.width, bounds.height)
-    val tx = (canvas - bounds.width * scale) / 2.0 - bounds.x * scale
-    val ty = (canvas - bounds.height * scale) / 2.0 - bounds.y * scale
-    g.transform(AffineTransform(scale, 0.0, 0.0, scale, tx, ty))
-    g.color = Color(argb, true)
-    g.fill(piece)
 }
 
 /** One icon file: where it lives under res, and the image that belongs there. */

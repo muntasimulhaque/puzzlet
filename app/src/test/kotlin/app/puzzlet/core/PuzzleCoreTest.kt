@@ -207,6 +207,20 @@ class PuzzleCoreTest {
     }
 
     @Test
+    fun `scatter never seats a piece beside its own slot, when there is room`() {
+        for (seed in 1L..20L) for ((rows, cols) in listOf(3 to 3, 4 to 3, 5 to 4, 6 to 4)) {
+            val p = createPuzzle("sail", rows, cols, Area(0.0, 0.0, 900.0, 1400.0), 520.0, seed)
+            for (piece in p.pieces) {
+                val d = dist(piece.currentCenter, piece.homeCenter)
+                assertTrue(
+                    "seed=$seed ${rows}x$cols piece ${piece.id} starts ${d.toInt()}px from home (tol ${p.snapTolerance.toInt()})",
+                    d > p.snapTolerance,
+                )
+            }
+        }
+    }
+
+    @Test
     fun `restore re-seats saved pieces and keeps the rest on their scatter seats`() {
         val p = restorePuzzle("sail", 3, 3, setOf(0, 4), Area(0.0, 0.0, 800.0, 800.0), 500.0, 3L)
         assertEquals(2, p.placedCount)

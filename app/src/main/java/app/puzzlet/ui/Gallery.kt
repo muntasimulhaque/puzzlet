@@ -40,6 +40,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import app.puzzlet.R
 import app.puzzlet.core.Scenes
@@ -95,7 +97,11 @@ fun Gallery(
                     color = PuzzletColors.Ink,
                 )
             }
-            CircleButton(onClick = onToggleMute, background = PuzzletColors.Card) {
+            CircleButton(
+                onClick = onToggleMute,
+                background = PuzzletColors.Card,
+                label = stringResource(if (muted) R.string.sound_off else R.string.sound_on),
+            ) {
                 if (muted) SoundOffIcon(color = PuzzletColors.Ink) else SoundOnIcon(color = PuzzletColors.Ink)
             }
         }
@@ -175,7 +181,11 @@ fun DifficultyChooser(
                 .padding(start = 16.dp, top = 20.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CircleButton(onClick = onBack, background = PuzzletColors.Card) {
+            CircleButton(
+                onClick = onBack,
+                background = PuzzletColors.Card,
+                label = stringResource(R.string.go_back),
+            ) {
                 BackIcon(color = PuzzletColors.Ink)
             }
         }
@@ -267,13 +277,14 @@ fun BrandMarkSmall() {
     }
 }
 
-/** A round pressable used across the app. */
+/** A round pressable used across the app. [label] names it for TalkBack. */
 @Composable
 fun CircleButton(
     onClick: () -> Unit,
     background: Color,
     modifier: Modifier = Modifier,
     size: androidx.compose.ui.unit.Dp = 48.dp,
+    label: String? = null,
     content: @Composable () -> Unit,
 ) {
     Box(
@@ -281,7 +292,14 @@ fun CircleButton(
             .size(size)
             .clip(CircleShape)
             .background(background)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .then(
+                if (label != null) {
+                    Modifier.semantics { contentDescription = label }
+                } else {
+                    Modifier
+                },
+            ),
         contentAlignment = Alignment.Center,
     ) {
         content()

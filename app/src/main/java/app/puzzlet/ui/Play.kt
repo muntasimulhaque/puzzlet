@@ -43,7 +43,11 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import app.puzzlet.R
 import app.puzzlet.core.Area
 import app.puzzlet.core.Cubic
 import app.puzzlet.core.Piece
@@ -205,7 +209,11 @@ private fun PlayTopBar(
             .padding(horizontal = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        CircleButton(onClick = onBack, background = PuzzletColors.Card) {
+        CircleButton(
+            onClick = onBack,
+            background = PuzzletColors.Card,
+            label = stringResource(R.string.go_back),
+        ) {
             BackIcon(color = PuzzletColors.Ink)
         }
         Spacer(Modifier.weight(1f))
@@ -214,6 +222,7 @@ private fun PlayTopBar(
         CircleButton(
             onClick = onPeek,
             background = if (peek) PuzzletColors.Honey else PuzzletColors.Card,
+            label = stringResource(R.string.peek),
         ) {
             ScenePicture(
                 spec = Scenes.byId(sceneId),
@@ -222,7 +231,11 @@ private fun PlayTopBar(
             )
         }
         Spacer(Modifier.padding(horizontal = 4.dp))
-        CircleButton(onClick = onRestart, background = PuzzletColors.Card) {
+        CircleButton(
+            onClick = onRestart,
+            background = PuzzletColors.Card,
+            label = stringResource(R.string.restart),
+        ) {
             ReplayIcon(color = PuzzletColors.Ink)
         }
     }
@@ -290,8 +303,10 @@ private fun DrawScope.drawBoard(
     }
 
     // While a piece is held, its slot glows softly: the piece shows you
-    // where it wants to go, without moving anything for you.
-    if (dragged != null) {
+    // where it wants to go. A helper for the youngest hands only; on the
+    // higher ladders the child answers that question themselves (AGENTS.md,
+    // the original goal: the puzzle must make the child think).
+    if (dragged != null && game.rows * game.cols <= 9) {
         drawRoundRect(
             PuzzletColors.Honey.copy(alpha = ringAlpha),
             topLeft = Offset(dragged.home.x.toFloat(), dragged.home.y.toFloat()),

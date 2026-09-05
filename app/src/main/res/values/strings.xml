@@ -5,4 +5,9 @@
     <string name="well_done">Well done!</string>
     <string name="again">Again</string>
     <string name="home">Home</string>
+    <string name="go_back">Go back</string>
+    <string name="peek">Show the whole picture</string>
+    <string name="restart">Start this picture again</string>
+    <string name="sound_on">Sound is on. Tap to switch it off.</string>
+    <string name="sound_off">Sound is off. Tap to switch it on.</string>
 </resources>

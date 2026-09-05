@@ -59,21 +59,27 @@ fun createPuzzle(
     )
     val cut = PieceCut.generate(rows, cols, boardSide, boardSide, seed)
     val shapes = cut.shapes
+    val snapTolerance = 0.38 * minOf(cut.cellW, cut.cellH)
+    // Homes first, so the scatter can keep every piece away from its own
+    // slot: a piece that starts almost home teaches nothing (AGENTS.md, the
+    // original goal: the puzzle must make the child think).
+    val homes = shapes.mapIndexed { i, shape ->
+        Vec2(board.x + (i % cols) * cut.cellW, board.y + (i / cols) * cut.cellH) + shape.offsetInCell
+    }
     val centers = scatterCenters(
         field = field,
         board = board,
         sizes = shapes.map { it.size },
         seed = seed,
+        awayFrom = homes.mapIndexed { i, home -> home + shapes[i].size * 0.5 },
+        awayRadius = snapTolerance * 1.5,
     )
     val pieces = shapes.mapIndexed { i, shape ->
-        val cellX = board.x + (i % cols) * cut.cellW
-        val cellY = board.y + (i / cols) * cut.cellH
-        val home = Vec2(cellX, cellY) + shape.offsetInCell
         val topLeft = centers[i] - shape.size * 0.5
         Piece(
             id = i,
             shape = shape,
-            home = home,
+            home = homes[i],
             current = clampBoxTopLeft(topLeft, shape.size.x, shape.size.y, field),
             placed = false,
         )
@@ -88,7 +94,7 @@ fun createPuzzle(
         pieces = pieces,
         placedCount = 0,
         completed = false,
-        snapTolerance = 0.38 * minOf(cut.cellW, cut.cellH),
+        snapTolerance = snapTolerance,
     )
 }
 
@@ -153,6 +159,8 @@ fun restart(p: Puzzle): Puzzle {
         board = p.board,
         sizes = p.pieces.map { it.size },
         seed = p.seed + 7919L,
+        awayFrom = p.pieces.map { it.homeCenter },
+        awayRadius = p.snapTolerance * 1.5,
     )
     val pieces = p.pieces.mapIndexed { i, piece ->
         val topLeft = centers[i] - piece.size * 0.5
@@ -170,12 +178,26 @@ fun restart(p: Puzzle): Puzzle {
  * centre first) and fall back onto the board's own ghost only when a small
  * screen leaves no room. Three passes with a relaxing minimum distance keep
  * this bounded and deterministic: a scatter can never loop forever.
+ *
+ * [awayFrom]/[awayRadius] keep each piece out of arm's reach of its own
+ * slot, so no piece starts almost home; the relaxed passes may drop that
+ * rule rather than fail a scatter on a tiny screen.
  */
-fun scatterCenters(field: Area, board: Area, sizes: List<Vec2>, seed: Long): List<Vec2> {
+fun scatterCenters(
+    field: Area,
+    board: Area,
+    sizes: List<Vec2>,
+    seed: Long,
+    awayFrom: List<Vec2> = emptyList(),
+    awayRadius: Double = 0.0,
+): List<Vec2> {
     if (sizes.isEmpty()) return emptyList()
     val rnd = Random(seed)
     val maxHalf = sizes.maxOf { hypot(it.x, it.y) / 2.0 }
-    val step = 2.0 * maxHalf * 1.04
+    // A dense candidate field: three jittered candidates per cell, cells a
+    // step and a half apart. The pool must be much larger than the piece
+    // count, or the greedy starves and pieces land wherever.
+    val step = 1.5 * maxHalf
     val cols = max(1, floor((field.w - 2 * maxHalf) / step).toInt() + 1)
     val rows = max(1, floor((field.h - 2 * maxHalf) / step).toInt() + 1)
     val x0 = field.x + maxHalf
@@ -183,11 +205,12 @@ fun scatterCenters(field: Area, board: Area, sizes: List<Vec2>, seed: Long): Lis
 
     data class Candidate(val pos: Vec2, val outsideBoard: Boolean, val score: Double)
 
-    val candidates = ArrayList<Candidate>(cols * rows)
-    for (r in 0 until rows) for (c in 0 until cols) {
+    val candidates = ArrayList<Candidate>(3 * cols * rows)
+    for (r in 0 until rows) for (c in 0 until cols) for (j in 0..2) {
+        val spread = 0.30 + 0.12 * j
         val pos = Vec2(
-            x0 + c * step + (rnd.nextDouble() - 0.5) * 0.44 * step,
-            y0 + r * step + (rnd.nextDouble() - 0.5) * 0.44 * step,
+            x0 + c * step + (rnd.nextDouble() - 0.5) * spread * step,
+            y0 + r * step + (rnd.nextDouble() - 0.5) * spread * step,
         )
         val outside = !board.inflated(maxHalf * 0.5).contains(pos)
         candidates.add(Candidate(pos, outside, dist(pos, board.centerVec()) + rnd.nextDouble() * step * 0.5))
@@ -197,15 +220,29 @@ fun scatterCenters(field: Area, board: Area, sizes: List<Vec2>, seed: Long): Lis
     )
 
     val assigned = ArrayList<Vec2>(sizes.size)
-    val strictMin = step * 0.98
-    val relaxedMin = maxHalf * 1.1
-    for (minDist in listOf(strictMin, relaxedMin, 0.0)) {
+    // Spacing floors the pieces never visibly violate (bbox corners may
+    // kiss; pieces are far smaller than their bboxes), but low enough that
+    // the greedy can satisfy spacing AND the own-slot exclusion together.
+    val strictMin = 1.3 * maxHalf
+    val relaxedMin = 0.9 * maxHalf
+    for ((passIndex, minDist) in listOf(strictMin, relaxedMin, 0.0).withIndex()) {
         for (i in assigned.size until sizes.size) {
             val half = hypot(sizes[i].x, sizes[i].y) / 2.0
-            val candidate = ordered.firstOrNull { c ->
-                assigned.all { a -> dist(a, c.pos) >= max(minDist, half) } && !assigned.contains(c.pos)
-            } ?: continue
-            assigned.add(candidate.pos)
+            val pool = ordered.filter { c ->
+                assigned.all { a -> dist(a, c.pos) >= max(minDist, half) } &&
+                    !assigned.contains(c.pos)
+            }
+            // Passes 0 and 1 honour the own-slot exclusion when any candidate
+            // allows it; otherwise take the farthest-from-home seat that the
+            // spacing still allows. A thinking guarantee, never a blocker.
+            val chosen = when {
+                passIndex < 2 && i < awayFrom.size ->
+                    pool.firstOrNull { dist(it.pos, awayFrom[i]) >= awayRadius }
+                        ?: pool.maxByOrNull { dist(it.pos, awayFrom[i]) }
+                        ?: pool.firstOrNull()
+                else -> pool.firstOrNull()
+            }
+            if (chosen != null) assigned.add(chosen.pos)
         }
         if (assigned.size == sizes.size) break
     }
