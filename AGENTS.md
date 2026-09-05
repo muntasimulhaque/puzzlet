@@ -294,3 +294,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   unused Cut.index helper, the unused host currentPiece, two unused
   IconDesign colors, and the unused root aab/ ignore line are gone; the
   gate stayed green.
+- 2026-09-05: Session closed with 0.2 in review. The Data safety flow met
+  a new question (advertising ID): answered No, verified against the
+  artifact (no ad-ID permission, no SDK, zero references), and recorded in
+  the submission guide's console answers. Next session picks up from:
+  tester feedback, the pre-launch report, then 0.3.

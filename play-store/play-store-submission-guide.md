@@ -122,6 +122,11 @@ Expected rating: Everyone / PEGI 3.
 the Families program, correct and intended: it is designed for children,
 paid upfront, ad-free, link-free, and collects nothing.
 
+**App content → Advertising ID**: **No**. Verified against the built
+artifact: no ad-ID permission in the merged manifest, no ad SDK, no code
+reference. If the console asks again on a future upload, the answer stays
+No.
+
 **App content → Data safety**: the app collects and shares **no user data**.
 Nothing transmitted, nothing stored beyond local preferences (sound switch,
 one picture in progress), no SDKs, no network calls, zero manifest
