@@ -136,12 +136,11 @@ external links reachable by a child, no ads.
 ## Version walk (the law)
 
 `versionName` steps 0.1 per release, in lockstep with `versionCode`:
-versionCode 3 is 0.3, versionCode 4 is 0.4, versionCode 10 is 1.0,
+versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
-store appearance (closed testing) is versionCode 3, versionName 0.3;
-versions 1 and 2 were internal only and Play never saw them.
+store appearance (closed testing) is versionCode 1, versionName 0.1.
 
-## Release notes for closed testing 0.3 (measured: 474 chars)
+## Release notes for closed testing 0.1 (measured: 474 chars)
 
 ```
 First closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pieces: drag a piece anywhere near its place and it clicks home with a soft knock. The whole picture shows faintly underneath, and a held piece makes its own place glow. Finish, and the picture is held up with confetti. Sound can be switched off on the first screen. If anything breaks, freezes, or feels wrong for a three-year-old, please write to muntasim.haque@gmail.com. Thank you for testing.
@@ -151,7 +150,7 @@ First closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pie
 
 1. Pull the signed AAB from the `latest-build` GitHub release:
    `gh release download latest-build -R muntasimulhaque/puzzlet -p "*.aab"`
-   (Verified before handoff: versionCode 3, versionName 0.3, target 37.)
+   (Verified before handoff: versionCode 1, versionName 0.1, target 37.)
 2. Play Console: create the app. Name it from the listing, mark it a Game,
    and set it PAID with a one-time price (a merchant payments profile is
    required; $0.99 or $1.19 both round nicely across regions).
@@ -166,7 +165,7 @@ First closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pie
    first), Ads: No, App access: all, the IARC questionnaire (Game; No to
    everything sensitive), Target audience: 5 and under, Data safety: no
    data collected, Families self-certification.
-6. Testing, Closed testing: create the track (name it 0.3 closed build or
+6. Testing, Closed testing: create the track (name it 0.1 closed build or
    similar), paste the tester list, paste the release notes above, pick
    the test countries, and save.
 7. Upload the AAB into the track, review, and roll out. Play sends the

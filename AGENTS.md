@@ -55,11 +55,12 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 - `applicationId` is permanently `app.puzzlet`. Play ties an app to its
   first package ID forever. The code namespace mirrors it.
-- `versionCode` only ever increases and is never reused, starting at 1.
-  `versionName` is `versionCode` divided by ten, one decimal: 1 means 0.1,
-  2 means 0.2, 9 means 0.9, 10 means 1.0, 11 means 1.1, and so on forever.
-  The first store build is versionCode 3 (0.3): 1 and 2 were never
-  uploaded, and Play never saw them.
+- `versionCode` only ever increases and is never reused. `versionName` is
+  `versionCode` divided by ten, one decimal: 1 means 0.1, 2 means 0.2, 9
+  means 0.9, 10 means 1.0, 11 means 1.1, and so on forever. The owner set
+  the walk explicitly: 0.1, 0.2, and so on. The first store appearance
+  (closed testing) is versionCode 1, versionName 0.1; Play never saw any
+  earlier build, so the walk starts honestly at its first step.
 - `targetSdk` moves only together with an AGP that supports it.
 - The merged manifest carries one app-private, signature-scoped permission
   (`app.puzzlet.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`), added by
@@ -285,10 +286,11 @@ console answers live in play-store/play-store-submission-guide.md.
   keytool, and publishes the AAB + APK to the latest-build release. A lost
   keystore is an un-updatable app, so the vault file is sacred.
 - D-029 (2026-09-05): The version walk is the owner's law: versionName
-  steps 0.1 per release, in lockstep with versionCode (3 equals 0.3, 10
+  steps 0.1 per release, in lockstep with versionCode (1 equals 0.1, 10
   equals 1.0). The first Google Play appearance is a CLOSED TESTING
-  release of versionCode 3 (0.3); its notes live in the submission guide.
-  Play's license-testing list keeps paid-app testers from being charged.
+  release of versionCode 1, versionName 0.1; its notes live in the
+  submission guide. Play's license-testing list keeps paid-app testers
+  from being charged.
   sailboat, rocket, house, lighthouse, balloon, train, castle, fruit. A
   fruit plate on a wooden table earns its keep by texture: every piece on
   it differs from its neighbours. The capture set gains an eighth shot
@@ -334,7 +336,9 @@ console answers live in play-store/play-store-submission-guide.md.
   docs/privacy.html, to be served once the owner enables GitHub Pages on
   the repo with the docs-folder root.
 - 2026-09-05: The AAB was verified before handoff (aapt2 badging on the
-  release APK, same config): versionCode 3, versionName 0.3, target 37.
+  release APK, same config), then RESET to the owner's walk: versionCode
+  1, versionName 0.1, because Play had never seen a build and the walk
+  should start at its first step.
   The closed-testing console steps, the license-testing note, and the
   paste-ready release notes joined the submission guide. Nothing in the
   app changed; no version bump.
