@@ -53,6 +53,18 @@ data class Puzzle(
     fun piece(id: Int): Piece? = pieces.firstOrNull { it.id == id }
 }
 
+/**
+ * The stable cut seed: same picture and difficulty, same cut, every time.
+ * The host deals fresh tray seats per game, but the cut never moves, like
+ * a bought puzzle. The difficulty ladder previews the exact cut through
+ * this, so what the child taps is what the child plays.
+ */
+fun cutSeedFor(sceneId: String, rows: Int, cols: Int): Long {
+    var h = 1125899906842597L
+    for (ch in sceneId) h = 31 * h + ch.code
+    return h * 31 + rows * 1009L + cols
+}
+
 fun createPuzzle(
     sceneId: String,
     rows: Int,

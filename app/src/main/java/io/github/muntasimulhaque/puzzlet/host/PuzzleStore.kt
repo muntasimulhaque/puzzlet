@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import io.github.muntasimulhaque.puzzlet.core.Puzzle
+import io.github.muntasimulhaque.puzzlet.core.cutSeedFor
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -69,11 +70,7 @@ class PuzzleStore(private val context: Context) {
             ?.toSet()
             ?: emptySet()
         var seat = prefs[Keys.SEAT]
-        if (seat == null) {
-            var h = 1125899906842597L
-            for (ch in scene) h = 31 * h + ch.code
-            seat = h * 31 + rows * 1009L + cols
-        }
+        if (seat == null) seat = cutSeedFor(scene, rows, cols)
         return Snapshot(scene, rows, cols, placed, seat)
     }
 

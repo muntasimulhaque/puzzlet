@@ -10,4 +10,14 @@
     <string name="restart">Start this picture again</string>
     <string name="sound_on">Sound is on. Tap to switch it off.</string>
     <string name="sound_off">Sound is off. Tap to switch it on.</string>
+    <string name="scene_sail">Sailboat</string>
+    <string name="scene_rocket">Rocket</string>
+    <string name="scene_house">House</string>
+    <string name="scene_lighthouse">Lighthouse</string>
+    <string name="scene_balloon">Balloon</string>
+    <string name="scene_train">Train</string>
+    <string name="scene_castle">Castle</string>
+    <string name="scene_fruit">Fruit</string>
+    <string name="pieces">pieces</string>
+    <string name="play_option">%1$s, %2$d pieces</string>
 </resources>

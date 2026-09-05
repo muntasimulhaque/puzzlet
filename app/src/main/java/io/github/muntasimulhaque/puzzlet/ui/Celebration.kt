@@ -95,7 +95,7 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
                     CircleButton(
                         onClick = onAgain,
                         background = PuzzletColors.Teal,
-                        size = 64.dp,
+                        size = 72.dp,
                         label = stringResource(R.string.restart),
                     ) {
                         ReplayIcon(color = PuzzletColors.Paper)
@@ -112,7 +112,7 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
                     CircleButton(
                         onClick = onHome,
                         background = PuzzletColors.Card,
-                        size = 64.dp,
+                        size = 56.dp,
                         label = stringResource(R.string.home),
                     ) {
                         MenuIcon(color = PuzzletColors.Ink)

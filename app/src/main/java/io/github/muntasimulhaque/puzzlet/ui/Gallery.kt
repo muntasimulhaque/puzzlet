@@ -1,44 +1,26 @@
 package io.github.muntasimulhaque.puzzlet.ui
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -47,23 +29,24 @@ import io.github.muntasimulhaque.puzzlet.R
 import io.github.muntasimulhaque.puzzlet.core.Scenes
 import io.github.muntasimulhaque.puzzlet.core.SceneSpec
 
-/** Difficulty ladder, youngest first. Rows x cols on a square board. */
-data class Difficulty(val pieces: Int, val rows: Int, val cols: Int)
-
-val DIFFICULTIES = listOf(
-    Difficulty(4, 2, 2),
-    Difficulty(6, 3, 2),
-    Difficulty(9, 3, 3),
-    Difficulty(12, 4, 3),
-    Difficulty(16, 4, 4),
-    Difficulty(20, 5, 4),
-    Difficulty(24, 6, 4),
-)
+/** Spoken picture names for TalkBack. The cards themselves stay wordless. */
+internal fun sceneNameRes(sceneId: String): Int = when (sceneId) {
+    "sail" -> R.string.scene_sail
+    "rocket" -> R.string.scene_rocket
+    "house" -> R.string.scene_house
+    "lighthouse" -> R.string.scene_lighthouse
+    "balloon" -> R.string.scene_balloon
+    "train" -> R.string.scene_train
+    "castle" -> R.string.scene_castle
+    "fruit" -> R.string.scene_fruit
+    else -> R.string.app_name
+}
 
 /**
- * The picture menu. Cards are pure pictures: a child who cannot read can
- * choose everything. A small honey dot marks a picture with unfinished work
- * waiting, and the sound switch sits where a parent's thumb falls.
+ * The picture menu: pictures only, edge to edge. A child who cannot read
+ * chooses everything, so no headline stands between the child and the
+ * pictures; the launcher and the store already carry the name. The sound
+ * switch floats quietly where a parent's thumb falls.
  */
 @Composable
 fun Gallery(
@@ -72,40 +55,11 @@ fun Gallery(
     muted: Boolean,
     onToggleMute: () -> Unit,
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(PuzzletColors.Paper),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 24.dp, top = 28.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            BrandMarkSmall()
-            Spacer(Modifier.width(16.dp))
-            Column(Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = PuzzletColors.Teal,
-                )
-                Text(
-                    text = stringResource(R.string.tagline),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = PuzzletColors.Ink,
-                )
-            }
-            CircleButton(
-                onClick = onToggleMute,
-                background = PuzzletColors.Card,
-                label = stringResource(if (muted) R.string.sound_off else R.string.sound_on),
-            ) {
-                if (muted) SoundOffIcon(color = PuzzletColors.Ink) else SoundOnIcon(color = PuzzletColors.Ink)
-            }
-        }
-        Spacer(Modifier.height(20.dp))
         BoxWithConstraints(Modifier.fillMaxSize()) {
             val columns = when {
                 maxWidth < 480.dp -> 1
@@ -115,7 +69,7 @@ fun Gallery(
             LazyVerticalGrid(
                 columns = GridCells.Fixed(columns),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 28.dp),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 84.dp, bottom = 28.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
@@ -128,17 +82,27 @@ fun Gallery(
                 }
             }
         }
+        CircleButton(
+            onClick = onToggleMute,
+            background = PuzzletColors.Card,
+            modifier = Modifier.align(Alignment.TopEnd).padding(top = 20.dp, end = 20.dp),
+            label = stringResource(if (muted) R.string.sound_off else R.string.sound_on),
+        ) {
+            if (muted) SoundOffIcon(color = PuzzletColors.Ink) else SoundOnIcon(color = PuzzletColors.Ink)
+        }
     }
 }
 
 @Composable
 private fun SceneCard(scene: SceneSpec, showProgress: Boolean, onClick: () -> Unit) {
+    val name = stringResource(sceneNameRes(scene.id))
     Box(
         modifier = Modifier
             .aspectRatio(1f)
             .shadow(6.dp, RoundedCornerShape(28.dp))
             .clip(RoundedCornerShape(28.dp))
             .background(PuzzletColors.Card)
+            .semantics { contentDescription = name }
             .clickable(onClick = onClick),
     ) {
         ScenePicture(
@@ -156,124 +120,6 @@ private fun SceneCard(scene: SceneSpec, showProgress: Boolean, onClick: () -> Un
                     .background(PuzzletColors.Honey),
             )
         }
-    }
-}
-
-/**
- * Choosing how many pieces. The numbers are for the parent reading over a
- * shoulder; the grid pictures are what a child actually taps.
- */
-@Composable
-fun DifficultyChooser(
-    sceneId: String,
-    onBack: () -> Unit,
-    onPlay: (rows: Int, cols: Int) -> Unit,
-) {
-    BackHandler(onBack = onBack)
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(PuzzletColors.Paper),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            CircleButton(
-                onClick = onBack,
-                background = PuzzletColors.Card,
-                label = stringResource(R.string.go_back),
-            ) {
-                BackIcon(color = PuzzletColors.Ink)
-            }
-        }
-        BoxWithConstraints(
-            Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentAlignment = Alignment.Center,
-        ) {
-            val side = minOf(maxWidth * 0.86f, maxHeight * 0.92f)
-            ScenePicture(
-                spec = Scenes.byId(sceneId),
-                modifier = Modifier.width(side),
-                cornerRadius = 32.dp,
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 18.dp),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-        ) {
-            for (difficulty in DIFFICULTIES) {
-                DifficultyButton(difficulty) { onPlay(difficulty.rows, difficulty.cols) }
-            }
-        }
-    }
-}
-
-@Composable
-private fun DifficultyButton(difficulty: Difficulty, onClick: () -> Unit) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            modifier = Modifier
-                .size(64.dp)
-                .shadow(4.dp, RoundedCornerShape(20.dp))
-                .clip(RoundedCornerShape(20.dp))
-                .background(PuzzletColors.Card)
-                .clickable(onClick = onClick),
-            contentAlignment = Alignment.Center,
-        ) {
-            PieceGridIcon(rows = difficulty.rows, cols = difficulty.cols)
-        }
-        Spacer(Modifier.height(6.dp))
-        Text(
-            text = difficulty.pieces.toString(),
-            style = MaterialTheme.typography.bodyMedium,
-            color = PuzzletColors.Ink,
-        )
-    }
-}
-
-/** The cut, drawn small: rows by cols tiles, the child's own preview. */
-@Composable
-private fun PieceGridIcon(rows: Int, cols: Int) {
-    Canvas(modifier = Modifier.size(44.dp)) {
-        val side = size.width
-        val gap = side * 0.045f
-        val cell = (side - gap * (cols - 1)) / cols
-        val cellH = (side - gap * (rows - 1)) / rows
-        for (r in 0 until rows) for (c in 0 until cols) {
-            drawRoundRect(
-                PuzzletColors.Teal,
-                topLeft = Offset(c * (cell + gap), r * (cellH + gap)),
-                size = Size(cell, cellH),
-                cornerRadius = CornerRadius(cell * 0.24f),
-            )
-        }
-    }
-}
-
-/** The launcher tile, small, for headers: the same committed PNG. */
-@Composable
-fun BrandMarkSmall() {
-    Box(
-        modifier = Modifier
-            .size(44.dp)
-            .clip(RoundedCornerShape(percent = 22))
-            .background(PuzzletColors.Teal),
-        contentAlignment = Alignment.Center,
-    ) {
-        Image(
-            painter = painterResource(R.mipmap.ic_launcher_foreground),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.fillMaxSize(),
-        )
     }
 }
 

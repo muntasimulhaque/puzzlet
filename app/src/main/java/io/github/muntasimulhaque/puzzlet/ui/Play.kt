@@ -261,11 +261,13 @@ private fun PlayTopBar(
             BackIcon(color = PuzzletColors.Ink)
         }
         Spacer(Modifier.weight(1f))
-        // Peek: the finished picture on a coin. Tap to reveal the goal
-        // on the board; the picture itself is the affordance, no eye icon.
+        // Peek: the finished picture on a coin, big enough for small thumbs.
+        // Tap to reveal the goal on the board; the picture itself is the
+        // affordance, no eye icon.
         CircleButton(
             onClick = onPeek,
             background = if (peek) PuzzletColors.Honey else PuzzletColors.Card,
+            size = 56.dp,
             label = stringResource(R.string.peek),
         ) {
             ScenePicture(

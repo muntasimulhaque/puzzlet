@@ -263,6 +263,12 @@ class PuzzleCoreTest {
     }
 
     @Test
+    fun `cut seeds are stable per picture and difficulty`() {
+        assertEquals(cutSeedFor("sail", 2, 2), cutSeedFor("sail", 2, 2))
+        assertTrue(cutSeedFor("sail", 2, 2) != cutSeedFor("rocket", 2, 2))
+    }
+
+    @Test
     fun `pieceAt picks the nearest unplaced piece and never a placed one`() {
         var p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 9L)
         p = drag(p, 0, p.piece(0)!!.home)

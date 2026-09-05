@@ -298,6 +298,21 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   keyed by piece id so a grab reorder never reuses the wrong node;
   celebration buttons carry TalkBack labels; the dead PlayActions onBack is
   gone.
+- D-042 The Ive redesign (owner-directed from scratch: forget the takes,
+  redesign the icon and the whole app). App now: a headerless picture menu
+  with a floating quiet sound switch and spoken card names; a difficulty
+  ladder where every row shows its picture cut exactly as the game will
+  cut it through cutSeedFor, replacing the generic grid chips and the
+  hidden horizontal scroll; a board well that reads recessed with a light
+  lip over a hairline; a 56 dp peek coin; celebration Again leading at
+  72 dp with Home quiet at 56 dp. Supersedes the gallery header in D-007
+  brand before gameplay (pictures are the brand for a pre-reader, launcher
+  and store carry the name) and the chooser presentation in D-037. Kept
+  laws, confirmed with the owner: no music ever, no tutorial, English only
+  and fully offline with zero permissions, lagoon paper ink honey palette
+  with Baloo, light fixed with no dark mode. Icon: three from-scratch
+  takes in play-store/candidates/icon-v3, shipped mark and art pinned
+  until one wins.
 
 ## Lessons that still bite
 
@@ -397,3 +412,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   full, no drag hint or glow, no mid game restart, tray deranged fresh
   every game with seatSeed persisted, tiles keyed, celebration TalkBack
   labels added. Cut 0.6 (versionCode 6), notes 426 chars, all gates green.
+- 2026-09-05: From-scratch icon takes H hover, S seam, W well pushed in
+  play-store/candidates/icon-v3, plus the full app redesign in code as
+  D-042 (headerless gallery, truthful cut ladder, recessed well, button
+  hierarchy). Dark mode declined, light fixed stands. Gates green here,
+  pushed for capture review, no version bump.

@@ -7,6 +7,7 @@ import io.github.muntasimulhaque.puzzlet.core.Area
 import io.github.muntasimulhaque.puzzlet.core.Puzzle
 import io.github.muntasimulhaque.puzzlet.core.Vec2
 import io.github.muntasimulhaque.puzzlet.core.createPuzzle
+import io.github.muntasimulhaque.puzzlet.core.cutSeedFor
 import io.github.muntasimulhaque.puzzlet.core.pieceAt
 import io.github.muntasimulhaque.puzzlet.core.redeal as redealPuzzle
 import io.github.muntasimulhaque.puzzlet.core.restorePuzzle
@@ -73,7 +74,7 @@ class PuzzleHost(app: Application) : ViewModel() {
                     placedIds = snap.placed,
                     field = Area(0.0, 0.0, 1.0, 1.0),
                     capPx = 1e6,
-                    seed = seedFor(snap.sceneId, snap.rows, snap.cols),
+                    seed = cutSeedFor(snap.sceneId, snap.rows, snap.cols),
                     seatSeed = snap.seatSeed,
                 )
             }
@@ -105,7 +106,7 @@ class PuzzleHost(app: Application) : ViewModel() {
             cols = cols,
             field = Area(0.0, 0.0, 1.0, 1.0),
             capPx = 1e6,
-            seed = seedFor(sceneId, rows, cols),
+            seed = cutSeedFor(sceneId, rows, cols),
             seatSeed = Random.Default.nextLong(),
         )
         _screen.value = Screen.Playing(game)
@@ -242,9 +243,3 @@ class PuzzleHost(app: Application) : ViewModel() {
 private fun resumeKey(sceneId: String, rows: Int, cols: Int) = "$sceneId:$rows:$cols"
 
 private fun resumeKey(game: Puzzle) = resumeKey(game.sceneId, game.rows, game.cols)
-
-private fun seedFor(sceneId: String, rows: Int, cols: Int): Long {
-    var h = 1125899906842597L
-    for (ch in sceneId) h = 31 * h + ch.code
-    return h * 31 + rows * 1009L + cols
-}
