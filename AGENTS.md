@@ -434,3 +434,8 @@ a stale build can never sit there waiting to be uploaded twice.
   owner judges the redesign before upload), piece-level TalkBack (D-032),
   and a child's hands on it. The audit is a standing exercise: rerun it
   before every store release.
+- 2026-09-05: Release 0.2 (versionCode 2) cut for closed testing with the
+  final mark. Release notes delivered in chat (496 characters, measured)
+  and stored in the submission guide. AAB pulled into play-store/aab and
+  verified by aapt2 (versionCode 2, versionName 0.2,
+  io.github.muntasimulhaque.puzzlet).
