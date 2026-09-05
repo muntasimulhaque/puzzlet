@@ -208,10 +208,17 @@ internal fun DrawScope.drawPiece(
             }
         }
         clipPath(path) {
-            // The scene sits at the board's origin in field coordinates; the
-            // piece transform is at the piece's bbox corner, so draw the
-            // scene offset by (board - at) and the clip does the rest.
-            withTransform({ translate((board.x).toFloat() - ax, (board.y).toFloat() - ay) }) {
+            // The piece carries its own slice of the picture: draw the scene
+            // as if the piece sat at home (scene at board, outline at home),
+            // and the outer transform (position plus draw scale) moves and
+            // scales the whole thing. Using the current position here would
+            // double-count the move and leave the silhouette empty.
+            withTransform({
+                translate(
+                    (board.x - piece.home.x).toFloat(),
+                    (board.y - piece.home.y).toFloat(),
+                )
+            }) {
                 drawScene(scene, board.w)
             }
         }
