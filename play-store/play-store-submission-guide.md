@@ -140,12 +140,11 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
-## Release notes for closed testing 0.1 (measured: 474 chars)
+## Release notes for closed testing 0.2 (measured: 496 chars)
 
 ```
-First closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pieces: drag a piece anywhere near its place and it clicks home with a soft knock. The whole picture shows faintly underneath, and a held piece makes its own place glow. Finish, and the picture is held up with confetti. Sound can be switched off on the first screen. If anything breaks, freezes, or feels wrong for a three-year-old, please write to muntasim.haque@gmail.com. Thank you for testing.
+Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pieces: drag a piece anywhere near its place and it clicks home with a soft knock. The whole picture shows faintly underneath, and a held piece makes its own place glow. Finish, and the picture is held up with confetti. Sound can be switched off on the first screen. The app icon is final here. If anything breaks, freezes, or feels wrong for a three-year-old, write to muntasim.haque@gmail.com. Thank you for testing.
 ```
-
 ## Closed testing: step by step
 
 1. Pull the signed AAB from the `latest-build` GitHub release into the
