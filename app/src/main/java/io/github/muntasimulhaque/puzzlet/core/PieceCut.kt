@@ -52,9 +52,7 @@ object PieceCut {
         val cellW: Double,
         val cellH: Double,
         val knobH: Double,
-    ) {
-        fun shape(r: Int, c: Int, cols: Int) = shapes[r * cols + c]
-    }
+    )
 
     fun generate(rows: Int, cols: Int, boardW: Double, boardH: Double, seed: Long): Cut {
         require(rows >= 2 && cols >= 2) { "A jigsaw needs at least a 2x2 cut" }

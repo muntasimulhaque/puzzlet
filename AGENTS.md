@@ -288,3 +288,9 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   and stored in the submission guide. AAB pulled into `play-store/aab/`
   and verified by aapt2 (versionCode 2, versionName 0.2,
   `io.github.muntasimulhaque.puzzlet`).
+- 2026-09-05: Version 0.2 submitted for closed testing review; the AAB was
+  deleted from play-store/aab/ per the folder rule. Session-end
+  housekeeping: the unused InkSoft color, the unused Geometry helpers, the
+  unused Cut.index helper, the unused host currentPiece, two unused
+  IconDesign colors, and the unused root aab/ ignore line are gone; the
+  gate stayed green.

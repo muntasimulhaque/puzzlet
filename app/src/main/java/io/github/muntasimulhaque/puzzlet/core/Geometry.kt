@@ -1,6 +1,5 @@
 package io.github.muntasimulhaque.puzzlet.core
 
-import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.hypot
 import kotlin.math.sin
@@ -60,15 +59,3 @@ fun starPoints(
     }
 }
 
-/** True when two axis-aligned boxes overlap by more than [fraction] of the smaller area. */
-fun overlapFraction(a: Area, b: Area): Double {
-    val w = minOf(a.maxX, b.maxX) - maxOf(a.minX, b.minX)
-    val h = minOf(a.maxY, b.maxY) - maxOf(a.minY, b.minY)
-    if (w <= 0 || h <= 0) return 0.0
-    val inter = w * h
-    val smaller = minOf(a.w * a.h, b.w * b.h)
-    return if (smaller <= 0) 0.0 else inter / smaller
-}
-
-/** True when the two doubles are the same within pixel-scale tolerance. */
-fun nearlyEqual(a: Double, b: Double, eps: Double = 1e-6) = abs(a - b) <= eps

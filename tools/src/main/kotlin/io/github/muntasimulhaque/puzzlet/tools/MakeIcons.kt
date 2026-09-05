@@ -32,10 +32,8 @@ import kotlin.system.exitProcess
  */
 object IconDesign {
     const val TEAL: Int = 0xFF0C7A64.toInt()
-    const val TEAL_DEEP: Int = 0xFF085949.toInt()
     const val PAPER: Int = 0xFFFAF6EF.toInt()
     const val WHITE: Int = 0xFFFFFFFF.toInt()
-    const val HONEY: Int = 0xFFF0B429.toInt()
 
     /** The densities the house ships, in scale order. */
     val DENSITY_DIRS = arrayOf("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")

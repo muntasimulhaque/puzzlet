@@ -17,8 +17,6 @@ object PuzzletColors {
     val Teal = Color(0xFF0C7A64)
     val Paper = Color(0xFFFAF6EF)
     val Ink = Color(0xFF1F2B28)
-    /** Ink at resting strength for outlines and shadows. */
-    val InkSoft = Color(0x1F1F2B28)
     /** The celebration accent; it arrives with things worth celebrating. */
     val Honey = Color(0xFFF0B429)
     val Coral = Color(0xFFE4572E)

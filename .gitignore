@@ -22,8 +22,7 @@ Thumbs.db
 .vscode/
 *.iml
 
-# Local landing spots for a signed AAB pulled from the latest-build
+# Local landing spot for the signed AAB pulled from the latest-build
 # release. play-store/aab/ holds the build awaiting submission; it is
 # emptied after the owner submits it for review.
-aab/
 play-store/aab/
