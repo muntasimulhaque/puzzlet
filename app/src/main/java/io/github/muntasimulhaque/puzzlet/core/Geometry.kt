@@ -26,7 +26,6 @@ data class Area(val x: Double, val y: Double, val w: Double, val h: Double) {
     val centerY get() = y + h / 2.0
 
     fun contains(p: Vec2) = p.x >= x && p.x <= maxX && p.y >= y && p.y <= maxY
-    fun inflated(by: Double) = Area(x - by, y - by, w + 2 * by, h + 2 * by)
 }
 
 fun dist(a: Vec2, b: Vec2) = a.distanceTo(b)

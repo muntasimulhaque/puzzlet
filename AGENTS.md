@@ -334,3 +334,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   (the D-029 line removed, guide step 3 trimmed): license testing serves
   nothing in an app with no billing SDK; tester free installs are promo
   codes, now documented in the submission guide.
+- 2026-09-05: Session closed with 0.3 in review (versionCode 3, the tray
+  play field). All gates green, the dead Area.inflated helper swept, the
+  listing kit and guide current, everything pushed. Next session picks
+  up from: the 0.3 review verdict, tester feedback on the tray build,
+  then 0.4 (notes carry no contact line, per D-038).
