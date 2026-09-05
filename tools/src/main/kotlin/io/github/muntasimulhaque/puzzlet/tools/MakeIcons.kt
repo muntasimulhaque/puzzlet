@@ -71,24 +71,25 @@ object IconDesign {
  * the seam, round chamber inside. Never touch without the owner pointing.
  */
 fun socketBite(): Area {
+    val t = AffineTransform.getTranslateInstance(IconDesign.SEAM_X, IconDesign.SOCKET_Y)
+    return biteUnit().createTransformedArea(t)
+}
+
+/** The bite in local coords: mouth at origin opening east, chamber west. */
+private fun biteUnit(): Area {
     val d = IconDesign
     val bite = Area()
-    bite.add(Area(Rectangle2D.Double(d.SEAM_X - d.BITE_D, d.SOCKET_Y - d.BITE_W / 2.0, d.BITE_D + 0.012, d.BITE_W)))
-    bite.add(Area(Ellipse2D.Double(d.SEAM_X - d.BITE_D - 0.015 - d.BITE_R, d.SOCKET_Y - d.BITE_R, d.BITE_R * 2.0, d.BITE_R * 2.0)))
+    bite.add(Area(Rectangle2D.Double(-d.BITE_D, -d.BITE_W / 2.0, d.BITE_D + 0.012, d.BITE_W)))
+    bite.add(Area(Ellipse2D.Double(-d.BITE_D - 0.015 - d.BITE_R, -d.BITE_R, d.BITE_R * 2.0, d.BITE_R * 2.0)))
     return bite
 }
 
-/** The white hero: the green shape at hero scale, rooted at the seam. */
+/** The white hero: the green bite mirrored east at hero scale. Same shape. */
 fun heroKnob(): Area {
     val d = IconDesign
-    val w = d.BITE_W * d.HERO
-    val len = (d.BITE_D + 0.012) * d.HERO
-    val hr = d.BITE_R * d.HERO
-    val knob = Area()
-    knob.add(Area(Rectangle2D.Double(d.SEAM_X - 0.005, d.KNOB_Y - w / 2.0, len + 0.005, w)))
-    val hx = d.SEAM_X - 0.005 + len - hr * 0.55
-    knob.add(Area(Ellipse2D.Double(hx - hr, d.KNOB_Y - hr, hr * 2.0, hr * 2.0)))
-    return knob
+    val t = AffineTransform.getTranslateInstance(d.SEAM_X, d.KNOB_Y)
+    t.concatenate(AffineTransform.getScaleInstance(-d.HERO, d.HERO))
+    return biteUnit().createTransformedArea(t)
 }
 
 /** The S region: paper field, green-shaped white hero out, green socket in. */

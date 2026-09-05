@@ -438,3 +438,6 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 - 2026-09-06: Correction, green restored byte-identical to approved and
   white rebuilt from it at hero scale. My earlier pass reshaped both when
   only white was asked. Probes green, art regenerated.
+- 2026-09-06: White hero is now the green bite mirrored east, exact head
+  offset included, after the owner corrected me twice. Same shape by
+  construction, green untouched.

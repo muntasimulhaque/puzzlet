@@ -44,6 +44,10 @@ class MakeIconsTest {
         return { u: Double, v: Double -> Pair((o + u * span).toInt(), (o + v * span).toInt()) }
     }
 
+    /** Head centres derived from the generator consts, never hardcoded. */
+    private fun knobHeadX() = IconDesign.SEAM_X + (IconDesign.BITE_D + 0.015) * IconDesign.HERO
+    private fun socketHeadX() = IconDesign.SEAM_X - IconDesign.BITE_D - 0.015
+
     @Test
     fun `legacy tile carries the seam with knob and socket`() {
         val icon = legacyIcon(192)
@@ -54,10 +58,10 @@ class MakeIconsTest {
         val (fx, fy) = p(0.25, 0.5)
         assertEquals(IconDesign.PAPER, icon.getRGB(fx, fy))
         // The hero knob head, reaching right: paper.
-        val (kx, ky) = p(0.60, IconDesign.KNOB_Y)
+        val (kx, ky) = p(knobHeadX(), IconDesign.KNOB_Y)
         assertEquals("knob head at ($kx, $ky) is not paper", IconDesign.PAPER, icon.getRGB(kx, ky))
         // The socket bite, opening above the knob: not paper.
-        val (sx, sy) = p(0.47, IconDesign.SOCKET_Y)
+        val (sx, sy) = p(socketHeadX(), IconDesign.SOCKET_Y)
         assertNotEquals("socket at ($sx, $sy) should be carved out", IconDesign.PAPER, icon.getRGB(sx, sy))
         // Far right of the seam: tile, never paper.
         val (tx, ty) = p(0.92, 0.5)
@@ -74,9 +78,9 @@ class MakeIconsTest {
             val (x, y) = p(u, v)
             return hypot(x - cx, y - cx) <= size * 66.0 / 108.0
         }
-        assertTrue("knob leaves the mask circle", inside(0.60, IconDesign.KNOB_Y))
-        assertTrue("socket leaves the mask circle", inside(0.47, IconDesign.SOCKET_Y))
-        val (kx, ky) = p(0.60, IconDesign.KNOB_Y)
+        assertTrue("knob leaves the mask circle", inside(knobHeadX(), IconDesign.KNOB_Y))
+        assertTrue("socket leaves the mask circle", inside(socketHeadX(), IconDesign.SOCKET_Y))
+        val (kx, ky) = p(knobHeadX(), IconDesign.KNOB_Y)
         assertEquals(IconDesign.PAPER, layer.getRGB(kx, ky))
     }
 
@@ -93,14 +97,14 @@ class MakeIconsTest {
         assertEquals(IconDesign.PAPER, layer.getRGB(bx, by))
         // The socket bite: carved open. Only the seam's own soft shadow may
         // veil it, never paper and never more than a breath of deep.
-        val (sx, sy) = p(0.47, IconDesign.SOCKET_Y)
+        val (sx, sy) = p(socketHeadX(), IconDesign.SOCKET_Y)
         val socketArgb = layer.getRGB(sx, sy)
         assertNotEquals("socket at ($sx, $sy) must not be paper", IconDesign.PAPER, socketArgb)
         assertTrue("socket at ($sx, $sy) must stay essentially open, alpha was ${socketArgb ushr 24}", (socketArgb ushr 24) < 48)
         // The monochrome sibling renders the same silhouette in white.
         val mono = adaptiveLayer(432, IconDesign.WHITE)
         assertEquals(IconDesign.WHITE, mono.getRGB(bx, by))
-        val (mx, my) = p(0.60, IconDesign.KNOB_Y)
+        val (mx, my) = p(knobHeadX(), IconDesign.KNOB_Y)
         assertEquals(IconDesign.WHITE, mono.getRGB(mx, my))
     }
 }
