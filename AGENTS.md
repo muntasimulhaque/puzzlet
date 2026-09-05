@@ -375,3 +375,6 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   D-039 cache fix), ghost base 0.13 to 0.20, miss and restart snap home
   in logic while tiles spring visibly (restart staggered from restartAt).
   Cut 0.5 (versionCode 5), notes 420 chars, all gates green.
+- 2026-09-05: Version 0.5 submitted for closed testing review; the AAB was
+  deleted from play-store/aab/ per the folder rule. Next session picks up
+  from: the 0.5 review verdict and tester feedback on the tile build.
