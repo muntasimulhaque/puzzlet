@@ -148,9 +148,11 @@ First closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pie
 
 ## Closed testing: step by step
 
-1. Pull the signed AAB from the `latest-build` GitHub release:
-   `gh release download latest-build -R muntasimulhaque/puzzlet -p "*.aab"`
-   (Verified before handoff: versionCode 1, versionName 0.1, target 37.)
+1. Pull the signed AAB from the `latest-build` GitHub release into the
+   landing folder (gitignored):
+   `gh release download latest-build -R muntasimulhaque/puzzlet -p "*.aab" -D play-store/aab`
+   (Verified before handoff: versionCode 1, versionName 0.1, target 37.
+   After submitting it for review, delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
    (type it exactly; it is permanent). Name it from the listing, mark it a Game,
    and set it PAID with a one-time price (a merchant payments profile is

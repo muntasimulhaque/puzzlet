@@ -192,6 +192,14 @@ arrive in chat as bare plain text that fits the 500-character Play field,
 counted before handing them over, never assumed. The listing kit and the
 console answers live in play-store/play-store-submission-guide.md.
 
+The AAB always lands in play-store/aab/ (gitignored, house pattern): after
+every push that refreshes the latest-build release, download the newest
+AAB there (`gh release download latest-build -R muntasimulhaque/puzzlet
+-p "*.aab" -D play-store/aab`), so the owner always has the build to
+upload in one known place. After the owner submits it for review, DELETE
+it from the folder: the folder holds only the AAB awaiting submission, so
+a stale build can never sit there waiting to be uploaded twice.
+
 ## Decision log
 
 - D-001 (2026-09-04): Name is Puzzlet. One word, two syllables a 3-year-old
