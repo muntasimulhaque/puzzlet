@@ -147,10 +147,12 @@ class ScreenshotTest {
             PlayScreen(twenty, null, -1, 0L, 0L, noActions, {})
         }
 
-        // A piece in hand, carried from the tray toward the board.
-        val dragging = dragState(twenty, pieceId = 0, at = Vec2(pane.w * 0.22, pane.h * 0.52))
+        // A piece in hand, carried from the tray toward the board. It must
+        // be a waiting piece: the host never lets a placed piece be held,
+        // and drawing a placed piece twice reads as a glitch.
+        val dragging = dragState(twenty, pieceId = 6, at = Vec2(pane.w * 0.22, pane.h * 0.52))
         shot("05_play_drag") {
-            PlayScreen(dragging.game, 0, -1, 0L, 0L, noActions, {})
+            PlayScreen(dragging.game, 6, -1, 0L, 0L, noActions, {})
         }
 
         // Mid-game on the twelve-piece house: eight of twelve placed.
