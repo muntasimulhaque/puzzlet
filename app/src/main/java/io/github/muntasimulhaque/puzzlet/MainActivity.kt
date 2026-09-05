@@ -89,6 +89,7 @@ class MainActivity : ComponentActivity() {
                             pulseAt = s.pulseAt,
                             actions = playActions(),
                             onBack = host::backToChoose,
+                            returning = s.returning,
                         )
                     }
                 }

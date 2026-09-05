@@ -164,11 +164,10 @@ class PuzzleCoreTest {
     }
 
     @Test
-    fun `scatter stays inside the field and is deterministic`() {
+    fun `the tray seats every piece inside itself, deterministically`() {
         val p = createPuzzle("rocket", 6, 4, Area(0.0, 0.0, 800.0, 1200.0), 500.0, 11L)
         for (piece in p.pieces) {
-            assertTrue(piece.currentCenter.x in 0.0..800.0)
-            assertTrue(piece.currentCenter.y in 0.0..1200.0)
+            assertTrue("piece ${piece.id} sits outside the tray", p.tray.contains(piece.currentCenter))
         }
         val again = createPuzzle("rocket", 6, 4, Area(0.0, 0.0, 800.0, 1200.0), 500.0, 11L)
         assertEquals(p.pieces.map { it.current }, again.pieces.map { it.current })
@@ -196,7 +195,7 @@ class PuzzleCoreTest {
     }
 
     @Test
-    fun `restart clears progress and rescatters`() {
+    fun `restart clears progress and re-seats the tray`() {
         var p = createPuzzle("house", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 5L)
         p = drag(p, 0, p.piece(0)!!.home)
         p = drop(p, 0)
@@ -204,10 +203,12 @@ class PuzzleCoreTest {
         assertEquals(0, p.placedCount)
         assertFalse(p.completed)
         assertTrue(p.pieces.none { it.placed })
+        val fresh = createPuzzle("house", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 5L)
+        assertEquals(fresh.pieces.map { it.current }, p.pieces.map { it.current })
     }
 
     @Test
-    fun `scatter never seats a piece beside its own slot, when there is room`() {
+    fun `tray seats never start a piece beside its own slot`() {
         for (seed in 1L..20L) for ((rows, cols) in listOf(3 to 3, 4 to 3, 5 to 4, 6 to 4)) {
             val p = createPuzzle("sail", rows, cols, Area(0.0, 0.0, 900.0, 1400.0), 520.0, seed)
             for (piece in p.pieces) {
@@ -221,7 +222,7 @@ class PuzzleCoreTest {
     }
 
     @Test
-    fun `restore re-seats saved pieces and keeps the rest on their scatter seats`() {
+    fun `restore re-seats saved pieces and keeps the rest on their tray seats`() {
         val p = restorePuzzle("sail", 3, 3, setOf(0, 4), Area(0.0, 0.0, 800.0, 800.0), 500.0, 3L)
         assertEquals(2, p.placedCount)
         assertFalse(p.completed)
@@ -239,7 +240,7 @@ class PuzzleCoreTest {
     }
 
     @Test
-    fun `pieceAt picks the topmost unplaced piece and never a placed one`() {
+    fun `pieceAt picks the nearest unplaced piece and never a placed one`() {
         var p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 9L)
         p = drag(p, 0, p.piece(0)!!.home)
         p = drop(p, 0)

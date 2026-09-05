@@ -25,7 +25,6 @@ import io.github.muntasimulhaque.puzzlet.ui.Gallery
 import io.github.muntasimulhaque.puzzlet.ui.PlayActions
 import io.github.muntasimulhaque.puzzlet.ui.PlayScreen
 import io.github.muntasimulhaque.puzzlet.ui.PuzzletTheme
-import io.github.muntasimulhaque.puzzlet.ui.boardSideFor
 import java.io.File
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -148,8 +147,8 @@ class ScreenshotTest {
             PlayScreen(twenty, null, -1, 0L, noActions, {})
         }
 
-        // A piece in hand, lifted, its slot glowing honey across the board.
-        val dragging = dragState(twenty, pieceId = 0, at = Vec2(pane.w * 0.16, pane.h * 0.30))
+        // A piece in hand, carried from the tray toward the board.
+        val dragging = dragState(twenty, pieceId = 0, at = Vec2(pane.w * 0.22, pane.h * 0.52))
         shot("05_play_drag") {
             PlayScreen(dragging.game, 0, -1, 0L, noActions, {})
         }
@@ -195,15 +194,14 @@ class ScreenshotTest {
     private fun buildGame(pane: Pane, sceneId: String, rows: Int, cols: Int, placed: Set<Int> = emptySet()): Puzzle {
         val topBarPx = (64 * pane.density).toDouble()
         val field = Area(0.0, 0.0, pane.w.toDouble(), pane.h - topBarPx)
-        val side = boardSideFor(field.w, field.h, rows * cols <= 9, 560.0 * pane.density)
-        return restorePuzzle(sceneId, rows, cols, placed, field, side, seed = 7L)
+        return restorePuzzle(sceneId, rows, cols, placed, field, 560.0 * pane.density, seed = 7L)
     }
 
-    /** The drag still-life: a piece lifted from its pile toward the board. */
+    /** The drag still-life: a piece in hand, carried toward the board. */
     private fun dragState(base: Puzzle, pieceId: Int, at: Vec2): Screen.Playing {
         val game = base.copy(
             pieces = base.pieces.map { piece ->
-                if (piece.id == pieceId) piece.copy(current = at) else piece
+                if (piece.id == pieceId) piece.copy(current = at - piece.size * 0.5) else piece
             },
         )
         return Screen.Playing(game, draggedId = pieceId)

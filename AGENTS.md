@@ -73,18 +73,23 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 ## The game
 
-Scatter, drag, snap, celebrate. Eight pictures: sailboat, rocket, house,
+Tray, drag, snap, celebrate. Eight pictures: sailboat, rocket, house,
 lighthouse, balloon, train, castle, fruit. All inanimate: no humans, no
 animals, no faces, no eyes. Each cuts into 4, 6, 9, 12, 16, 20 or 24
-pieces, chosen with picture buttons. Drag a piece anywhere near its place
-and it clicks home with a spring, a soft knock and a haptic tick. The
+pieces, chosen with picture buttons. The pieces wait in a tray above the
+board at tray scale; a piece in hand grows to board size under the
+finger. Drag it anywhere near its place and it clicks home with a spring,
+a soft knock and a haptic tick; a miss glides back to its tray seat. The
 faint ghost board is always visible; a peek coin strengthens it; the slot
 glow helps only the chunky ladder (9 pieces or fewer), because the game
 must make the child think. No timer, no score, no fail state, no reading
-required. No piece ever starts within snap tolerance of its own slot.
-Finish, and the picture is held up with confetti. The sound switch lives
-on the shelf; one unfinished picture survives backing out and process
-death (DataStore), re-seated by the same seed.
+required, no tutorial: the tray-and-board layout is the whole lesson. No
+piece ever starts within snap tolerance of its own slot; the tray sits
+above the board, so the guarantee is structural. Finish, and the picture
+is held up with confetti. Restart pours every piece back to the tray, a
+beat apart. The sound switch lives in the top bar; one unfinished
+picture survives backing out and process death (DataStore), re-seated by
+the same seed.
 
 ## Architecture
 
@@ -201,12 +206,12 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   immersive edge-to-edge, `allowBackup` false, cleartext off, light-fixed
   paper world, generous corners.
 - D-012 Lifecycle viewmodel + runtime compose joined (house-pinned 2.8.7).
-- D-013 through D-019, the engine and its laws, all still true: scenes as
+- D-013 through D-019, the engine and its laws, core still true: scenes as
   pure data with one renderer; single-Canvas play field, no bitmaps;
-  forgiving circular hit test and absolute snap at 0.38 of the smaller
-  cell; ghost at 0.13, peek at 0.45; the fixed ladder 4 to 24; in-session
-  resume; seeded determinism (same picture and difficulty, same cut and
-  scatter, every time).
+  forgiving hit test and absolute snap at 0.38 of the smaller cell; ghost
+  at 0.13, peek at 0.45; the fixed ladder 4 to 24; in-session resume;
+  seeded determinism (same picture and difficulty, same cut and seating,
+  every time); the full-field scatter superseded by the tray, see D-037.
 - D-020 Sound is the house generator ported: pick, drop, snap, and one
   chime (C5, completion only, 1200 ms guard). SoundPool with USAGE_GAME
   and sonification content; the host infers effects from transitions; the
@@ -239,6 +244,15 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   choice from a rendered candidate sheet. The standing lesson for every
   design round: do not describe takes in prose and hope; render takes as
   images, put them in one folder, and let the owner point at one.
+- D-037 The tray play field (owner-directed after the 0.2 closed-testing
+  bounce: the owner, an engineer, could not tell how to play; a 3 to 5
+  year old would not either). Pieces wait in a tray above the board at
+  tray scale and pop to board scale in hand; a missed drop glides back to
+  its tray seat; a soft mat frames the board; layout math (tray height,
+  board side, tray packing) lives in core so tests and captures agree.
+  Restart pours the pieces back, a beat apart. A teach-me demo was
+  considered and vetoed by the owner: a simple game is self-explanatory,
+  no tutorial, no hand-holding; the layout itself is the lesson.
 
 ## Lessons that still bite
 
@@ -299,3 +313,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   artifact (no ad-ID permission, no SDK, zero references), and recorded in
   the submission guide's console answers. Next session picks up from:
   tester feedback, the pre-launch report, then 0.3.
+- 2026-09-05: The 0.2 promo codes proved out (the owner redeemed one and
+  installed). The owner then played the build and bounced: the play field
+  had no story. The play field became tray and board (D-037); the owner
+  vetoed a demo: self-explanatory or nothing. D-029 correction still
+  pending the owner's word.
