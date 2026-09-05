@@ -172,9 +172,7 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    and set it PAID with a one-time price (a merchant payments profile is
    required; $0.99 or $1.19 both round nicely across regions).
 3. Prepare the tester list as a Google Group (fastest to manage): add the
-   family and friends who will test, then also add the SAME group under
-   Setup, License testing, so testers of a paid app are not charged while
-   testing.
+   family and friends who will test.
 4. Fill the store listing from this file (name, short and full
    description), upload play-icon-512.png, feature-graphic-1024x500.png,
    and the three screenshot folders.
@@ -197,3 +195,14 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    (the law above), push to main, and CI refreshes the AAB at
    latest-build. Release notes go to chat as bare plain text that fits the
    500-character field, counted before handing them over, never assumed.
+
+Free copies for testers (a paid app, the owner's setup): every tester who
+should not pay needs a one-time promo code, cut at Monetize with Play >
+Promo codes, type Paid app. One code per tester, single use, and
+redemption makes the app permanently free for that Google account. Send
+each tester their deep link, https://play.google.com/redeem?code=CODE,
+and have them redeem before touching any buy button. Up to 500 codes per
+quarter; unused ones expire at quarter end. The owner's own publishing
+account installs free as a test purchase, no code needed. License
+testing is not part of this: it waives in-app products and subscriptions
+only, and this app has none.
