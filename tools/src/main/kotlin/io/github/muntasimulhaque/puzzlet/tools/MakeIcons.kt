@@ -1,9 +1,7 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
 import java.awt.AlphaComposite
-import java.awt.BasicStroke
 import java.awt.Color
-import java.awt.GradientPaint
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.geom.AffineTransform
@@ -12,12 +10,9 @@ import java.awt.geom.Ellipse2D
 import java.awt.geom.Rectangle2D
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
-import java.awt.image.ConvolveOp
-import java.awt.image.Kernel
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
-import kotlin.math.exp
 import kotlin.system.exitProcess
 
 /**
@@ -58,34 +53,36 @@ object IconDesign {
 
     /** The seam, unit space: boundary x, hero knob cy, socket cy. */
     const val SEAM_X = 0.56
-    const val KNOB_Y = 0.52
-    const val SOCKET_Y = 0.24
-    const val NECK_W = 0.088
-    const val NECK_L = 0.115
-    const val HEAD_R = 0.135
-    const val BITE_W = 0.062
-    const val BITE_D = 0.075
-    const val BITE_R = 0.070
+    const val KNOB_Y = 0.63
+    const val SOCKET_Y = 0.30
+    const val NECK_W = 0.076
+    const val NECK_L = 0.125
+    const val HEAD_R = 0.108
 }
 
-/** The socket bite alone, for shading after the region is filled. */
-fun socketBite(): Area {
+/**
+ * The one knob master, pointing +x from the seam origin. Both the white
+ * outie and the green socket are this exact shape, so the joint reads as
+ * a mating pair instead of two different sizes.
+ */
+fun knobMaster(): Area {
     val d = IconDesign
-    val bite = Area()
-    bite.add(Area(Rectangle2D.Double(d.SEAM_X - d.BITE_D, d.SOCKET_Y - d.BITE_W / 2.0, d.BITE_D + 0.012, d.BITE_W)))
-    bite.add(Area(Ellipse2D.Double(d.SEAM_X - d.BITE_D - 0.015 - d.BITE_R, d.SOCKET_Y - d.BITE_R, d.BITE_R * 2.0, d.BITE_R * 2.0)))
-    return bite
+    val knob = Area()
+    val n = d.NECK_W / 2.0
+    knob.add(Area(Rectangle2D.Double(-0.005, -n, d.NECK_L + 0.005, d.NECK_W)))
+    val hx = d.NECK_L - d.HEAD_R * 0.55
+    knob.add(Area(Ellipse2D.Double(hx - d.HEAD_R, -d.HEAD_R, d.HEAD_R * 2.0, d.HEAD_R * 2.0)))
+    return knob
 }
 
-/** The S region: paper field, hero knob, minus the socket bite. */
+/** The S region: paper field, hero knob out, mirrored knob carved as socket. */
 fun seamRegion(): Area {
     val d = IconDesign
     val region = Area(Rectangle2D.Double(-0.05, -0.05, d.SEAM_X + 0.05, 1.10))
-    val n = d.NECK_W / 2.0
-    region.add(Area(Rectangle2D.Double(d.SEAM_X - 0.005, d.KNOB_Y - n, d.NECK_L + 0.005, d.NECK_W)))
-    val hx = d.SEAM_X + d.NECK_L - d.HEAD_R * 0.55
-    region.add(Area(Ellipse2D.Double(hx - d.HEAD_R, d.KNOB_Y - d.HEAD_R, d.HEAD_R * 2.0, d.HEAD_R * 2.0)))
-    region.subtract(socketBite())
+    region.add(knobMaster().createTransformedArea(AffineTransform.getTranslateInstance(d.SEAM_X, d.KNOB_Y)))
+    val mirror = AffineTransform.getTranslateInstance(d.SEAM_X, d.SOCKET_Y)
+    mirror.concatenate(AffineTransform.getScaleInstance(-1.0, 1.0))
+    region.subtract(knobMaster().createTransformedArea(mirror))
     return region
 }
 
@@ -98,21 +95,6 @@ private fun beginIcon(image: BufferedImage): Graphics2D {
     g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
     g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY)
     return g
-}
-
-private fun softBlur(src: BufferedImage, radius: Int): BufferedImage {
-    val size = radius * 2 + 1
-    val data = FloatArray(size * size)
-    var sum = 0.0
-    for (y in 0 until size) for (x in 0 until size) {
-        val dx = (x - radius).toDouble()
-        val dy = (y - radius).toDouble()
-        val v = exp(-(dx * dx + dy * dy) / (2.0 * radius * radius / 4.0))
-        data[y * size + x] = v.toFloat()
-        sum += v
-    }
-    for (i in data.indices) data[i] = (data[i] / sum).toFloat()
-    return ConvolveOp(Kernel(size, size, data), ConvolveOp.EDGE_NO_OP, null).filter(src, null)
 }
 
 /** Map unit space onto the tile: unit centre to tile centre, span across. */
@@ -128,52 +110,40 @@ private fun unitTransform(size: Int, span: Double): AffineTransform {
 }
 
 /** One icon layer: full art tile, bare foreground, or white mono. */
-internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage {
+internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage { // flat
     val d = IconDesign
     val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
     val g = beginIcon(image)
     if (layer == Layer.TILE) {
         val tileShape = tileShapeFor(size, cornerFraction)
-        g.paint = GradientPaint(0f, 0f, Color(d.TEAL), 0f, size.toFloat(), Color(d.DEEP))
+        g.color = Color(d.TEAL, true)
         g.fill(tileShape)
         g.clip = tileShape
     }
     val span = if (layer == Layer.FOREGROUND) size * d.FG_SPAN_DP / d.ADAPTIVE_DP else size * d.TILE_SPAN
     val t = unitTransform(size, span)
     val region = seamRegion().createTransformedArea(t)
-    val tileArea = if (layer == Layer.TILE) Area(tileShapeFor(size, cornerFraction)) else null
     val fillArgb = if (layer == Layer.MONO) d.WHITE else d.PAPER
     if (layer != Layer.MONO) {
-        val shade = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
-        val gs = beginIcon(shade)
-        gs.color = Color(d.DEEP, true)
-        gs.fill(region)
-        gs.dispose()
+        val down = maxOf(1, (size * 0.035).toInt())
+        val halo = maxOf(1, (size * 0.008).toInt())
         val keep = g.composite
-        g.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f)
-        g.drawImage(softBlur(shade, maxOf(2, size / 56)), size / 64, size / 72, null)
+        g.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f)
+        g.color = Color(d.DEEP, true)
+        g.translate(0, down)
+        g.fill(region)
+        g.translate(0, -down)
         g.composite = keep
+        for ((dx, dy) in listOf(halo to 0, -halo to 0, 0 to halo, 0 to -halo)) {
+            g.translate(dx, dy)
+            g.color = Color(d.DEEP, true)
+            g.fill(region)
+            g.translate(-dx, -dy)
+        }
     }
     g.color = Color(fillArgb, true)
     g.fill(region)
-    if (layer != Layer.MONO) {
-        g.stroke = BasicStroke(size * 0.008f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
-        g.color = Color(d.DEEP, true)
-        g.draw(region)
-        val bite = socketBite().createTransformedArea(t)
-        val keepClip = g.clip
-        g.clip = bite
-        g.paint = GradientPaint(0f, 0f, Color(8, 89, 73, 110), 0f, size * 0.30f, Color(8, 89, 73, 0))
-        g.fillRect(0, 0, size, size)
-        g.clip = keepClip
-        val keepLight = g.clip
-        val lightClip = Area(region)
-        if (tileArea != null) lightClip.intersect(tileArea)
-        g.clip = lightClip
-        g.paint = GradientPaint(0f, 0f, Color(255, 255, 255, 26), 0f, size * 0.5f, Color(255, 255, 255, 0))
-        g.fillRect(0, 0, size, size)
-        g.clip = keepLight
-    }
+    // Flat finish: the halo above already draws every edge.
     g.dispose()
     return image
 }

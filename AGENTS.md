@@ -431,3 +431,7 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 - 2026-09-05: S wins with a socket. Finals in MakeIcons and MakeArt with
   new pins, tray breathing widened, feature art S-calm with clean type.
   Gates green, pushed for capture review, no version bump yet.
+- 2026-09-05: White knob redrawn from the green one's shape per owner:
+  one knob master placed twice (outie plus mirrored socket), slimmer stem
+  with a pinched waist. Finals also went flat fills only after CI caught
+  blur and gradient drift across JDKs; the byte pins hold again.

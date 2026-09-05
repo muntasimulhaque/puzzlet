@@ -1,7 +1,6 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
 import java.awt.Color
-import java.awt.GradientPaint
 import java.awt.RenderingHints
 import java.awt.geom.Rectangle2D
 import java.awt.geom.RoundRectangle2D
@@ -34,7 +33,7 @@ object MakeArt {
         val g = image.createGraphics()
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        g.paint = GradientPaint(0f, 0f, Color(IconDesign.TEAL), 0f, h.toFloat(), Color(IconDesign.DEEP))
+        g.paint = Color(IconDesign.TEAL)
         g.fill(Rectangle2D.Double(0.0, 0.0, w.toDouble(), h.toDouble()))
         g.drawImage(storeTile(360), 96, 70, null)
         drawCleanString(g, "Puzzlet", "baloo2_extrabold.ttf", 132f, IconDesign.PAPER, 500f, 272f, rootDir)
