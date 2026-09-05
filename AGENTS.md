@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, and so on.
-  Current release: versionCode 4, versionName 0.4, cut for closed testing.
+  Current release: versionCode 5, versionName 0.5, cut for closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
   twin in the `KEYSTORE_BASE64` GitHub secret and the passwords in three
@@ -105,9 +105,11 @@ The organising principle (inherited from the house): the rules are pure
 data and functions; Android is a player of those rules, not a participant.
 No composable takes a ViewModel: screens take state and callbacks, the
 activity wires the host in, which is what lets the screenshot harness host
-every state with no-op callbacks. The play field renders through one
-Canvas; pieces are the scene clipped by their own outline, so there is not
-a single bitmap in gameplay.
+every state with no-op callbacks. The play field renders a backdrop Canvas
+(tray, frame, faint goal, glow, click ring) with one small tile Canvas per
+piece; each tile draws its own slice of the scene clipped by its own
+outline, so there is not a single bitmap in gameplay and no shared outline
+cache to go stale.
 
 Scene content is pure data: `Scene.kt` holds the shape types and the
 registry; `ScenePaintings.kt` and `ScenePaintingsMore.kt` hold the eight
@@ -209,9 +211,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   paper world, generous corners.
 - D-012 Lifecycle viewmodel + runtime compose joined (house-pinned 2.8.7).
 - D-013 through D-019, the engine and its laws, core still true: scenes as
-  pure data with one renderer; single-Canvas play field, no bitmaps;
+  pure data with one renderer; per-piece tile Canvases over a backdrop
+  Canvas (D-040 supersedes single-Canvas), no bitmaps;
   forgiving hit test and absolute snap at 0.38 of the smaller cell; ghost
-  at 0.13, peek at 0.45; the fixed ladder 4 to 24; in-session resume;
+  at 0.20, peek at 0.45 (ghost lifted from 0.13 in D-040); the fixed ladder 4 to 24; in-session resume;
   seeded determinism (same picture and difficulty, same cut and seating,
   every time); the full-field scatter superseded by the tray, see D-037.
 - D-020 Sound is the house generator ported: pick, drop, snap, and one
@@ -261,16 +264,25 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 - D-038 Release notes never name the owner's email and carry no contact
   line: testers write anyway (owner's call after the 0.3 notes shipped
   with one; the rule starts at 0.4).
-- D-039 The tray must never look empty and no piece may be blank. After the
-  0.3 bounce the play screen showed an empty tray on device while captures
-  looked fine: the outline cache keyed on constraints only, so it kept the
-  tiny 1x1 placeholder cut after layout reshaped the board. The cache now
-  keys on the board size. Every picture also carries small calm inanimate
-  texture across sky, sea, wall and hill (new core/SceneClues.kt, applied
-  once in Scenes.all), so each piece has shape and colour to recognise.
-  The tray edge, the board frame and the piece halo were strengthened with
-  existing theme colors only, and a placeholder to real field relayout test
-  pins the device flow.
+- D-039 The tray must never look empty and no piece may be blank. After
+  the 0.3 bounce the play screen showed an empty tray on device while
+  captures looked fine: the shared outline cache kept the tiny 1x1
+  placeholder cut after layout reshaped the board. Fixed first by keying
+  the cache on board size, then superseded by D-040 per-piece tiles.
+  Every picture also carries small calm inanimate texture across sky,
+  sea, wall and hill (core/SceneClues.kt, applied once in Scenes.all),
+  so each piece has shape and colour to recognise. A placeholder to real
+  field relayout test pins the device flow.
+- D-040 Owner approved all three simplifications (per-piece tiles, clearer
+  ghost, snap-home logic). The field is one backdrop Canvas plus one tile
+  Canvas per piece, each tile rebuilding its outline from its own shape,
+  which retires the shared cache class of bug entirely. The ghost base
+  moved 0.13 to 0.20 (peek stays 0.45): still faint enough to think with,
+  now visible on bright screens for pale pictures. A miss sets the piece
+  home at once in logic while its tile springs there visibly, and restart
+  sets all home at once while tiles pour back staggered from restartAt:
+  no cancellation can strand a piece. Held pieces stick to the finger
+  (display snaps while held) and glide only when free.
 
 ## Lessons that still bite
 
@@ -358,3 +370,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   details are the clue, the brain still does the work. Cut 0.4
   (versionCode 4) for closed testing, notes measured at 440 chars, no
   contact line per D-038.
+- 2026-09-05: Owner approved all three rule breaks. Field rebuilt as one
+  backdrop Canvas plus one tile Canvas per piece (D-040 supersedes the
+  D-039 cache fix), ghost base 0.13 to 0.20, miss and restart snap home
+  in logic while tiles spring visibly (restart staggered from restartAt).
+  Cut 0.5 (versionCode 5), notes 420 chars, all gates green.
