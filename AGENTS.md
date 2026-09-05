@@ -435,3 +435,6 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   one knob master placed twice (outie plus mirrored socket), slimmer stem
   with a pinched waist. Finals also went flat fills only after CI caught
   blur and gradient drift across JDKs; the byte pins hold again.
+- 2026-09-06: Correction, green restored byte-identical to approved and
+  white rebuilt from it at hero scale. My earlier pass reshaped both when
+  only white was asked. Probes green, art regenerated.

@@ -53,36 +53,50 @@ object IconDesign {
 
     /** The seam, unit space: boundary x, hero knob cy, socket cy. */
     const val SEAM_X = 0.56
-    const val KNOB_Y = 0.63
-    const val SOCKET_Y = 0.30
-    const val NECK_W = 0.076
-    const val NECK_L = 0.125
-    const val HEAD_R = 0.108
+    const val KNOB_Y = 0.50
+    const val SOCKET_Y = 0.24
+    // The knob, frozen from the approved green socket: narrow stem, round
+    // head. The white hero is this exact shape scaled by HERO, so the pair
+    // can never drift apart again.
+    // Green-approved bite numbers, frozen. The white hero below is this
+    // exact shape scaled by HERO, so the pair matches by construction.
+    const val BITE_W = 0.062
+    const val BITE_D = 0.075
+    const val BITE_R = 0.070
+    const val HERO = 1.64
 }
 
 /**
- * The one knob master, pointing +x from the seam origin. Both the white
- * outie and the green socket are this exact shape, so the joint reads as
- * a mating pair instead of two different sizes.
+ * The green socket, byte-identical to the approved take: channel mouth at
+ * the seam, round chamber inside. Never touch without the owner pointing.
  */
-fun knobMaster(): Area {
+fun socketBite(): Area {
     val d = IconDesign
+    val bite = Area()
+    bite.add(Area(Rectangle2D.Double(d.SEAM_X - d.BITE_D, d.SOCKET_Y - d.BITE_W / 2.0, d.BITE_D + 0.012, d.BITE_W)))
+    bite.add(Area(Ellipse2D.Double(d.SEAM_X - d.BITE_D - 0.015 - d.BITE_R, d.SOCKET_Y - d.BITE_R, d.BITE_R * 2.0, d.BITE_R * 2.0)))
+    return bite
+}
+
+/** The white hero: the green shape at hero scale, rooted at the seam. */
+fun heroKnob(): Area {
+    val d = IconDesign
+    val w = d.BITE_W * d.HERO
+    val len = (d.BITE_D + 0.012) * d.HERO
+    val hr = d.BITE_R * d.HERO
     val knob = Area()
-    val n = d.NECK_W / 2.0
-    knob.add(Area(Rectangle2D.Double(-0.005, -n, d.NECK_L + 0.005, d.NECK_W)))
-    val hx = d.NECK_L - d.HEAD_R * 0.55
-    knob.add(Area(Ellipse2D.Double(hx - d.HEAD_R, -d.HEAD_R, d.HEAD_R * 2.0, d.HEAD_R * 2.0)))
+    knob.add(Area(Rectangle2D.Double(d.SEAM_X - 0.005, d.KNOB_Y - w / 2.0, len + 0.005, w)))
+    val hx = d.SEAM_X - 0.005 + len - hr * 0.55
+    knob.add(Area(Ellipse2D.Double(hx - hr, d.KNOB_Y - hr, hr * 2.0, hr * 2.0)))
     return knob
 }
 
-/** The S region: paper field, hero knob out, mirrored knob carved as socket. */
+/** The S region: paper field, green-shaped white hero out, green socket in. */
 fun seamRegion(): Area {
     val d = IconDesign
     val region = Area(Rectangle2D.Double(-0.05, -0.05, d.SEAM_X + 0.05, 1.10))
-    region.add(knobMaster().createTransformedArea(AffineTransform.getTranslateInstance(d.SEAM_X, d.KNOB_Y)))
-    val mirror = AffineTransform.getTranslateInstance(d.SEAM_X, d.SOCKET_Y)
-    mirror.concatenate(AffineTransform.getScaleInstance(-1.0, 1.0))
-    region.subtract(knobMaster().createTransformedArea(mirror))
+    region.add(heroKnob())
+    region.subtract(socketBite())
     return region
 }
 
