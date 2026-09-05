@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, and so on.
-  Current release: versionCode 5, versionName 0.5, cut for closed testing.
+  Current release: versionCode 6, versionName 0.6, cut for closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
   twin in the `KEYSTORE_BASE64` GitHub secret and the passwords in three
@@ -393,3 +393,7 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 - 2026-09-05: Version 0.5 submitted for closed testing review; the AAB was
   deleted from play-store/aab/ per the folder rule. Next session picks up
   from: the 0.5 review verdict and tester feedback on the tile build.
+- 2026-09-05: Owner difficulty pass (D-041): blank board with peek to
+  full, no drag hint or glow, no mid game restart, tray deranged fresh
+  every game with seatSeed persisted, tiles keyed, celebration TalkBack
+  labels added. Cut 0.6 (versionCode 6), notes 426 chars, all gates green.
