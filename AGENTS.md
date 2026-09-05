@@ -291,6 +291,34 @@ console answers live in play-store/play-store-submission-guide.md.
   release of versionCode 1, versionName 0.1; its notes live in the
   submission guide. Play's license-testing list keeps paid-app testers
   from being charged.
+- D-030 (2026-09-05): The mark is REDESIGNED, superseding D-008's glyph.
+  The owner's design, after the first mark read as ambiguous at a glance:
+  ONE jigsaw piece reaching out in all four directions, four identical
+  arms, perfectly symmetric. Symmetry kills the double meaning outright,
+  the silhouette is the classic puzzle read, and the owner named the
+  meaning: friendship. Uniqueness findings recorded: the generic
+  four-knob piece cannot be owned (thousands of stock icons exist; ours is
+  drawn from code), the puzzle emoji differs (two tabs, two blanks), and
+  the single-piece autism-awareness association was surfaced to the owner
+  and accepted as weak for a puzzle game (two-piece mid-snap remains the
+  fallback if it ever needs breaking). One painter, paintBrandPiece,
+  feeds launcher, monochrome, legacy, store icon, feature graphic, and
+  the in-app mark.
+- D-031 (2026-09-05): The game must make the child think (the original
+  goal, audited). Two guarantees landed: no piece ever starts within snap
+  tolerance of its own slot (the scatter keeps every piece away from home;
+  tested over seeds), and the honey slot glow now helps only the chunky
+  ladder (9 pieces or fewer); from 12 pieces up the child answers where
+  the piece goes. The ghost board stays for everyone: it is the picture.
+- D-032 (2026-09-05): Every icon button carries a TalkBack label (back,
+  peek, restart, sound on/off). Honest open item: the pieces themselves
+  have no piece-level TalkBack actions yet; for a drag game for 3-5s this
+  is niche, but it is recorded here so it cannot be forgotten.
+- D-033 (2026-09-05): Housekeeping from the same audit: Scene.kt was over
+  the 400-line rule and split into the registry plus two painting files;
+  debug builds now run StrictMode (thread and VM policies, log penalties);
+  the merged manifest's one app-private signature permission was verified
+  against the house's shipped apps and documented, not fought.
   sailboat, rocket, house, lighthouse, balloon, train, castle, fruit. A
   fruit plate on a wooden table earns its keep by texture: every piece on
   it differs from its neighbours. The capture set gains an eighth shot
@@ -356,3 +384,14 @@ console answers live in play-store/play-store-submission-guide.md.
   committed under play-store/screenshots/; git status is the drift check:
   refresh a capture, and a no-change run must come back byte-identical
   apart from the celebration scene, which is mid-animation by design.
+- 2026-09-05: GOAL AUDIT before the first release, against the owner's
+  original brief. Met and verified: no music (single chime, guarded), no
+  animate beings, no internet and zero declared permissions, paid-once
+  flow, native Kotlin and Compose, API 37, open source, AGENTS.md
+  discipline, name, listing kit, three form factors in CI. Fixed in the
+  audit: the thinking guarantees (D-031), the TalkBack labels (D-032), the
+  400-line split and StrictMode (D-033), and the mark redesign (D-030).
+  Still open, honestly: human eyes on the captures and the new mark (the
+  owner judges the redesign before upload), piece-level TalkBack (D-032),
+  and a child's hands on it. The audit is a standing exercise: rerun it
+  before every store release.
