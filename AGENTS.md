@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, and so on.
-  Current release: versionCode 6, versionName 0.6, cut for closed testing.
+  Current release: versionCode 7, versionName 0.7, cut for closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
   twin in the `KEYSTORE_BASE64` GitHub secret and the passwords in three
@@ -447,3 +447,7 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   kept exact by formula consts. Fully flat mark, pins green.
 - 2026-09-06: Knobs to the measured ceiling, scale 1.35, doubling ruled
   out with mask math. Equal gaps hold by formula, pins green.
+- 2026-09-06: Cut 0.7 (versionCode 7) for closed testing: difficulty pass,
+  redesign, S icon finals, tray breathing, fresh captures. Notes 472
+  chars, all gates green. 0.6 was superseded before submission, so its AAB
+  never left the folder.

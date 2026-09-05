@@ -145,6 +145,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 0.7 (measured: 472 chars)
+
+```
+This build is a large step forward. The board starts blank now, tap the small picture up top to peek when stuck, with no hints and no restart button, so pieces move by hand like a real puzzle. The menu is pictures only and every row shows its picture cut exactly as the game will cut it. New app icon, wider tray spacing, spoken picture names, same eight pictures, same counts from 4 to 24, same soft sounds, no new permissions, still fully offline. Thank you for testing.
+```
+
 ## Release notes for closed testing 0.6 (measured: 426 chars)
 
 ```
