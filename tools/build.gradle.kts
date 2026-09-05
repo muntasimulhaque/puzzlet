@@ -28,7 +28,7 @@ tasks.register<JavaExec>("makeIcons") {
     group = "tools"
     description = "Regenerate the launcher icon set in app/src/main/res."
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass = "app.puzzlet.tools.MakeIconsKt"
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeIconsKt"
     args = listOf(rootDir.absolutePath)
 }
 
@@ -36,7 +36,7 @@ tasks.register<JavaExec>("checkIcons") {
     group = "tools"
     description = "Verify the committed launcher icons match a fresh regeneration."
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass = "app.puzzlet.tools.MakeIconsKt"
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeIconsKt"
     args = listOf(rootDir.absolutePath, "--check")
 }
 
@@ -44,7 +44,7 @@ tasks.register<JavaExec>("makeSounds") {
     group = "tools"
     description = "Regenerate the four sound assets in app/src/main/res/raw."
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass = "app.puzzlet.tools.SoundGenKt"
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.SoundGenKt"
     args = listOf(rootDir.absolutePath)
 }
 
@@ -52,7 +52,7 @@ tasks.register<JavaExec>("checkSounds") {
     group = "tools"
     description = "Verify the committed sound assets match a fresh regeneration."
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass = "app.puzzlet.tools.SoundGenKt"
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.SoundGenKt"
     args = listOf(rootDir.absolutePath, "--check")
 }
 
@@ -60,6 +60,6 @@ tasks.register<JavaExec>("makeArt") {
     group = "tools"
     description = "Regenerate the store art (feature graphic, store icon)."
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass = "app.puzzlet.tools.MakeArtKt"
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeArtKt"
     args = listOf(rootDir.absolutePath)
 }

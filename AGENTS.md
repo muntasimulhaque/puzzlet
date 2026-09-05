@@ -53,7 +53,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 ## Shipping constraints
 
-- `applicationId` is permanently `app.puzzlet`. Play ties an app to its
+- `applicationId` is permanently `io.github.muntasimulhaque.puzzlet`. Play ties an app to its
   first package ID forever. The code namespace mirrors it.
 - `versionCode` only ever increases and is never reused. `versionName` is
   `versionCode` divided by ten, one decimal: 1 means 0.1, 2 means 0.2, 9
@@ -63,7 +63,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
   earlier build, so the walk starts honestly at its first step.
 - `targetSdk` moves only together with an AGP that supports it.
 - The merged manifest carries one app-private, signature-scoped permission
-  (`app.puzzlet.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`), added by
+  (`io.github.muntasimulhaque.puzzlet.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`), added by
   androidx.core for dynamically registered receivers, exactly as in the
   house's shipped apps. The zero-permissions rule means: we declare
   nothing dangerous, nothing normal, nothing that touches the network.
@@ -201,8 +201,16 @@ console answers live in play-store/play-store-submission-guide.md.
   accepted: anyone may compile a free clone; the moat is the listing, the
   brand, and the craft.
 - D-003 (2026-09-04): English only. Revisit only on owner request.
-- D-004 (2026-09-04): `applicationId` and namespace are `app.puzzlet`,
-  clean, no legacy suffix. A new ID has no scars.
+- D-004 (2026-09-04): `applicationId` and namespace were `app.puzzlet`,
+  clean, no legacy suffix.
+- D-034 (2026-09-05): D-004 revised twice at the owner's challenge, then
+  settled. The house fact: the two sibling apps use two conventions
+  (count-and-play: app.maqsadah.*, ninetynine: io.github.*). The owner's
+  final choice follows ninetynine: namespace, applicationId, and every
+  code package are io.github.muntasimulhaque.puzzlet. Nothing had been
+  uploaded to Play, so both intermediate IDs cost nothing; the lesson is
+  to settle the ID before the app is created in the console, where it
+  becomes permanent.
 - D-005 (2026-09-04): Toolchain pinned to the house: Gradle 9.5.0, AGP
   9.3.0, Kotlin 2.2.10, Compose BOM 2026.08.00, Java 17, compile/target 37,
   minSdk 24. One house, one discipline.

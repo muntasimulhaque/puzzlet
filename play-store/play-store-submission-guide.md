@@ -151,7 +151,8 @@ First closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pie
 1. Pull the signed AAB from the `latest-build` GitHub release:
    `gh release download latest-build -R muntasimulhaque/puzzlet -p "*.aab"`
    (Verified before handoff: versionCode 1, versionName 0.1, target 37.)
-2. Play Console: create the app. Name it from the listing, mark it a Game,
+2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
+   (type it exactly; it is permanent). Name it from the listing, mark it a Game,
    and set it PAID with a one-time price (a merchant payments profile is
    required; $0.99 or $1.19 both round nicely across regions).
 3. Prepare the tester list as a Google Group (fastest to manage): add the

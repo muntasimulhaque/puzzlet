@@ -11,7 +11,7 @@ picture survives process death. Store screenshots render in CI from the
 app's own states; the listing kit and the signing flow are ready for the
 Play Console. See AGENTS.md for the working rules and the decision log.
 
-- **Play Store package:** `app.puzzlet` (reserved; not yet published)
+- **Play Store package:** `io.github.muntasimulhaque.puzzlet` (reserved; not yet published)
 - **License:** MIT
 
 ## Build

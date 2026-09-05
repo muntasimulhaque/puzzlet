@@ -4,12 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "app.puzzlet"
+    namespace = "io.github.muntasimulhaque.puzzlet"
     compileSdk = 37
 
     defaultConfig {
-        // Must never change: this is the future Play Store package ID.
-        applicationId = "app.puzzlet"
+        // Must never change: this is the future Play Store package ID, the
+        // ninetynine convention (io.github.muntasimulhaque.*).
+        applicationId = "io.github.muntasimulhaque.puzzlet"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
