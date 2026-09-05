@@ -141,10 +141,10 @@ versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 3, versionName 0.3;
 versions 1 and 2 were internal only and Play never saw them.
 
-## Release notes for closed testing 0.3 (measured: N chars)
+## Release notes for closed testing 0.3 (measured: 474 chars)
 
 ```
-RELEASE_NOTES
+First closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pieces: drag a piece anywhere near its place and it clicks home with a soft knock. The whole picture shows faintly underneath, and a held piece makes its own place glow. Finish, and the picture is held up with confetti. Sound can be switched off on the first screen. If anything breaks, freezes, or feels wrong for a three-year-old, please write to muntasim.haque@gmail.com. Thank you for testing.
 ```
 
 ## Closed testing: step by step
