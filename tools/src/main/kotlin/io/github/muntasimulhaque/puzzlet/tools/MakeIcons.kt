@@ -54,101 +54,53 @@ object IconDesign {
 }
 
 /**
- * The friendship square (the owner's design): a 2 x 2 of four jigsaw
- * pieces, joined. Each piece is a real piece, oriented in a pinwheel: its
- * head reaches outward (top, right, bottom, left: the four arms) and its
- * cut opens on the inner seam, so four notches sit in the middle of the
- * square, waiting for the next pieces to snap in. Thin seams show that the
- * square is four pieces; the outer silhouette stays the calm square with
- * four arms. The piece spans 0.962 of the unit box.
+ * The friendship piece (the owner's design): ONE jigsaw piece, its four
+ * arms reaching outward (top, right, bottom, left), and now also its four
+ * cuts punched in the middle of the square: a real piece has a head on one
+ * side and the same cut on the other, so each arm carries its matching cut
+ * beneath it, mouth toward the centre, waiting for the next piece. The
+ * piece spans 0.70 of the unit box, knob tip to knob tip.
  */
 enum class Side { TOP, RIGHT, BOTTOM, LEFT }
 
-internal const val BRAND_SPAN = 0.962
+internal const val BRAND_SPAN = 0.70
 
-private fun addKnob(body: Area, mx: Double, my: Double, side: Side) {
-    when (side) {
-        Side.TOP -> {
-            body.add(Area(Rectangle2D.Double(mx - 0.02, my - 0.055, 0.04, 0.065)))
-            body.add(Area(Ellipse2D.Double(mx - 0.046, my - 0.085, 0.092, 0.092)))
-        }
-        Side.BOTTOM -> {
-            body.add(Area(Rectangle2D.Double(mx - 0.02, my - 0.01, 0.04, 0.065)))
-            body.add(Area(Ellipse2D.Double(mx - 0.046, my - 0.007, 0.092, 0.092)))
-        }
-        Side.LEFT -> {
-            body.add(Area(Rectangle2D.Double(mx - 0.055, my - 0.02, 0.065, 0.04)))
-            body.add(Area(Ellipse2D.Double(mx - 0.085, my - 0.046, 0.092, 0.092)))
-        }
-        Side.RIGHT -> {
-            body.add(Area(Rectangle2D.Double(mx - 0.01, my - 0.02, 0.065, 0.04)))
-            body.add(Area(Ellipse2D.Double(mx - 0.007, my - 0.046, 0.092, 0.092)))
-        }
-    }
-}
-
-private fun addCut(body: Area, mx: Double, my: Double, side: Side) {
-    // The blank: a necked cut opening on the edge and biting inward.
-    when (side) {
-        Side.TOP -> {
-            body.subtract(Area(Rectangle2D.Double(mx - 0.02, my - 0.0275, 0.04, 0.06)))
-            body.subtract(Area(Ellipse2D.Double(mx - 0.035, my - 0.0025, 0.07, 0.07)))
-        }
-        Side.BOTTOM -> {
-            body.subtract(Area(Rectangle2D.Double(mx - 0.02, my - 0.0325, 0.04, 0.06)))
-            body.subtract(Area(Ellipse2D.Double(mx - 0.035, my - 0.0325, 0.07, 0.07)))
-        }
-        Side.LEFT -> {
-            body.subtract(Area(Rectangle2D.Double(mx - 0.0275, my - 0.02, 0.06, 0.04)))
-            body.subtract(Area(Ellipse2D.Double(mx - 0.0025, my - 0.035, 0.07, 0.07)))
-        }
-        Side.RIGHT -> {
-            body.subtract(Area(Rectangle2D.Double(mx - 0.0325, my - 0.02, 0.06, 0.04)))
-            body.subtract(Area(Ellipse2D.Double(mx - 0.0325, my - 0.035, 0.07, 0.07)))
-        }
-    }
-}
-
-/**
- * One joined piece: a quadrant of the square with rounded corners, a knob
- * reaching outward on [knob] and a cut biting inward on [notch].
- */
-fun brandQuadrant(x0: Double, y0: Double, x1: Double, y1: Double, knob: Side, notch: Side): Area {
-    val body = Area(RoundRectangle2D.Double(x0, y0, x1 - x0, y1 - y0, 0.045, 0.045))
-    val knobMid = if (knob == Side.TOP || knob == Side.BOTTOM) (x0 + x1) / 2 else (y0 + y1) / 2
-    val notchMid = if (notch == Side.TOP || notch == Side.BOTTOM) (x0 + x1) / 2 else (y0 + y1) / 2
-    val edge = if (knob == Side.TOP || knob == Side.BOTTOM) (if (knob == Side.TOP) y0 else y1) else (if (knob == Side.LEFT) x0 else x1)
-    when (knob) {
-        Side.TOP -> addKnob(body, knobMid, y0, Side.TOP)
-        Side.BOTTOM -> addKnob(body, knobMid, y1, Side.BOTTOM)
-        Side.LEFT -> addKnob(body, x0, knobMid, Side.LEFT)
-        Side.RIGHT -> addKnob(body, x1, knobMid, Side.RIGHT)
-    }
-    when (notch) {
-        Side.TOP -> addCut(body, notchMid, y0, Side.TOP)
-        Side.BOTTOM -> addCut(body, notchMid, y1, Side.BOTTOM)
-        Side.LEFT -> addCut(body, x0, notchMid, Side.LEFT)
-        Side.RIGHT -> addCut(body, x1, notchMid, Side.RIGHT)
-    }
+fun brandPiece(): Area {
+    val body = Area(RoundRectangle2D.Double(0.28, 0.28, 0.44, 0.44, 0.09, 0.09))
+    // Each knob: a neck crossing the body edge plus a round head beyond it.
+    // Top (bump up), right, bottom, left: the same four arms.
+    body.add(Area(Rectangle2D.Double(0.474, 0.18, 0.052, 0.12)))
+    body.add(Area(Ellipse2D.Double(0.44, 0.15, 0.12, 0.12)))
+    body.add(Area(Rectangle2D.Double(0.70, 0.474, 0.12, 0.052)))
+    body.add(Area(Ellipse2D.Double(0.73, 0.44, 0.12, 0.12)))
+    body.add(Area(Rectangle2D.Double(0.474, 0.70, 0.052, 0.12)))
+    body.add(Area(Ellipse2D.Double(0.44, 0.73, 0.12, 0.12)))
+    body.add(Area(Rectangle2D.Double(0.18, 0.474, 0.12, 0.052)))
+    body.add(Area(Ellipse2D.Double(0.15, 0.44, 0.12, 0.12)))
+    // The four cuts, one beneath each arm: a mouth (small circle) toward
+    // the centre and a head (bigger circle) deeper in, the same shape a
+    // real piece wears on its cut side. Spaced clear of the knob necks.
+    body.subtract(Area(Ellipse2D.Double(0.465, 0.405, 0.07, 0.07)))
+    body.subtract(Area(Ellipse2D.Double(0.448, 0.313, 0.104, 0.104)))
+    body.subtract(Area(Ellipse2D.Double(0.465, 0.525, 0.07, 0.07)))
+    body.subtract(Area(Ellipse2D.Double(0.448, 0.583, 0.104, 0.104)))
+    body.subtract(Area(Ellipse2D.Double(0.405, 0.465, 0.07, 0.07)))
+    body.subtract(Area(Ellipse2D.Double(0.313, 0.448, 0.104, 0.104)))
+    body.subtract(Area(Ellipse2D.Double(0.525, 0.465, 0.07, 0.07)))
+    body.subtract(Area(Ellipse2D.Double(0.583, 0.448, 0.104, 0.104)))
     return body
 }
 
 /**
- * The whole mark, drawn into [g]: four joined pieces in a pinwheel. The
- * piece spans 0.962 of the unit box; [span] is that span on the target.
+ * Draw the piece scaled to [span], centred at (cx, cy), in [argb].
  */
 fun paintBrandPiece(g: Graphics2D, cx: Double, cy: Double, span: Double, argb: Int) {
+    val piece = brandPiece()
     val scale = span / BRAND_SPAN
-    val ox = cx - 0.5 * scale
-    val oy = cy - 0.5 * scale
-    g.transform(AffineTransform(scale, 0.0, 0.0, scale, ox, oy))
+    g.transform(AffineTransform(scale, 0.0, 0.0, scale, cx - 0.5 * scale, cy - 0.5 * scale))
     g.color = Color(argb, true)
-    // Pinwheel: head outward, cut inward, a quarter turn per piece.
-    g.fill(brandQuadrant(0.10, 0.10, 0.4875, 0.4875, Side.TOP, Side.BOTTOM))
-    g.fill(brandQuadrant(0.5125, 0.10, 0.90, 0.4875, Side.RIGHT, Side.LEFT))
-    g.fill(brandQuadrant(0.5125, 0.5125, 0.90, 0.90, Side.BOTTOM, Side.TOP))
-    g.fill(brandQuadrant(0.10, 0.5125, 0.4875, 0.90, Side.LEFT, Side.RIGHT))
-    g.transform(AffineTransform(1.0 / scale, 0.0, 0.0, 1.0 / scale, -ox, -oy))
+    g.fill(piece)
+    g.transform(AffineTransform(1.0 / scale, 0.0, 0.0, 1.0 / scale, -(cx - 0.5 * scale), -(cy - 0.5 * scale)))
 }
 
 /** The legacy tile: teal rounded square, paper piece, for API 24-25 launchers. */

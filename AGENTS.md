@@ -322,7 +322,16 @@ a stale build can never sit there waiting to be uploaded twice.
   surfaced to the owner and accepted as weak for a puzzle game (the
   mid-snap two-piece story remains the fallback if it ever needs
   breaking). One painter, paintBrandPiece, feeds launcher, monochrome,
-  legacy, store icon, feature graphic, and the in-app mark. The geometry
+  legacy, store icon, feature graphic, and the in-app mark.
+- D-035 (2026-09-05): The mark FINALISED after two misreadings by the
+  agent (a circle-holes version, then a 2x2 pinwheel that changed the icon
+  the owner said to keep). The final form: the four-armed piece stays
+  exactly as it was, and each arm carries its matching cut punched in the
+  middle of the square, mouth toward the centre, head deeper in: a real
+  piece has a head on one side and the same cut on the other, so the icon
+  now shows four heads and four cuts. Probes verify all of it. Lesson
+  recorded: when the owner says keep the icon and add something, the icon
+  stays; only the something is added. The geometry
   is verified by pixel probes in MakeIconsTest (heads, cuts, seams,
   bodies), after two rounds of probe bugs taught the same lesson twice:
   ALWAYS map piece-unit coordinates through the piece's span and offset
