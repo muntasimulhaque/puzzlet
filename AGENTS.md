@@ -80,16 +80,18 @@ pieces, chosen with picture buttons. The pieces wait in a tray above the
 board at tray scale; a piece in hand grows to board size under the
 finger. Drag it anywhere near its place and it clicks home with a spring,
 a soft knock and a haptic tick; a miss glides back to its tray seat. The
-faint ghost board is always visible; a peek coin strengthens it; the slot
-glow helps only the chunky ladder (9 pieces or fewer), because the game
-must make the child think. No timer, no score, no fail state, no reading
-required, no tutorial: the tray-and-board layout is the whole lesson. No
-piece ever starts within snap tolerance of its own slot; the tray sits
-above the board, so the guarantee is structural. Finish, and the picture
-is held up with confetti. Restart pours every piece back to the tray, a
-beat apart. The sound switch lives in the top bar; one unfinished
-picture survives backing out and process death (DataStore), re-seated by
-the same seed.
+board stays blank so the child must think; a peek coin reveals the full
+picture, tap again to hide it. No drag hint, no slot glow, no mid game
+restart: like a real puzzle, pieces move by hand and there is no easy
+undo. The tray jumbles fresh every new game, never serial, while the cut
+stays stable like a bought puzzle. No timer, no score, no fail state, no
+reading required, no tutorial: the tray-and-board layout is the whole
+lesson. No piece ever starts within snap tolerance of its own slot; the
+tray sits above the board, so the guarantee is structural. Finish, and
+the picture is held up with confetti. Again deals the same cut with a
+fresh jumble, a beat apart. The sound switch lives in the top bar; one
+unfinished picture survives backing out and process death (DataStore),
+re-seated by the same cut and the same jumble.
 
 ## Architecture
 
@@ -106,7 +108,7 @@ data and functions; Android is a player of those rules, not a participant.
 No composable takes a ViewModel: screens take state and callbacks, the
 activity wires the host in, which is what lets the screenshot harness host
 every state with no-op callbacks. The play field renders a backdrop Canvas
-(tray, frame, faint goal, glow, click ring) with one small tile Canvas per
+(tray, frame, goal when peeked, click ring) with one small tile Canvas per
 piece; each tile draws its own slice of the scene clipped by its own
 outline, so there is not a single bitmap in gameplay and no shared outline
 cache to go stale.
@@ -283,6 +285,19 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   sets all home at once while tiles pour back staggered from restartAt:
   no cancellation can strand a piece. Held pieces stick to the finger
   (display snaps while held) and glide only when free.
+- D-041 The difficulty pass (owner-directed, supersedes ghost and glow in
+  D-013 through D-019 and D-040, the glow in D-030 through D-033, the
+  restart in D-037, and the identical seating in D-013 through D-019 and
+  D-022). The board stays blank (ghost 0); peek toggles the full picture
+  (1) for a child who forgot. No drag hint and no slot glow on any ladder.
+  No mid game restart in the top bar; celebration Again deals the same cut
+  with a fresh jumble. The cut stays stable from cutSeed like a bought
+  puzzle; the tray jumbles fresh every new game from seatSeed, deranged so
+  it never opens serial and no piece keeps its serial seat, persisted for
+  resume so backing out and process death keep the same jumble. Tiles are
+  keyed by piece id so a grab reorder never reuses the wrong node;
+  celebration buttons carry TalkBack labels; the dead PlayActions onBack is
+  gone.
 
 ## Lessons that still bite
 

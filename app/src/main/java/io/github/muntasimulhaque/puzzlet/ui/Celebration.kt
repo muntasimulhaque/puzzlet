@@ -92,7 +92,12 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
             Spacer(Modifier.height(26.dp))
             Row {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircleButton(onClick = onAgain, background = PuzzletColors.Teal, size = 64.dp) {
+                    CircleButton(
+                        onClick = onAgain,
+                        background = PuzzletColors.Teal,
+                        size = 64.dp,
+                        label = stringResource(R.string.restart),
+                    ) {
                         ReplayIcon(color = PuzzletColors.Paper)
                     }
                     Spacer(Modifier.height(6.dp))
@@ -104,7 +109,12 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
                 }
                 Spacer(Modifier.width(40.dp))
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircleButton(onClick = onHome, background = PuzzletColors.Card, size = 64.dp) {
+                    CircleButton(
+                        onClick = onHome,
+                        background = PuzzletColors.Card,
+                        size = 64.dp,
+                        label = stringResource(R.string.home),
+                    ) {
                         MenuIcon(color = PuzzletColors.Ink)
                     }
                     Spacer(Modifier.height(6.dp))

@@ -215,7 +215,6 @@ class ScreenshotTest {
         onDrop = { false },
         onLayout = { _, _ -> },
         onRestart = {},
-        onBack = {},
     )
 
     /** The activity's own window pixels: the truth the child actually sees. */

@@ -41,19 +41,17 @@ internal fun outlinePath(segments: List<Cubic>): Path {
     return path
 }
 
-/** Everything behind the pieces: tray, frame, faint goal, glow, click ring. */
+/** Everything behind the pieces: tray, frame, goal when peeked, click ring. */
 @Composable
 internal fun BoardBackdrop(
     game: Puzzle,
     scene: SceneSpec,
     ghostAlpha: Float,
-    dragId: Int?,
-    ringAlpha: Float,
     pulseId: Int,
     pulseT: Float,
 ) {
     Canvas(Modifier.fillMaxSize()) {
-        drawBackdrop(game, scene, ghostAlpha, dragId, ringAlpha, pulseId, pulseT)
+        drawBackdrop(game, scene, ghostAlpha, pulseId, pulseT)
     }
 }
 
@@ -61,15 +59,12 @@ internal fun DrawScope.drawBackdrop(
     game: Puzzle,
     scene: SceneSpec,
     ghostAlpha: Float,
-    dragId: Int?,
-    ringAlpha: Float,
     pulseId: Int,
     pulseT: Float,
 ) {
     drawTray(game.tray)
     drawMat(game.board)
     drawGhost(game.board, scene, ghostAlpha)
-    drawSlotGlow(game, dragId, ringAlpha)
     drawPulse(game, pulseId, pulseT)
 }
 
@@ -99,6 +94,7 @@ private fun DrawScope.drawMat(board: Area) {
 }
 
 private fun DrawScope.drawGhost(board: Area, scene: SceneSpec, ghostAlpha: Float) {
+    if (ghostAlpha <= 0.001f) return
     val boardR = Rect(
         board.x.toFloat(), board.y.toFloat(),
         (board.x + board.w).toFloat(), (board.y + board.h).toFloat(),
@@ -112,18 +108,6 @@ private fun DrawScope.drawGhost(board: Area, scene: SceneSpec, ghostAlpha: Float
         drawScene(scene, board.w)
     }
     drawIntoCanvas { it.restore() }
-}
-
-private fun DrawScope.drawSlotGlow(game: Puzzle, dragId: Int?, ringAlpha: Float) {
-    val dragged = dragId?.let { game.piece(it) } ?: return
-    if (game.rows * game.cols > 9) return
-    drawRoundRect(
-        PuzzletColors.Honey.copy(alpha = ringAlpha),
-        topLeft = Offset(dragged.home.x.toFloat(), dragged.home.y.toFloat()),
-        size = Size(dragged.size.x.toFloat(), dragged.size.y.toFloat()),
-        cornerRadius = CornerRadius(10f),
-        style = Stroke(width = 4.dp.toPx()),
-    )
 }
 
 private fun DrawScope.drawPulse(game: Puzzle, pulseId: Int, pulseT: Float) {

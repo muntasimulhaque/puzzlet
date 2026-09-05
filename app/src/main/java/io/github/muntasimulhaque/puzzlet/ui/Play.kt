@@ -4,12 +4,8 @@ import android.view.HapticFeedbackConstants
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.VectorConverter
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -29,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -66,7 +63,6 @@ class PlayActions(
     val onDrop: () -> Boolean,
     val onLayout: (Area, Double) -> Unit,
     val onRestart: () -> Unit,
-    val onBack: () -> Unit,
 )
 
 /**
@@ -88,14 +84,13 @@ fun PlayScreen(
 ) {
     BackHandler(onBack = onBack)
     var peek by remember { mutableStateOf(false) }
-    val ghostAlpha by animateFloatAsState(if (peek) 0.45f else 0.20f, label = "ghost")
+    val ghostAlpha by animateFloatAsState(if (peek) 1f else 0f, label = "ghost")
     Column(modifier = Modifier.fillMaxSize().background(PuzzletColors.Paper)) {
         PlayTopBar(
             sceneId = game.sceneId,
             peek = peek,
             onPeek = { peek = !peek },
             onBack = onBack,
-            onRestart = actions.onRestart,
         )
         PlayField(game, draggedId, pulseId, pulseAt, restartAt, ghostAlpha, actions, onBack, Modifier.fillMaxWidth().weight(1f))
     }
@@ -128,13 +123,7 @@ private fun PlayField(
                 pulse.animateTo(1f, tween(380, easing = LinearOutSlowInEasing))
             }
         }
-        val ring = rememberInfiniteTransition(label = "ring").animateFloat(
-            initialValue = 0f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(tween(700), RepeatMode.Reverse),
-            label = "ringAlpha",
-        )
-        GestureBoard(game, draggedId, pulseId, pulse.value, restartAt, ghostAlpha, 0.30f + 0.35f * ring.value, hitPx, actions, onBack)
+        GestureBoard(game, draggedId, pulseId, pulse.value, restartAt, ghostAlpha, hitPx, actions, onBack)
     }
 }
 
@@ -146,14 +135,13 @@ private fun GestureBoard(
     pulseT: Float,
     restartAt: Long,
     ghostAlpha: Float,
-    ringAlpha: Float,
     hitRadiusPx: Double,
     actions: PlayActions,
     onBack: () -> Unit,
 ) {
     val scene = remember(game.sceneId) { Scenes.byId(game.sceneId) }
     Box(Modifier.fillMaxSize().fieldGestures(game, hitRadiusPx, actions)) {
-        BoardBackdrop(game, scene, ghostAlpha, draggedId, ringAlpha, pulseId, pulseT)
+        BoardBackdrop(game, scene, ghostAlpha, pulseId, pulseT)
         PieceLayer(game, scene, draggedId, restartAt)
         if (game.completed) {
             Celebration(game, onAgain = actions.onRestart, onHome = onBack)
@@ -191,17 +179,23 @@ private fun PieceLayer(game: Puzzle, scene: SceneSpec, draggedId: Int?, restartA
     val board = game.board
     for (piece in game.pieces) {
         if (piece.placed) {
-            PieceNode(piece, 1f, scene, board, restartAt, piece.id, false)
+            key(piece.id) {
+                PieceNode(piece, 1f, scene, board, restartAt, piece.id, false)
+            }
         }
     }
     for (piece in game.pieces) {
         if (!piece.placed && piece.id != draggedId) {
-            PieceNode(piece, game.trayScale.toFloat(), scene, board, restartAt, piece.id, false)
+            key(piece.id) {
+                PieceNode(piece, game.trayScale.toFloat(), scene, board, restartAt, piece.id, false)
+            }
         }
     }
     val dragged = draggedId?.let { game.piece(it) }
     if (dragged != null) {
-        PieceNode(dragged, 1.06f, scene, board, restartAt, dragged.id, true)
+        key(dragged.id) {
+            PieceNode(dragged, 1.06f, scene, board, restartAt, dragged.id, true)
+        }
     }
 }
 
@@ -251,7 +245,6 @@ private fun PlayTopBar(
     peek: Boolean,
     onPeek: () -> Unit,
     onBack: () -> Unit,
-    onRestart: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -268,7 +261,7 @@ private fun PlayTopBar(
             BackIcon(color = PuzzletColors.Ink)
         }
         Spacer(Modifier.weight(1f))
-        // Peek: the finished picture on a coin. Tap to strengthen the ghost
+        // Peek: the finished picture on a coin. Tap to reveal the goal
         // on the board; the picture itself is the affordance, no eye icon.
         CircleButton(
             onClick = onPeek,
@@ -280,14 +273,6 @@ private fun PlayTopBar(
                 modifier = Modifier.padding(5.dp),
                 cornerRadius = 40.dp,
             )
-        }
-        Spacer(Modifier.padding(horizontal = 4.dp))
-        CircleButton(
-            onClick = onRestart,
-            background = PuzzletColors.Card,
-            label = stringResource(R.string.restart),
-        ) {
-            ReplayIcon(color = PuzzletColors.Ink)
         }
     }
 }

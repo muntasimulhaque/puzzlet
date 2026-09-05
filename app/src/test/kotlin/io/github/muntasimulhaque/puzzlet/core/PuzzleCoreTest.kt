@@ -252,6 +252,17 @@ class PuzzleCoreTest {
     }
 
     @Test
+    fun `restore keeps the saved jumble`() {
+        val field = Area(0.0, 0.0, 800.0, 800.0)
+        val first = restorePuzzle("sail", 3, 3, setOf(0), field, 500.0, 3L, 41L)
+        val second = restorePuzzle("sail", 3, 3, setOf(0), field, 500.0, 3L, 41L)
+        assertEquals(first.seats, second.seats)
+        val other = restorePuzzle("sail", 3, 3, setOf(0), field, 500.0, 3L, 42L)
+        assertTrue("new jumble should differ", first.seats != other.seats)
+        assertEquals(first.piece(0)!!.home, first.piece(0)!!.current)
+    }
+
+    @Test
     fun `pieceAt picks the nearest unplaced piece and never a placed one`() {
         var p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 9L)
         p = drag(p, 0, p.piece(0)!!.home)

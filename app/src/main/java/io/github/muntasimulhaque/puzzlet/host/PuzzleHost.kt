@@ -8,11 +8,13 @@ import io.github.muntasimulhaque.puzzlet.core.Puzzle
 import io.github.muntasimulhaque.puzzlet.core.Vec2
 import io.github.muntasimulhaque.puzzlet.core.createPuzzle
 import io.github.muntasimulhaque.puzzlet.core.pieceAt
+import io.github.muntasimulhaque.puzzlet.core.redeal as redealPuzzle
 import io.github.muntasimulhaque.puzzlet.core.restorePuzzle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 import io.github.muntasimulhaque.puzzlet.core.drag as dragPiece
 import io.github.muntasimulhaque.puzzlet.core.drop as dropPiece
 import io.github.muntasimulhaque.puzzlet.core.grab as grabPiece
@@ -40,11 +42,12 @@ sealed interface Screen {
  * The host performs what the domain decides. It owns which screen is up,
  * which piece is in hand, the sound switch, the one unfinished picture that
  * survives both backing out and a process death, and the play choreography:
- * the missed-drop glide home and the restart pour-back. Nothing teaches; the
- * tray-and-board layout is the whole lesson (AGENTS.md, D-037). A miss sets
- * the piece home at once in logic while the field springs its tile there,
- * so no cancellation can strand a piece; restart sets all home at once and
- * the field staggers the visible pour from restartAt.
+ * the missed-drop glide home and the fresh deal after a finish. Nothing
+ * teaches; the tray-and-board layout is the whole lesson (AGENTS.md,
+ * D-037). A miss sets the piece home at once in logic while the field
+ * springs its tile there, so no cancellation can strand a piece; a new deal
+ * keeps the same cut and jumbles fresh seats, and the field staggers the
+ * visible pour from restartAt.
  */
 class PuzzleHost(app: Application) : ViewModel() {
 
@@ -71,6 +74,7 @@ class PuzzleHost(app: Application) : ViewModel() {
                     field = Area(0.0, 0.0, 1.0, 1.0),
                     capPx = 1e6,
                     seed = seedFor(snap.sceneId, snap.rows, snap.cols),
+                    seatSeed = snap.seatSeed,
                 )
             }
         }
@@ -102,6 +106,7 @@ class PuzzleHost(app: Application) : ViewModel() {
             field = Area(0.0, 0.0, 1.0, 1.0),
             capPx = 1e6,
             seed = seedFor(sceneId, rows, cols),
+            seatSeed = Random.Default.nextLong(),
         )
         _screen.value = Screen.Playing(game)
     }
@@ -173,10 +178,8 @@ class PuzzleHost(app: Application) : ViewModel() {
         if (s is Screen.Playing) {
             resumes.remove(resumeKey(s.game))
             viewModelScope.launch { store.clearResume() }
-            // All home at once in logic; the field staggers the visible
-            // pour piece by piece from restartAt.
             _screen.value = s.copy(
-                game = restartPuzzle(s.game),
+                game = redealPuzzle(s.game, Random.Default.nextLong()),
                 draggedId = null,
                 pulseId = -1,
                 pulseAt = 0L,

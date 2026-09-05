@@ -120,6 +120,55 @@ class PuzzleTrayTest {
     }
 
     @Test
+    fun `the tray never opens in serial`() {
+        for (seed in 1L..40L) for ((rows, cols) in difficulties) {
+            val n = rows * cols
+            val order = shuffledTrayOrder(n, seed)
+            val sorted = List(n) { it }
+            assertTrue(
+                "seed=$seed ${rows}x$cols opens serial",
+                order != sorted,
+            )
+            assertTrue(
+                "seed=$seed ${rows}x$cols leaves a piece in place",
+                order.indices.none { order[it] == it },
+            )
+        }
+    }
+
+    @Test
+    fun `same cut with new seats keeps shapes but jumbles the shelf`() {
+        val field = fields[0]
+        val a = createPuzzle("sail", 4, 3, field, cap, 7L, 21L)
+        val b = createPuzzle("sail", 4, 3, field, cap, 7L, 22L)
+        assertEquals(a.pieces.map { it.shape.size }, b.pieces.map { it.shape.size })
+        assertEquals(a.pieces.map { it.home }, b.pieces.map { it.home })
+        assertTrue("new seats should jumble", a.seats != b.seats)
+        val again = createPuzzle("sail", 4, 3, field, cap, 7L, 21L)
+        assertEquals(a.seats, again.seats)
+    }
+
+    @Test
+    fun `redeal keeps the cut, jumbles seats, and clears progress`() {
+        var p = createPuzzle("house", 3, 3, fields[1], cap, 5L, 31L)
+        p = drag(p, 0, p.piece(0)!!.home)
+        p = drop(p, 0)
+        assertTrue(p.piece(0)!!.placed)
+        val dealt = redeal(p, 32L)
+        assertEquals(0, dealt.placedCount)
+        assertTrue(dealt.pieces.none { it.placed })
+        assertEquals(p.pieces.map { it.shape.size }, dealt.pieces.map { it.shape.size })
+        assertEquals(p.pieces.map { it.home }, dealt.pieces.map { it.home })
+        assertTrue("redeal should jumble", dealt.seats != p.seats)
+        for (piece in dealt.pieces) {
+            assertTrue(
+                "redealt piece off seat",
+                dist(piece.currentCenter, dealt.seats[piece.id]) < 1e-6,
+            )
+        }
+    }
+
+    @Test
     fun `pieceAt is nearest-within-reach and honours the scale hint`() {
         val p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 9L)
         val a = p.piece(0)!!

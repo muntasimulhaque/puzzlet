@@ -103,7 +103,6 @@ class MainActivity : ComponentActivity() {
         onDrop = host::drop,
         onLayout = host::layout,
         onRestart = host::restart,
-        onBack = host::backToChoose,
     )
 
     override fun onStart() {

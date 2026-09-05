@@ -27,13 +27,32 @@ data class TrayPack(val scale: Double, val seats: List<Vec2>)
 /**
  * Shelf rows of pieces, bottom-aligned like toys on a shelf, each row
  * centred, the whole pack centred in the tray. The piece order is shuffled
- * from the seed (same picture and difficulty, same seating, every time),
- * and the scale is the largest that fits every row inside the tray: a
- * bounded binary search over a greedy pack, so it can never loop forever.
+ * from the seed and never left in serial (D-041): the tray is a jumble,
+ * like a bought puzzle tipped from its box. The scale is the largest that
+ * fits every row inside the tray: a bounded binary search over a greedy
+ * pack, so it can never loop forever.
  */
+fun shuffledTrayOrder(count: Int, seed: Long): List<Int> {
+    if (count <= 1) return List(count) { it }
+    val order = List(count) { it }.shuffled(Random(seed)).toMutableList()
+    for (i in 0 until count) {
+        if (order[i] == i) {
+            val j = (i + 1) % count
+            val tmp = order[i]
+            order[i] = order[j]
+            order[j] = tmp
+        }
+    }
+    if (order == List(count) { it }) {
+        val first = order.removeAt(0)
+        order.add(first)
+    }
+    return order
+}
+
 fun trayPack(tray: Area, sizes: List<Vec2>, seed: Long): TrayPack {
     require(sizes.isNotEmpty()) { "A tray needs at least one piece" }
-    val order = sizes.indices.shuffled(Random(seed))
+    val order = shuffledTrayOrder(sizes.size, seed)
 
     fun gap(s: Double) = 10.0 * s
     fun rowGap(s: Double) = 6.0 * s
