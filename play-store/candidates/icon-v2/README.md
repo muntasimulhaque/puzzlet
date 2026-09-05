@@ -10,6 +10,14 @@ Icons (512 tile):
 - icon-B-interlock (my recommendation): classic piece, top and bottom
   outie, left and right innie. Reads as a puzzle at any size, still
   symmetric and calm. Speaks for itself.
+- icon-A2-clover (your bottom holes idea, built): option A outside,
+  four bottom holes joined in the middle. Four pieces in a pinwheel,
+  each bottom edge facing inward, each outer knob facing out, meeting
+  as one smooth four lobe clover. Fully enclosed, fourfold symmetric,
+  no seams to vanish at small sizes, verified at 512 and at true 48.
+  This breaks the no holes part of D-036 per your direction.
+- sheet-A-vs-A2: left A, right A2. Top row at tile size, bottom row
+  true 48 px shown at 3x so small size legibility can be judged.
 - icon-C-click: two pieces about to click. Likely too small and busy
   at 48 dp. Included so you can reject it with eyes, not prose.
 - icon-D-board: literal 2 by 2 board with one piece lifted. Likely too

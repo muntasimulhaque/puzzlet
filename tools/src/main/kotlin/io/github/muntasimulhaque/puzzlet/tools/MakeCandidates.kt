@@ -151,6 +151,23 @@ fun candidatePieceB(): Area {
     return a
 }
 
+/**
+ * Take A2: option A outer shape, plus the four bottom holes joined in the
+ * middle. Four pieces in a pinwheel, each bottom edge facing inward, each
+ * outer knob facing out. The lobes overlap into one smooth clover, fully
+ * enclosed, fourfold symmetric, no seams to vanish at small sizes.
+ */
+fun candidatePieceA2(): Area {
+    val a = candidatePieceA()
+    val d = 0.043
+    val r = 0.051
+    val lobes = listOf(0.0 to -d, d to 0.0, 0.0 to d, -d to 0.0)
+    for ((dx, dy) in lobes) {
+        a.subtract(Area(Ellipse2D.Double(0.5 + dx - r, 0.5 + dy - r, r * 2.0, r * 2.0)))
+    }
+    return a
+}
+
 /** Paint an area centred, spanning span px, in argb. */
 private fun paintAt(g: Graphics2D, shape: Area, cx: Double, cy: Double, span: Double, argb: Int) {
     val bounds = shape.bounds2D
@@ -328,14 +345,37 @@ fun writeCandidates(rootDir: File) {
     val size = 512
     val span = size * 0.62
     ImageIO.write(iconTile(size, candidatePieceA(), span), "png", File(out, "icon-A-four-outie.png"))
+    ImageIO.write(iconTile(size, candidatePieceA2(), span), "png", File(out, "icon-A2-clover.png"))
     ImageIO.write(iconTile(size, candidatePieceB(), span), "png", File(out, "icon-B-interlock.png"))
     ImageIO.write(iconC(size), "png", File(out, "icon-C-click.png"))
     ImageIO.write(iconD(size), "png", File(out, "icon-D-board.png"))
     ImageIO.write(featureB(rootDir), "png", File(out, "feature-B-calm.png"))
     ImageIO.write(featureD(rootDir), "png", File(out, "feature-D-play.png"))
+    ImageIO.write(sheetA2(size), "png", File(out, "sheet-A-vs-A2.png"))
+}
+
+/** Side by side A against A2 at tile size and at true 48 px legibility. */
+fun sheetA2(size: Int): BufferedImage {
+    val sheet = BufferedImage(size * 2 + 48, size + 200, BufferedImage.TYPE_INT_ARGB)
+    val g = begin(sheet)
+    g.color = Color(Candidates.PAPER)
+    g.fill(Rectangle2D.Double(0.0, 0.0, sheet.width.toDouble(), sheet.height.toDouble()))
+    g.dispose()
+    val left = iconTile(size, candidatePieceA(), size * 0.62)
+    val right = iconTile(size, candidatePieceA2(), size * 0.62)
+    val g2 = begin(sheet)
+    g2.drawImage(left, 16, 16, null)
+    g2.drawImage(right, size + 32, 16, null)
+    val tiny = 48
+    val tl = iconTile(tiny, candidatePieceA(), tiny * 0.66)
+    val tr = iconTile(tiny, candidatePieceA2(), tiny * 0.66)
+    g2.drawImage(tl, 16, size + 48, tiny * 3, tiny * 3, null)
+    g2.drawImage(tr, size + 32, size + 48, tiny * 3, tiny * 3, null)
+    g2.dispose()
+    return sheet
 }
 
 fun main(args: Array<String>) {
     writeCandidates(File(args[0]))
-    println("makeCandidates: wrote 6 takes under play-store/candidates/icon-v2")
+    println("makeCandidates: wrote 8 takes under play-store/candidates/icon-v2")
 }
