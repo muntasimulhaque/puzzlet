@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, and so on.
-  Current release: versionCode 2, versionName 0.2, cut for closed testing.
+  Current release: versionCode 4, versionName 0.4, cut for closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
   twin in the `KEYSTORE_BASE64` GitHub secret and the passwords in three
@@ -261,6 +261,16 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 - D-038 Release notes never name the owner's email and carry no contact
   line: testers write anyway (owner's call after the 0.3 notes shipped
   with one; the rule starts at 0.4).
+- D-039 The tray must never look empty and no piece may be blank. After the
+  0.3 bounce the play screen showed an empty tray on device while captures
+  looked fine: the outline cache keyed on constraints only, so it kept the
+  tiny 1x1 placeholder cut after layout reshaped the board. The cache now
+  keys on the board size. Every picture also carries small calm inanimate
+  texture across sky, sea, wall and hill (new core/SceneClues.kt, applied
+  once in Scenes.all), so each piece has shape and colour to recognise.
+  The tray edge, the board frame and the piece halo were strengthened with
+  existing theme colors only, and a placeholder to real field relayout test
+  pins the device flow.
 
 ## Lessons that still bite
 
@@ -339,3 +349,12 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   listing kit and guide current, everything pushed. Next session picks
   up from: the 0.3 review verdict, tester feedback on the tray build,
   then 0.4 (notes carry no contact line, per D-038).
+- 2026-09-05: The tray looked empty on device (owner bounce with three
+  screenshots). Root cause was the outline cache holding the 1x1
+  placeholder cut after layout; fixed by keying on board size, with a
+  relayout regression test. Pieces pop now (paper halo, stronger tray
+  edge and board frame, existing colors only). Every picture gained calm
+  inanimate texture in core/SceneClues.kt so no piece is blank: the
+  details are the clue, the brain still does the work. Cut 0.4
+  (versionCode 4) for closed testing, notes measured at 440 chars, no
+  contact line per D-038.

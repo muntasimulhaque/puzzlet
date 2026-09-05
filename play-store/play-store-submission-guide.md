@@ -145,6 +145,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 0.4 (measured: 440 chars)
+
+```
+This build fixes the play screen. Pieces now always appear in the tray above the board, large and clear with a light edge, and drag to the picture below to click home. Every picture gained small calm details across sky, sea, wall and hill, so no piece is ever blank and each piece belongs somewhere clear. Same eight pictures, same piece counts from 4 to 24, same soft sounds, no new permissions, still fully offline. Thank you for testing.
+```
+
 ## Release notes for closed testing 0.3 (measured: 496 chars)
 
 Submitted as shown below, then the owner set the law: from 0.4 on,
