@@ -443,3 +443,5 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   construction, green untouched.
 - 2026-09-06: Both knobs one size at scale 1.0, gaps pinned equal top,
   middle, and bottom by a new test. No more hero scaling.
+- 2026-09-06: Shadows off white, both knobs up to scale 1.15 with gaps
+  kept exact by formula consts. Fully flat mark, pins green.

@@ -1,6 +1,5 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
-import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.RenderingHints
@@ -53,17 +52,19 @@ object IconDesign {
 
     /**
      * The seam, unit space: boundary x, hero knob cy, socket cy. Both
-     * knobs share one size, and the three gaps read equal: tile top to
-     * socket head, socket head to knob head, knob head to tile bottom.
+     * knobs share one size and one scale, and the three gaps read equal:
+     * tile top to socket head, socket head to knob head, knob head down.
      */
     const val SEAM_X = 0.56
-    const val KNOB_Y = 0.69
-    const val SOCKET_Y = 0.31
     // Green-approved bite numbers, frozen. The white hero is this exact
     // shape mirrored, congruent, so the pair matches by construction.
     const val BITE_W = 0.062
     const val BITE_D = 0.075
     const val BITE_R = 0.070
+    /** Both knobs wear the bite shape at this scale: a little bigger. */
+    const val KS = 1.15
+    const val KNOB_Y = (2.0 + BITE_R * KS) / 3.0
+    const val SOCKET_Y = (1.0 - BITE_R * KS) / 3.0
 }
 
 /**
@@ -72,6 +73,7 @@ object IconDesign {
  */
 fun socketBite(): Area {
     val t = AffineTransform.getTranslateInstance(IconDesign.SEAM_X, IconDesign.SOCKET_Y)
+    t.concatenate(AffineTransform.getScaleInstance(IconDesign.KS, IconDesign.KS))
     return biteUnit().createTransformedArea(t)
 }
 
@@ -84,11 +86,11 @@ private fun biteUnit(): Area {
     return bite
 }
 
-/** The white hero: the green bite mirrored east, congruent. Same shape. */
+/** The white hero: the green bite mirrored east at the same scale. */
 fun heroKnob(): Area {
     val d = IconDesign
     val t = AffineTransform.getTranslateInstance(d.SEAM_X, d.KNOB_Y)
-    t.concatenate(AffineTransform.getScaleInstance(-1.0, 1.0))
+    t.concatenate(AffineTransform.getScaleInstance(-d.KS, d.KS))
     return biteUnit().createTransformedArea(t)
 }
 
@@ -124,8 +126,8 @@ private fun unitTransform(size: Int, span: Double): AffineTransform {
     return t
 }
 
-/** One icon layer: full art tile, bare foreground, or white mono. */
-internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage { // flat
+/** One icon layer: flat tile, bare foreground, or white mono. */
+internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage {
     val d = IconDesign
     val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
     val g = beginIcon(image)
@@ -139,35 +141,19 @@ internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): Buffer
     val t = unitTransform(size, span)
     val region = seamRegion().createTransformedArea(t)
     val fillArgb = if (layer == Layer.MONO) d.WHITE else d.PAPER
-    if (layer != Layer.MONO) {
-        val down = maxOf(1, (size * 0.035).toInt())
-        val halo = maxOf(1, (size * 0.008).toInt())
-        val keep = g.composite
-        g.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f)
-        g.color = Color(d.DEEP, true)
-        g.translate(0, down)
-        g.fill(region)
-        g.translate(0, -down)
-        g.composite = keep
-        for ((dx, dy) in listOf(halo to 0, -halo to 0, 0 to halo, 0 to -halo)) {
-            g.translate(dx, dy)
-            g.color = Color(d.DEEP, true)
-            g.fill(region)
-            g.translate(-dx, -dy)
-        }
-    }
+    // No shadow on white, per owner: the green carries none, so neither
+    // does the white. The seam reads on paper against teal contrast alone.
     g.color = Color(fillArgb, true)
     g.fill(region)
-    // Flat finish: the halo above already draws every edge.
     g.dispose()
     return image
 }
 
-/** The legacy tile: full art, teal gradient, paper seam, for API 24-25. */
+/** The legacy tile: flat teal, paper seam, for API 24-25. */
 fun legacyIcon(sizePx: Int): BufferedImage =
     paintLayer(sizePx, Layer.TILE, IconDesign.LEGACY_CORNER_FRACTION)
 
-/** One adaptive layer: paper seam on transparency, shadow baked in. */
+/** One adaptive layer: paper seam on transparency, no baked shadow. */
 fun adaptiveLayer(sizePx: Int, pieceArgb: Int): BufferedImage {
     // The monochrome sibling renders the same silhouette in white; the
     // paper argument stays so every caller keeps one shape of call.

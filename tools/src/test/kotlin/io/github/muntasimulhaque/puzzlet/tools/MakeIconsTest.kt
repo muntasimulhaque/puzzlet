@@ -45,15 +45,16 @@ class MakeIconsTest {
     }
 
     /** Head centres derived from the generator consts, never hardcoded. */
-    private fun knobHeadX() = IconDesign.SEAM_X + IconDesign.BITE_D + 0.015
-    private fun socketHeadX() = IconDesign.SEAM_X - IconDesign.BITE_D - 0.015
+    private fun knobHeadX() = IconDesign.SEAM_X + (IconDesign.BITE_D + 0.015) * IconDesign.KS
+    private fun socketHeadX() = IconDesign.SEAM_X - (IconDesign.BITE_D + 0.015) * IconDesign.KS
 
     @Test
     fun `both knobs share one size and equal gaps to each other and the edges`() {
         val d = IconDesign
-        val top = d.SOCKET_Y - d.BITE_R
-        val mid = d.KNOB_Y - d.SOCKET_Y - 2 * d.BITE_R
-        val bottom = 1.0 - d.KNOB_Y - d.BITE_R
+        val r = d.BITE_R * d.KS
+        val top = d.SOCKET_Y - r
+        val mid = d.KNOB_Y - d.SOCKET_Y - 2 * r
+        val bottom = 1.0 - d.KNOB_Y - r
         assertEquals(top, mid, 1e-9)
         assertEquals(mid, bottom, 1e-9)
     }
