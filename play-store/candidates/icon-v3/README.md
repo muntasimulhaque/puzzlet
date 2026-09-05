@@ -18,3 +18,8 @@ all three at tile size plus true 48 px rows.
 Reply with the take name (for example: H) plus any single change. The
 winner gets rebuilt across all densities plus adaptive and monochrome,
 with pins, in MakeIcons.
+
+Outcome: S won, with a socket added above the knob. Finals live in
+MakeIcons (all densities plus adaptive and monochrome, probed) and
+MakeArt (S tile feature with clean type). This sheet stays as the
+decision record.

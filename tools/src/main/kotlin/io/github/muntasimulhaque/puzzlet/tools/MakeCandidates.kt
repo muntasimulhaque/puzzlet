@@ -261,17 +261,17 @@ fun iconD(size: Int): BufferedImage {
     return tile
 }
 
-private fun baloo(rootDir: File, file: String, size: Float): Font =
+private fun balooV2(rootDir: File, file: String, size: Float): Font =
     Font.createFont(Font.TRUETYPE_FONT, File(rootDir, "app/src/main/res/font/$file")).deriveFont(size)
 
 /**
  * Baloo gaps above 96pt under Java2D (the shipped graphic has them),
  * so words render at 96pt and scale up. Same font, same shapes, clean.
  */
-private fun drawCleanString(g: Graphics2D, text: String, file: String, target: Float, argb: Int, x: Float, y: Float, rootDir: File) {
+private fun drawCleanStringV2(g: Graphics2D, text: String, file: String, target: Float, argb: Int, x: Float, y: Float, rootDir: File) {
     val base = 96f
     val k = target / base
-    val font = baloo(rootDir, file, base)
+    val font = balooV2(rootDir, file, base)
     val tmp = BufferedImage(4, 4, BufferedImage.TYPE_INT_ARGB)
     val g0 = begin(tmp)
     val bounds = font.getStringBounds(text, g0.fontRenderContext)
@@ -306,10 +306,10 @@ fun featureB(rootDir: File): BufferedImage {
     val piece = iconTile(360, candidatePieceB(), 360 * 0.62)
     val g2 = begin(image)
     g2.drawImage(piece, 96, 70, null)
-    drawCleanString(g2, "Puzzlet", "baloo2_extrabold.ttf", 132f, Candidates.PAPER, 500f, 272f, rootDir)
+    drawCleanStringV2(g2, "Puzzlet", "baloo2_extrabold.ttf", 132f, Candidates.PAPER, 500f, 272f, rootDir)
     g2.color = Color(Candidates.HONEY)
     g2.fill(RoundRectangle2D.Double(504.0, 298.0, 150.0, 13.0, 6.5, 6.5))
-    drawCleanString(g2, "A calm jigsaw for small hands.", "baloo2_bold.ttf", 36f, 0xE6FAF6EF.toInt(), 504f, 360f, rootDir)
+    drawCleanStringV2(g2, "A calm jigsaw for small hands.", "baloo2_bold.ttf", 36f, 0xE6FAF6EF.toInt(), 504f, 360f, rootDir)
     g2.dispose()
     return image
 }
@@ -331,10 +331,10 @@ fun featureD(rootDir: File): BufferedImage {
     g.dispose()
     val g2 = begin(image)
     paintAt(g2, candidatePieceB(), 334.0, 158.0, 122.0, Candidates.PAPER)
-    drawCleanString(g2, "Puzzlet", "baloo2_extrabold.ttf", 124f, Candidates.PAPER, 470f, 268f, rootDir)
+    drawCleanStringV2(g2, "Puzzlet", "baloo2_extrabold.ttf", 124f, Candidates.PAPER, 470f, 268f, rootDir)
     g2.color = Color(Candidates.HONEY)
     g2.fill(RoundRectangle2D.Double(474.0, 292.0, 140.0, 12.0, 6.0, 6.0))
-    drawCleanString(g2, "Tray, drag, snap. No rush.", "baloo2_bold.ttf", 34f, 0xE6FAF6EF.toInt(), 474f, 352f, rootDir)
+    drawCleanStringV2(g2, "Tray, drag, snap. No rush.", "baloo2_bold.ttf", 34f, 0xE6FAF6EF.toInt(), 474f, 352f, rootDir)
     g2.dispose()
     return image
 }

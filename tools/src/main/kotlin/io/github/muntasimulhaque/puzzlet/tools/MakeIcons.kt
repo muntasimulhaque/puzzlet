@@ -1,37 +1,41 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
+import java.awt.AlphaComposite
+import java.awt.BasicStroke
 import java.awt.Color
+import java.awt.GradientPaint
 import java.awt.Graphics2D
-import java.awt.Rectangle
 import java.awt.RenderingHints
 import java.awt.geom.AffineTransform
 import java.awt.geom.Area
 import java.awt.geom.Ellipse2D
-import java.awt.geom.Path2D
 import java.awt.geom.Rectangle2D
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
+import java.awt.image.ConvolveOp
+import java.awt.image.Kernel
 import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
+import kotlin.math.exp
 import kotlin.system.exitProcess
 
 /**
  * The launcher icon, drawn from code so every PNG has exactly one author.
  *
- * Design (the owner's, D-030): ONE jigsaw piece reaching out in all four
- * directions, top, right, bottom, left: four identical arms offering
- * friendship. Perfect symmetry keeps the mark calm, kills any double
- * meaning outright, and reads as a puzzle at any size. Rendered three ways:
- * the legacy tile for API 24-25, the adaptive foreground for API 26+, and a
- * white monochrome sibling for Android 13+ themed icons. The app's brand
- * mark reuses the committed foreground PNG, one source of truth.
+ * Design (the owner's pick, S): one seam, two tones. A paper field fills
+ * the left of the tile and a hero knob reaches right into the deep, while
+ * a socket bite opens above it. Knob and socket, the whole joint language,
+ * nothing else. Rendered three ways: the legacy tile for API 24-25, the
+ * adaptive foreground for API 26+ over the flat teal background, and a
+ * white monochrome sibling for Android 13+ themed icons.
  *
  * Colors here mirror app/src/main/res/values/colors.xml. Change both
  * together, then run makeIcons and commit the regenerated PNGs.
  */
 object IconDesign {
     const val TEAL: Int = 0xFF0C7A64.toInt()
+    const val DEEP: Int = 0xFF085949.toInt()
     const val PAPER: Int = 0xFFFAF6EF.toInt()
     const val WHITE: Int = 0xFFFFFFFF.toInt()
 
@@ -43,86 +47,51 @@ object IconDesign {
     const val LEGACY_DP = 48.0
     /** Adaptive layer canvas, dp (the 108 dp full-bleed square). */
     const val ADAPTIVE_DP = 108.0
-    /** Piece span inside the adaptive canvas; far inside the 66 dp circle. */
-    const val ADAPTIVE_SPAN_DP = 44.0
-    /** Piece span as a fraction of the legacy tile. */
-    const val LEGACY_SPAN_FRACTION = 0.66
+    /** Macro bleed of the mark on the adaptive canvas; knob and socket stay in the 66 dp circle. */
+    const val FG_SPAN_DP = 96.0
+    /** Fraction of a full-art tile the mark spans. */
+    const val TILE_SPAN = 0.98
     /** Legacy tile corner radius as a fraction of the tile. */
     const val LEGACY_CORNER_FRACTION = 0.22
+    /** Store tile corner radius as a fraction of the tile. */
+    const val STORE_CORNER_FRACTION = 0.19
+
+    /** The seam, unit space: boundary x, hero knob cy, socket cy. */
+    const val SEAM_X = 0.56
+    const val KNOB_Y = 0.52
+    const val SOCKET_Y = 0.24
+    const val NECK_W = 0.088
+    const val NECK_L = 0.115
+    const val HEAD_R = 0.135
+    const val BITE_W = 0.062
+    const val BITE_D = 0.075
+    const val BITE_R = 0.070
 }
 
-/**
- * The friendship piece (the owner's design): ONE jigsaw piece, its four
- * arms reaching outward (top, right, bottom, left): four identical arms,
- * no holes, nothing else. The piece spans 0.70 of the unit box, knob tip
- * to knob tip.
- */
-enum class Side { TOP, RIGHT, BOTTOM, LEFT }
-
-internal const val BRAND_SPAN = 0.70
-
-fun brandPiece(): Area {
-    val body = Area(RoundRectangle2D.Double(0.28, 0.28, 0.44, 0.44, 0.09, 0.09))
-    // Each knob: a neck crossing the body edge plus a round head beyond it.
-    // Top (bump up), right, bottom, left: the same four arms.
-    body.add(Area(Rectangle2D.Double(0.474, 0.18, 0.052, 0.12)))
-    body.add(Area(Ellipse2D.Double(0.44, 0.15, 0.12, 0.12)))
-    body.add(Area(Rectangle2D.Double(0.70, 0.474, 0.12, 0.052)))
-    body.add(Area(Ellipse2D.Double(0.73, 0.44, 0.12, 0.12)))
-    body.add(Area(Rectangle2D.Double(0.474, 0.70, 0.052, 0.12)))
-    body.add(Area(Ellipse2D.Double(0.44, 0.73, 0.12, 0.12)))
-    body.add(Area(Rectangle2D.Double(0.18, 0.474, 0.12, 0.052)))
-    body.add(Area(Ellipse2D.Double(0.15, 0.44, 0.12, 0.12)))
-
-    return body
+/** The socket bite alone, for shading after the region is filled. */
+fun socketBite(): Area {
+    val d = IconDesign
+    val bite = Area()
+    bite.add(Area(Rectangle2D.Double(d.SEAM_X - d.BITE_D, d.SOCKET_Y - d.BITE_W / 2.0, d.BITE_D + 0.012, d.BITE_W)))
+    bite.add(Area(Ellipse2D.Double(d.SEAM_X - d.BITE_D - 0.015 - d.BITE_R, d.SOCKET_Y - d.BITE_R, d.BITE_R * 2.0, d.BITE_R * 2.0)))
+    return bite
 }
 
-/**
- * Draw the piece scaled to [span], centred at (cx, cy), in [argb].
- */
-fun paintBrandPiece(g: Graphics2D, cx: Double, cy: Double, span: Double, argb: Int) {
-    val piece = brandPiece()
-    val scale = span / BRAND_SPAN
-    g.transform(AffineTransform(scale, 0.0, 0.0, scale, cx - 0.5 * scale, cy - 0.5 * scale))
-    g.color = Color(argb, true)
-    g.fill(piece)
-    g.transform(AffineTransform(1.0 / scale, 0.0, 0.0, 1.0 / scale, -(cx - 0.5 * scale), -(cy - 0.5 * scale)))
+/** The S region: paper field, hero knob, minus the socket bite. */
+fun seamRegion(): Area {
+    val d = IconDesign
+    val region = Area(Rectangle2D.Double(-0.05, -0.05, d.SEAM_X + 0.05, 1.10))
+    val n = d.NECK_W / 2.0
+    region.add(Area(Rectangle2D.Double(d.SEAM_X - 0.005, d.KNOB_Y - n, d.NECK_L + 0.005, d.NECK_W)))
+    val hx = d.SEAM_X + d.NECK_L - d.HEAD_R * 0.55
+    region.add(Area(Ellipse2D.Double(hx - d.HEAD_R, d.KNOB_Y - d.HEAD_R, d.HEAD_R * 2.0, d.HEAD_R * 2.0)))
+    region.subtract(socketBite())
+    return region
 }
 
-/** The legacy tile: teal rounded square, paper piece, for API 24-25 launchers. */
-fun legacyIcon(sizePx: Int): BufferedImage {
-    val image = BufferedImage(sizePx, sizePx, BufferedImage.TYPE_INT_ARGB)
-    val g = begin(image)
-    g.color = Color(IconDesign.TEAL, true)
-    // Java2D arc dimensions are the corner ellipse DIAMETER; the design
-    // fraction is the radius, so double it. This keeps the tile identical to
-    // the brand tile in Gallery.kt (RoundedCornerShape(percent = 22)).
-    val d = sizePx * IconDesign.LEGACY_CORNER_FRACTION * 2.0
-    g.fill(RoundRectangle2D.Double(0.0, 0.0, sizePx.toDouble(), sizePx.toDouble(), d, d))
-    paintBrandPiece(g, sizePx / 2.0, sizePx / 2.0, sizePx * IconDesign.LEGACY_SPAN_FRACTION, IconDesign.PAPER)
-    g.dispose()
-    return image
-}
+internal enum class Layer { TILE, FOREGROUND, MONO }
 
-/**
- * One adaptive layer: transparent canvas, piece only. Used for the
- * foreground (paper) and the monochrome sibling (white).
- */
-fun adaptiveLayer(sizePx: Int, pieceArgb: Int): BufferedImage {
-    val image = BufferedImage(sizePx, sizePx, BufferedImage.TYPE_INT_ARGB)
-    val g = begin(image)
-    paintBrandPiece(
-        g,
-        sizePx / 2.0,
-        sizePx / 2.0,
-        sizePx * IconDesign.ADAPTIVE_SPAN_DP / IconDesign.ADAPTIVE_DP,
-        pieceArgb,
-    )
-    g.dispose()
-    return image
-}
-
-private fun begin(image: BufferedImage): Graphics2D {
+private fun beginIcon(image: BufferedImage): Graphics2D {
     val g = image.createGraphics()
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
     g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
@@ -130,6 +99,100 @@ private fun begin(image: BufferedImage): Graphics2D {
     g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY)
     return g
 }
+
+private fun softBlur(src: BufferedImage, radius: Int): BufferedImage {
+    val size = radius * 2 + 1
+    val data = FloatArray(size * size)
+    var sum = 0.0
+    for (y in 0 until size) for (x in 0 until size) {
+        val dx = (x - radius).toDouble()
+        val dy = (y - radius).toDouble()
+        val v = exp(-(dx * dx + dy * dy) / (2.0 * radius * radius / 4.0))
+        data[y * size + x] = v.toFloat()
+        sum += v
+    }
+    for (i in data.indices) data[i] = (data[i] / sum).toFloat()
+    return ConvolveOp(Kernel(size, size, data), ConvolveOp.EDGE_NO_OP, null).filter(src, null)
+}
+
+/** Map unit space onto the tile: unit centre to tile centre, span across. */
+private fun tileShapeFor(size: Int, cornerFraction: Double): RoundRectangle2D.Double {
+    val corner = size * cornerFraction * 2.0
+    return RoundRectangle2D.Double(0.0, 0.0, size.toDouble(), size.toDouble(), corner, corner)
+}
+
+private fun unitTransform(size: Int, span: Double): AffineTransform {
+    val t = AffineTransform.getTranslateInstance(size / 2.0 - 0.5 * span, size / 2.0 - 0.5 * span)
+    t.concatenate(AffineTransform.getScaleInstance(span, span))
+    return t
+}
+
+/** One icon layer: full art tile, bare foreground, or white mono. */
+internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage {
+    val d = IconDesign
+    val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
+    val g = beginIcon(image)
+    if (layer == Layer.TILE) {
+        val tileShape = tileShapeFor(size, cornerFraction)
+        g.paint = GradientPaint(0f, 0f, Color(d.TEAL), 0f, size.toFloat(), Color(d.DEEP))
+        g.fill(tileShape)
+        g.clip = tileShape
+    }
+    val span = if (layer == Layer.FOREGROUND) size * d.FG_SPAN_DP / d.ADAPTIVE_DP else size * d.TILE_SPAN
+    val t = unitTransform(size, span)
+    val region = seamRegion().createTransformedArea(t)
+    val tileArea = if (layer == Layer.TILE) Area(tileShapeFor(size, cornerFraction)) else null
+    val fillArgb = if (layer == Layer.MONO) d.WHITE else d.PAPER
+    if (layer != Layer.MONO) {
+        val shade = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
+        val gs = beginIcon(shade)
+        gs.color = Color(d.DEEP, true)
+        gs.fill(region)
+        gs.dispose()
+        val keep = g.composite
+        g.composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f)
+        g.drawImage(softBlur(shade, maxOf(2, size / 56)), size / 64, size / 72, null)
+        g.composite = keep
+    }
+    g.color = Color(fillArgb, true)
+    g.fill(region)
+    if (layer != Layer.MONO) {
+        g.stroke = BasicStroke(size * 0.008f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
+        g.color = Color(d.DEEP, true)
+        g.draw(region)
+        val bite = socketBite().createTransformedArea(t)
+        val keepClip = g.clip
+        g.clip = bite
+        g.paint = GradientPaint(0f, 0f, Color(8, 89, 73, 110), 0f, size * 0.30f, Color(8, 89, 73, 0))
+        g.fillRect(0, 0, size, size)
+        g.clip = keepClip
+        val keepLight = g.clip
+        val lightClip = Area(region)
+        if (tileArea != null) lightClip.intersect(tileArea)
+        g.clip = lightClip
+        g.paint = GradientPaint(0f, 0f, Color(255, 255, 255, 26), 0f, size * 0.5f, Color(255, 255, 255, 0))
+        g.fillRect(0, 0, size, size)
+        g.clip = keepLight
+    }
+    g.dispose()
+    return image
+}
+
+/** The legacy tile: full art, teal gradient, paper seam, for API 24-25. */
+fun legacyIcon(sizePx: Int): BufferedImage =
+    paintLayer(sizePx, Layer.TILE, IconDesign.LEGACY_CORNER_FRACTION)
+
+/** One adaptive layer: paper seam on transparency, shadow baked in. */
+fun adaptiveLayer(sizePx: Int, pieceArgb: Int): BufferedImage {
+    // The monochrome sibling renders the same silhouette in white; the
+    // paper argument stays so every caller keeps one shape of call.
+    if (pieceArgb == IconDesign.WHITE) return paintLayer(sizePx, Layer.MONO, 0.0)
+    return paintLayer(sizePx, Layer.FOREGROUND, 0.0)
+}
+
+/** The 512 store tile: full art with the store corner. */
+fun storeTile(sizePx: Int): BufferedImage =
+    paintLayer(sizePx, Layer.TILE, IconDesign.STORE_CORNER_FRACTION)
 
 /** One icon file: where it lives under res, and the image that belongs there. */
 data class IconFile(val relativePath: String, val image: () -> BufferedImage)

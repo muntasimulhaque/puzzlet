@@ -1,11 +1,12 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import java.awt.image.BufferedImage
 import java.io.File
 import java.nio.file.Files
+import kotlin.math.hypot
 
 class MakeIconsTest {
 
@@ -29,76 +30,77 @@ class MakeIconsTest {
         b.deleteRecursively()
     }
 
-    /** Map piece-unit coordinates the way paintBrandPiece does. */
-    private fun mapper(size: Int, spanFraction: Double): (Double, Double) -> Pair<Int, Int> {
-        val scale = size * spanFraction / BRAND_SPAN
-        val ox = size / 2.0 - scale / 2.0
-        return { u: Double, v: Double -> Pair((ox + u * scale).toInt(), (ox + v * scale).toInt()) }
+    /** Map unit space the way paintLayer does for a full-art tile. */
+    private fun tileMapper(size: Int): (Double, Double) -> Pair<Int, Int> {
+        val span = size * IconDesign.TILE_SPAN
+        val o = size / 2.0 - 0.5 * span
+        return { u: Double, v: Double -> Pair((o + u * span).toInt(), (o + v * span).toInt()) }
+    }
+
+    /** Map unit space the way paintLayer does for the adaptive foreground. */
+    private fun fgMapper(size: Int): (Double, Double) -> Pair<Int, Int> {
+        val span = size * IconDesign.FG_SPAN_DP / IconDesign.ADAPTIVE_DP
+        val o = size / 2.0 - 0.5 * span
+        return { u: Double, v: Double -> Pair((o + u * span).toInt(), (o + v * span).toInt()) }
     }
 
     @Test
-    fun `legacy tile is teal with the plain four-armed piece on it`() {
+    fun `legacy tile carries the seam with knob and socket`() {
         val icon = legacyIcon(192)
-        val p = mapper(192, IconDesign.LEGACY_SPAN_FRACTION)
+        val p = tileMapper(192)
         // Outside the rounded corners: fully transparent.
         assertEquals(0, icon.getRGB(8, 8) ushr 24)
-        // The piece body: paper.
-        val (bx, by) = p(0.5, 0.5)
-        assertEquals(IconDesign.PAPER, icon.getRGB(bx, by))
-        // The four knob heads, reaching outward: paper.
-        for ((u, v) in listOf(0.5 to 0.21, 0.79 to 0.5, 0.5 to 0.79, 0.21 to 0.5)) {
-            val (x, y) = p(u, v)
-            assertEquals("knob head at ($x, $y) is not paper", IconDesign.PAPER, icon.getRGB(x, y))
-        }
-        // Where cuts once were: plain paper again, no holes.
-        for ((u, v) in listOf(0.5 to 0.365, 0.635 to 0.5, 0.5 to 0.635, 0.365 to 0.5)) {
-            val (x, y) = p(u, v)
-            assertEquals("a hole survives at ($x, $y)", IconDesign.PAPER, icon.getRGB(x, y))
-        }
+        // The paper field, left of the seam.
+        val (fx, fy) = p(0.25, 0.5)
+        assertEquals(IconDesign.PAPER, icon.getRGB(fx, fy))
+        // The hero knob head, reaching right: paper.
+        val (kx, ky) = p(0.60, IconDesign.KNOB_Y)
+        assertEquals("knob head at ($kx, $ky) is not paper", IconDesign.PAPER, icon.getRGB(kx, ky))
+        // The socket bite, opening above the knob: not paper.
+        val (sx, sy) = p(0.47, IconDesign.SOCKET_Y)
+        assertNotEquals("socket at ($sx, $sy) should be carved out", IconDesign.PAPER, icon.getRGB(sx, sy))
+        // Far right of the seam: tile, never paper.
+        val (tx, ty) = p(0.92, 0.5)
+        assertNotEquals(IconDesign.PAPER, icon.getRGB(tx, ty))
     }
 
     @Test
-    fun `the four arms are perfectly symmetric`() {
+    fun `knob and socket survive inside the launcher mask circle`() {
         val size = 432
-        val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
-        val g = image.createGraphics()
-        g.color = java.awt.Color(IconDesign.TEAL, true)
-        g.fillRect(0, 0, size, size)
-        paintBrandPiece(g, size / 2.0, size / 2.0, size * 0.80, IconDesign.PAPER)
-        g.dispose()
-
-        val p = mapper(size, 0.80)
-        // All four knob heads: paper.
-        for ((u, v) in listOf(0.5 to 0.21, 0.79 to 0.5, 0.5 to 0.79, 0.21 to 0.5)) {
+        val layer = adaptiveLayer(size, IconDesign.PAPER)
+        val p = fgMapper(size)
+        val cx = size / 2.0
+        fun inside(u: Double, v: Double): Boolean {
             val (x, y) = p(u, v)
-            assertEquals("knob head at ($x, $y) is not paper", IconDesign.PAPER, image.getRGB(x, y))
+            return hypot(x - cx, y - cx) <= size * 66.0 / 108.0
         }
-        // The four necks, halfway out: paper.
-        for ((u, v) in listOf(0.5 to 0.36, 0.64 to 0.5, 0.5 to 0.64, 0.36 to 0.5)) {
-            val (x, y) = p(u, v)
-            assertEquals("neck at ($x, $y) is not paper", IconDesign.PAPER, image.getRGB(x, y))
-        }
-        // The diagonals between arms: tile, and the centre: paper.
-        for ((u, v) in listOf(0.30 to 0.30, 0.70 to 0.30, 0.30 to 0.70, 0.70 to 0.70)) {
-            val (x, y) = p(u, v)
-            assertEquals(IconDesign.PAPER, image.getRGB(x, y))
-        }
+        assertTrue("knob leaves the mask circle", inside(0.60, IconDesign.KNOB_Y))
+        assertTrue("socket leaves the mask circle", inside(0.47, IconDesign.SOCKET_Y))
+        val (kx, ky) = p(0.60, IconDesign.KNOB_Y)
+        assertEquals(IconDesign.PAPER, layer.getRGB(kx, ky))
     }
 
     @Test
-    fun `adaptive layer is transparent canvas with the piece only`() {
+    fun `adaptive layer is transparent canvas with the seam only`() {
         val layer = adaptiveLayer(432, IconDesign.PAPER)
-        val p = mapper(432, IconDesign.ADAPTIVE_SPAN_DP / IconDesign.ADAPTIVE_DP)
-        // Far corner: untouched canvas.
-        assertEquals(0, layer.getRGB(20, 20) ushr 24)
-        // The piece body: paper.
-        val (bx, by) = p(0.5, 0.5)
+        val p = fgMapper(432)
+        // Far right of the seam: untouched canvas. (The macro field
+        // bleeds top and bottom by design; the mask crops it.)
+        val (rx, ry) = p(0.97, 0.5)
+        assertEquals(0, layer.getRGB(rx, ry) ushr 24)
+        // The paper field: paper.
+        val (bx, by) = p(0.25, 0.5)
         assertEquals(IconDesign.PAPER, layer.getRGB(bx, by))
-        // No punched holes: where cuts once were, the piece is solid.
-        val (cx2, cy2) = p(0.5, 0.365)
-        assertEquals(IconDesign.PAPER, layer.getRGB(cx2, cy2))
-        // The monochrome sibling renders the same geometry in white.
+        // The socket bite: carved open. Only the seam's own soft shadow may
+        // veil it, never paper and never more than a breath of deep.
+        val (sx, sy) = p(0.47, IconDesign.SOCKET_Y)
+        val socketArgb = layer.getRGB(sx, sy)
+        assertNotEquals("socket at ($sx, $sy) must not be paper", IconDesign.PAPER, socketArgb)
+        assertTrue("socket at ($sx, $sy) must stay essentially open, alpha was ${socketArgb ushr 24}", (socketArgb ushr 24) < 48)
+        // The monochrome sibling renders the same silhouette in white.
         val mono = adaptiveLayer(432, IconDesign.WHITE)
         assertEquals(IconDesign.WHITE, mono.getRGB(bx, by))
+        val (mx, my) = p(0.60, IconDesign.KNOB_Y)
+        assertEquals(IconDesign.WHITE, mono.getRGB(mx, my))
     }
 }

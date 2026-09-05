@@ -56,7 +56,7 @@ fun trayPack(tray: Area, sizes: List<Vec2>, seed: Long): TrayPack {
 
     fun gap(s: Double) = 10.0 * s
     fun rowGap(s: Double) = 6.0 * s
-    val marginX = tray.w * 0.02
+    val marginX = tray.w * 0.045
     val vPad = tray.h * 0.10
 
     // Greedy rows at this scale; null when some single row cannot fit.
