@@ -30,47 +30,64 @@ class MakeIconsTest {
     }
 
     @Test
-    fun `legacy tile is teal with the paper piece at its heart`() {
+    fun `legacy tile is teal with four joined pieces on it`() {
         val icon = legacyIcon(192)
         // Outside the rounded corners: fully transparent.
         assertEquals(0, icon.getRGB(8, 8) ushr 24)
-        // Tile, above the piece: teal.
-        assertEquals(IconDesign.TEAL, icon.getRGB(96, 12))
-        // Body centre: paper.
-        assertEquals(IconDesign.PAPER, icon.getRGB(96, 96))
-        // The top arm's head: paper, where the design says it must be.
+        // Map piece-unit coordinates the way paintBrandPiece does: the piece
+        // occupies the centre span, not the whole canvas.
         val span = 192 * IconDesign.LEGACY_SPAN_FRACTION
-        val headDy = (0.29 * span / BRAND_SPAN).toInt()
-        assertEquals(IconDesign.PAPER, icon.getRGB(96, 96 - headDy))
+        val scale = span / BRAND_SPAN
+        val ox = 96.0 - scale / 2.0
+        fun P(u: Double, v: Double): Pair<Int, Int> =
+            Pair((ox + u * scale).toInt(), (ox + v * scale).toInt())
+        // The seam cross in the middle: the tile shows through.
+        val (sx, sy) = P(0.5, 0.5)
+        assertEquals(IconDesign.TEAL, icon.getRGB(sx, sy))
+        // A quadrant body: paper.
+        val (bx, by) = P(0.29375, 0.29375)
+        assertEquals(IconDesign.PAPER, icon.getRGB(bx, by))
+        // A knob head reaching outward: paper.
+        val (kx, ky) = P(0.29375, 0.065)
+        assertEquals(IconDesign.PAPER, icon.getRGB(kx, ky))
+        // A cut in the middle: the tile shows through the blank.
+        val (cx2, cy2) = P(0.29375, 0.470)
+        assertEquals(IconDesign.TEAL, icon.getRGB(cx2, cy2))
     }
 
     @Test
-    fun `the four arms reach the same distance in every direction`() {
-        // The owner's design is perfectly symmetric: probe all four knob
-        // heads and require the same colour, and require the diagonals
-        // between the arms to stay empty.
+    fun `the four cuts sit in the middle, one per piece, pinwheel-symmetric`() {
+        // Map piece-unit coordinates onto a rendered layer and probe all
+        // four cuts and all four heads: heads paper, cuts tile.
         val size = 432
         val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
         val g = image.createGraphics()
+        g.color = java.awt.Color(IconDesign.TEAL, true)
+        g.fillRect(0, 0, size, size)
         paintBrandPiece(g, size / 2.0, size / 2.0, size * 0.80, IconDesign.PAPER)
         g.dispose()
 
-        val c = size / 2.0
-        val head = 0.29 / BRAND_SPAN * (size * 0.80)
-        val probes = listOf(
-            (c + head).toInt() to c.toInt(),   // right
-            c.toInt() to (c - head).toInt(),   // top
-            (c - head).toInt() to c.toInt(),   // left
-            c.toInt() to (c + head).toInt(),   // bottom
+        val scale = (size * 0.80) / BRAND_SPAN
+        val ox = size / 2.0 - scale / 2.0
+        fun P(u: Double, v: Double): Pair<Int, Int> =
+            Pair((ox + u * scale).toInt(), (ox + v * scale).toInt())
+
+        val cuts = listOf(
+            P(0.29375, 0.470), P(0.530, 0.29375), P(0.70625, 0.530), P(0.470, 0.70625),
         )
-        for ((x, y) in probes) {
-            assertEquals("arm at ($x, $y) is not paper", IconDesign.PAPER, image.getRGB(x, y))
+        for ((x, y) in cuts) {
+            assertEquals("the cut at ($x, $y) is not punched through", IconDesign.TEAL, image.getRGB(x, y))
         }
-        val diagonal = (c - head).toInt()
-        assertTrue(
-            "the diagonal between arms should be empty",
-            image.getRGB(diagonal, diagonal) ushr 24 == 0,
+        val heads = listOf(
+            P(0.29375, 0.065), P(0.935, 0.29375), P(0.70625, 0.935), P(0.065, 0.70625),
         )
+        for ((x, y) in heads) {
+            assertEquals("the head at ($x, $y) is not paper", IconDesign.PAPER, image.getRGB(x, y))
+        }
+        // Between the cuts, the pieces themselves are still paper.
+        for ((x, y) in listOf(P(0.20, 0.20), P(0.80, 0.80))) {
+            assertEquals(IconDesign.PAPER, image.getRGB(x, y))
+        }
     }
 
     @Test
@@ -78,10 +95,20 @@ class MakeIconsTest {
         val layer = adaptiveLayer(432, IconDesign.PAPER)
         // Far corner: untouched canvas.
         assertEquals(0, layer.getRGB(20, 20) ushr 24)
-        // Centre: the piece body, in the requested colour.
-        assertEquals(IconDesign.PAPER, layer.getRGB(216, 216))
+        // Map piece-unit coordinates the way paintBrandPiece does.
+        val span = 432 * IconDesign.ADAPTIVE_SPAN_DP / IconDesign.ADAPTIVE_DP
+        val scale = span / BRAND_SPAN
+        val ox = 216.0 - scale / 2.0
+        fun P(u: Double, v: Double): Pair<Int, Int> =
+            Pair((ox + u * scale).toInt(), (ox + v * scale).toInt())
+        // The seam cross: the canvas shows through where four pieces meet.
+        val (sx, sy) = P(0.5, 0.5)
+        assertEquals(0, layer.getRGB(sx, sy) ushr 24)
+        // A quadrant body: paper.
+        val (bx, by) = P(0.29375, 0.29375)
+        assertEquals(IconDesign.PAPER, layer.getRGB(bx, by))
         // The monochrome sibling renders the same geometry in white.
         val mono = adaptiveLayer(432, IconDesign.WHITE)
-        assertEquals(IconDesign.WHITE, mono.getRGB(216, 216))
+        assertEquals(IconDesign.WHITE, mono.getRGB(bx, by))
     }
 }

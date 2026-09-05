@@ -307,19 +307,26 @@ a stale build can never sit there waiting to be uploaded twice.
   release of versionCode 1, versionName 0.1; its notes live in the
   submission guide. Play's license-testing list keeps paid-app testers
   from being charged.
-- D-030 (2026-09-05): The mark is REDESIGNED, superseding D-008's glyph.
-  The owner's design, after the first mark read as ambiguous at a glance:
-  ONE jigsaw piece reaching out in all four directions, four identical
-  arms, perfectly symmetric. Symmetry kills the double meaning outright,
-  the silhouette is the classic puzzle read, and the owner named the
-  meaning: friendship. Uniqueness findings recorded: the generic
-  four-knob piece cannot be owned (thousands of stock icons exist; ours is
-  drawn from code), the puzzle emoji differs (two tabs, two blanks), and
-  the single-piece autism-awareness association was surfaced to the owner
-  and accepted as weak for a puzzle game (two-piece mid-snap remains the
-  fallback if it ever needs breaking). One painter, paintBrandPiece,
-  feeds launcher, monochrome, legacy, store icon, feature graphic, and
-  the in-app mark.
+- D-030 (2026-09-05, revised same day): The mark is REDESIGNED,
+  superseding D-008's glyph. The owner's design, after the first mark read
+  as ambiguous at a glance: the square is FOUR jigsaw pieces, joined. Each
+  piece is a real piece oriented in a pinwheel: its head reaches outward
+  (top, right, bottom, left: the four arms) and its cut opens on the inner
+  seam, so four notches sit in the middle of the square, waiting for the
+  next pieces. Thin seams show the square is four pieces; the owner's
+  instruction was to keep the arms and show their holes. Symmetry plus the
+  seams kill the double meaning outright. Uniqueness findings recorded:
+  the generic four-knob piece cannot be owned (thousands of stock icons
+  exist; ours is drawn from code), the puzzle emoji differs (two tabs,
+  two blanks), and the single-piece autism-awareness association was
+  surfaced to the owner and accepted as weak for a puzzle game (the
+  mid-snap two-piece story remains the fallback if it ever needs
+  breaking). One painter, paintBrandPiece, feeds launcher, monochrome,
+  legacy, store icon, feature graphic, and the in-app mark. The geometry
+  is verified by pixel probes in MakeIconsTest (heads, cuts, seams,
+  bodies), after two rounds of probe bugs taught the same lesson twice:
+  ALWAYS map piece-unit coordinates through the piece's span and offset
+  before probing pixels.
 - D-031 (2026-09-05): The game must make the child think (the original
   goal, audited). Two guarantees landed: no piece ever starts within snap
   tolerance of its own slot (the scatter keeps every piece away from home;
