@@ -27,9 +27,10 @@ import io.github.muntasimulhaque.puzzlet.core.SceneSpec
  * The one renderer for scenes: board, gallery cards, thumbnails, celebration
  * all draw through here, so a picture always looks like itself at any size.
  * Scene geometry is unit-square Doubles; [side] is the on-screen side length.
+ * A zero side is a real first-measure pass, not an error: draw nothing.
  */
 fun DrawScope.drawScene(spec: SceneSpec, side: Double) {
-    require(side > 0.0) { "Scene needs positive side" }
+    if (side <= 0.0) return
     for (shape in spec.shapes) {
         val color = Color(shape.argb)
         fun px(v: Double) = (v * side).toFloat()

@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -65,17 +64,15 @@ fun DifficultyChooser(
     onPlay: (rows: Int, cols: Int) -> Unit,
 ) {
     BackHandler(onBack = onBack)
-    Column(
+    val spec = remember(sceneId) { Scenes.byId(sceneId) }
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(PuzzletColors.Paper),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+        item {
             CircleButton(
                 onClick = onBack,
                 background = PuzzletColors.Card,
@@ -84,27 +81,20 @@ fun DifficultyChooser(
                 BackIcon(color = PuzzletColors.Ink)
             }
         }
-        BoxWithConstraints(
-            Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentAlignment = Alignment.Center,
-        ) {
-            val side = minOf(maxWidth * 0.86f, maxHeight * 0.92f)
-            ScenePicture(
-                spec = Scenes.byId(sceneId),
-                modifier = Modifier.width(side),
-                cornerRadius = 32.dp,
-            )
-        }
-        LazyColumn(
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            items(DIFFICULTIES) { difficulty ->
-                DifficultyRow(sceneId, difficulty) { onPlay(difficulty.rows, difficulty.cols) }
+        item {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                ScenePicture(
+                    spec = spec,
+                    modifier = Modifier.fillMaxWidth(0.66f),
+                    cornerRadius = 32.dp,
+                )
             }
+        }
+        items(DIFFICULTIES) { difficulty ->
+            DifficultyRow(sceneId, difficulty) { onPlay(difficulty.rows, difficulty.cols) }
         }
     }
 }
@@ -130,8 +120,8 @@ private fun DifficultyRow(sceneId: String, difficulty: Difficulty, onClick: () -
             modifier = Modifier.size(76.dp),
             cornerRadius = 20.dp,
         )
-        Spacer(Modifier.width(16.dp))
-        Column {
+        Spacer(Modifier.weight(1f))
+        Column(horizontalAlignment = Alignment.End) {
             Text(
                 text = difficulty.pieces.toString(),
                 style = MaterialTheme.typography.titleLarge,
@@ -143,6 +133,7 @@ private fun DifficultyRow(sceneId: String, difficulty: Difficulty, onClick: () -
                 color = PuzzletColors.Ink,
             )
         }
+        Spacer(Modifier.width(8.dp))
     }
 }
 
