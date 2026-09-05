@@ -147,6 +147,10 @@ store appearance (closed testing) is versionCode 1, versionName 0.1.
 
 ## Release notes for closed testing 0.3 (measured: 496 chars)
 
+Submitted as shown below, then the owner set the law: from 0.4 on,
+release notes carry no contact line and never an email address;
+testers write anyway.
+
 ```
 The game is easier to see and hold now. Pieces wait in a tray above the picture, so every piece and the goal are visible at once. A picked piece grows to full size under the finger, and dropping it near its place clicks it home with a soft knock. A missed drop glides back to the tray, so the board stays tidy. Restarting pours the pieces back. Same eight pictures, same piece counts, no new permissions, still fully offline. Write anything odd to muntasim.haque@gmail.com. Thank you for testing.
 ```

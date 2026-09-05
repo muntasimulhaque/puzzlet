@@ -175,7 +175,9 @@ manually (`gh workflow run build.yml --ref main`).
 
 Small commits, plain messages, no AI trailers. Every release-candidate
 build bumps `versionCode` +1 and `versionName` by 0.1; push to `main` and
-CI does the rest, ending at the `latest-build` GitHub release.
+CI does the rest, ending at the `latest-build` GitHub release. Release
+notes never name the owner's email and carry no contact line: testers
+write anyway (D-038).
 
 The AAB always lands in `play-store/aab/` (gitignored): after every push
 that refreshes the release, download the newest AAB there (`gh release
@@ -253,6 +255,9 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   Restart pours the pieces back, a beat apart. A teach-me demo was
   considered and vetoed by the owner: a simple game is self-explanatory,
   no tutorial, no hand-holding; the layout itself is the lesson.
+- D-038 Release notes never name the owner's email and carry no contact
+  line: testers write anyway (owner's call after the 0.3 notes shipped
+  with one; the rule starts at 0.4).
 
 ## Lessons that still bite
 
@@ -318,3 +323,7 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   had no story. The play field became tray and board (D-037); the owner
   vetoed a demo: self-explanatory or nothing. D-029 correction still
   pending the owner's word.
+- 2026-09-05: 0.3 (versionCode 3) submitted for closed-testing review;
+  the AAB was deleted from play-store/aab/ per the folder rule. The
+  owner's new law: release notes never carry a contact line or the
+  email (D-038).
