@@ -87,9 +87,9 @@ class MainActivity : ComponentActivity() {
                             draggedId = s.draggedId,
                             pulseId = s.pulseId,
                             pulseAt = s.pulseAt,
+                            restartAt = s.restartAt,
                             actions = playActions(),
                             onBack = host::backToChoose,
-                            returning = s.returning,
                         )
                     }
                 }

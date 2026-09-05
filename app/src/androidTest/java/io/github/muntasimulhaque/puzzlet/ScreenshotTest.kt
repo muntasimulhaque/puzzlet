@@ -138,37 +138,37 @@ class ScreenshotTest {
         // A chunky game, barely begun: four huge sailboat pieces.
         val four = buildGame(pane, "sail", 2, 2)
         shot("03_play_4") {
-            PlayScreen(four, null, -1, 0L, noActions, {})
+            PlayScreen(four, null, -1, 0L, 0L, noActions, {})
         }
 
         // Mid-game on the twenty-piece rocket: seven of twenty placed.
         val twenty = buildGame(pane, "rocket", 5, 4, placed = (0..5).toSet() + 9)
         shot("04_play_20") {
-            PlayScreen(twenty, null, -1, 0L, noActions, {})
+            PlayScreen(twenty, null, -1, 0L, 0L, noActions, {})
         }
 
         // A piece in hand, carried from the tray toward the board.
         val dragging = dragState(twenty, pieceId = 0, at = Vec2(pane.w * 0.22, pane.h * 0.52))
         shot("05_play_drag") {
-            PlayScreen(dragging.game, 0, -1, 0L, noActions, {})
+            PlayScreen(dragging.game, 0, -1, 0L, 0L, noActions, {})
         }
 
         // Mid-game on the twelve-piece house: eight of twelve placed.
         val twelve = buildGame(pane, "house", 4, 3, placed = (0..7).toSet())
         shot("06_play_12") {
-            PlayScreen(twelve, null, -1, 0L, noActions, {})
+            PlayScreen(twelve, null, -1, 0L, 0L, noActions, {})
         }
 
         // The finish: the picture complete, held up with confetti falling.
         val done = buildGame(pane, "rocket", 5, 4, placed = (0 until 20).toSet())
         shot("07_celebration") {
-            PlayScreen(done, null, -1, 0L, noActions, {})
+            PlayScreen(done, null, -1, 0L, 0L, noActions, {})
         }
 
         // The fruit plate at sixteen pieces: nine placed, texture galore.
         val fruit = buildGame(pane, "fruit", 4, 4, placed = (0..8).toSet())
         shot("08_play_fruit") {
-            PlayScreen(fruit, null, -1, 0L, noActions, {})
+            PlayScreen(fruit, null, -1, 0L, 0L, noActions, {})
         }
 
         scenario.close()

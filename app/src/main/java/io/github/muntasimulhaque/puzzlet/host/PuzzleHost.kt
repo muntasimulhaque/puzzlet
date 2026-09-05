@@ -9,8 +9,6 @@ import io.github.muntasimulhaque.puzzlet.core.Vec2
 import io.github.muntasimulhaque.puzzlet.core.createPuzzle
 import io.github.muntasimulhaque.puzzlet.core.pieceAt
 import io.github.muntasimulhaque.puzzlet.core.restorePuzzle
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,8 +31,8 @@ sealed interface Screen {
         /** The piece that last clicked home, with the time it happened. */
         val pulseId: Int = -1,
         val pulseAt: Long = 0L,
-        /** Pieces gliding back to their tray seats after a missed drop. */
-        val returning: Set<Int> = emptySet(),
+        /** Last restart moment; the field staggers the pour-back from it. */
+        val restartAt: Long = 0L,
     ) : Screen
 }
 
@@ -43,7 +41,10 @@ sealed interface Screen {
  * which piece is in hand, the sound switch, the one unfinished picture that
  * survives both backing out and a process death, and the play choreography:
  * the missed-drop glide home and the restart pour-back. Nothing teaches; the
- * tray-and-board layout is the whole lesson (AGENTS.md, D-037).
+ * tray-and-board layout is the whole lesson (AGENTS.md, D-037). A miss sets
+ * the piece home at once in logic while the field springs its tile there,
+ * so no cancellation can strand a piece; restart sets all home at once and
+ * the field staggers the visible pour from restartAt.
  */
 class PuzzleHost(app: Application) : ViewModel() {
 
@@ -57,9 +58,6 @@ class PuzzleHost(app: Application) : ViewModel() {
     val muted: StateFlow<Boolean> = _muted.asStateFlow()
 
     private val resumes = HashMap<String, Puzzle>()
-
-    // Pieces gliding back to their tray seats after a missed drop.
-    private val returns = HashMap<Int, Job>()
 
     init {
         viewModelScope.launch {
@@ -79,13 +77,11 @@ class PuzzleHost(app: Application) : ViewModel() {
     }
 
     fun choose(sceneId: String) {
-        cancelReturns()
         draggedId = null
         _screen.value = Screen.Choose(sceneId)
     }
 
     fun home() {
-        cancelReturns()
         draggedId = null
         _screen.value = Screen.Home
     }
@@ -96,7 +92,6 @@ class PuzzleHost(app: Application) : ViewModel() {
      * here and immediately reshaped by layout(); progress survives that.
      */
     fun play(sceneId: String, rows: Int, cols: Int) {
-        cancelReturns()
         draggedId = null
         val key = resumeKey(sceneId, rows, cols)
         val resumed = resumes.remove(key)
@@ -113,7 +108,6 @@ class PuzzleHost(app: Application) : ViewModel() {
 
     fun layout(field: Area, capPx: Double) {
         if (_screen.value !is Screen.Playing) return
-        cancelReturns()
         val s = _screen.value
         if (s !is Screen.Playing) return
         val changed = s.game.field.w != field.w || s.game.field.h != field.h
@@ -127,12 +121,10 @@ class PuzzleHost(app: Application) : ViewModel() {
         val s = _screen.value
         if (s !is Screen.Playing) return null
         val piece = pieceAt(s.game, pos, hitRadius, s.game.trayScale) ?: return null
-        returns.remove(piece.id)?.cancel()
         draggedId = piece.id
         _screen.value = s.copy(
             game = grabPiece(s.game, piece.id),
             draggedId = piece.id,
-            returning = s.returning - piece.id,
         )
         sfx(Sfx.PICK)
         return piece.current
@@ -154,46 +146,42 @@ class PuzzleHost(app: Application) : ViewModel() {
         if (s !is Screen.Playing || id == null) return false
         val game = dropPiece(s.game, id)
         val snapped = game.placedCount > s.game.placedCount
+        // A miss sets the piece home at once in logic. The field animates
+        // its tile from the drop point to the seat, so the truth never sits
+        // mid flight where a cancel could strand it.
+        val settled = if (snapped) game else placePiece(game, id, seatTopLeft(game, id))
         _screen.value = s.copy(
-            game = game,
+            game = settled,
             draggedId = null,
             pulseId = if (snapped) id else s.pulseId,
             pulseAt = if (snapped) System.nanoTime() else s.pulseAt,
-            returning = if (snapped) s.returning else s.returning + id,
         )
         if (snapped) {
             sfx(Sfx.SNAP)
-            if (game.completed) {
+            if (settled.completed) {
                 sfx(Sfx.CHIME)
                 viewModelScope.launch { store.clearResume() }
             }
         } else {
             sfx(Sfx.DROP)
-            startReturn(id)
         }
         return snapped
     }
 
     fun restart() {
-        cancelReturns()
         val s = _screen.value
         if (s is Screen.Playing) {
             resumes.remove(resumeKey(s.game))
             viewModelScope.launch { store.clearResume() }
-            val fresh = restartPuzzle(s.game)
-            // The pour-back: every piece glides from wherever it was to its
-            // tray seat, a beat apart. The end state is exactly restart().
-            val froms = s.game.pieces.associate { it.id to it.current }
-            val staged = fresh.copy(
-                pieces = fresh.pieces.map { p -> p.copy(current = froms[p.id] ?: p.current) },
+            // All home at once in logic; the field staggers the visible
+            // pour piece by piece from restartAt.
+            _screen.value = s.copy(
+                game = restartPuzzle(s.game),
+                draggedId = null,
+                pulseId = -1,
+                pulseAt = 0L,
+                restartAt = System.nanoTime(),
             )
-            _screen.value = s.copy(game = staged, draggedId = null, pulseId = -1, pulseAt = 0L)
-            fresh.pieces.forEachIndexed { index, piece ->
-                viewModelScope.launch {
-                    delay(index * 18L)
-                    startReturn(piece.id)
-                }
-            }
         }
     }
 
@@ -241,53 +229,9 @@ class PuzzleHost(app: Application) : ViewModel() {
         return seat - piece.size * 0.5
     }
 
-    /**
-     * Glide a piece from where it is back to its tray seat, at full scale
-     * (the screen draws returning pieces full-size); grabbable mid-glide.
-     */
-    private fun startReturn(id: Int) {
-        if (draggedId == id) return
-        returns.remove(id)?.cancel()
-        val s = _screen.value
-        if (s !is Screen.Playing) return
-        val piece = s.game.piece(id) ?: return
-        if (piece.placed) return
-        val from = piece.current
-        val to = seatTopLeft(s.game, id)
-        val job = viewModelScope.launch {
-            val steps = 14
-            for (k in 1..steps) {
-                delay(16)
-                val cur = _screen.value
-                if (cur !is Screen.Playing || draggedId == id) {
-                    returns.remove(id)
-                    return@launch
-                }
-                val t = k / steps.toDouble()
-                val eased = 1.0 - (1.0 - t) * (1.0 - t)
-                _screen.value = cur.copy(
-                    game = placePiece(cur.game, id, from + (to - from) * eased),
-                    returning = if (k == steps) cur.returning - id else cur.returning,
-                )
-            }
-            returns.remove(id)
-        }
-        returns[id] = job
-    }
-
-    private fun cancelReturns() {
-        returns.values.forEach { it.cancel() }
-        returns.clear()
-        val s = _screen.value
-        if (s is Screen.Playing && s.returning.isNotEmpty()) {
-            _screen.value = s.copy(returning = emptySet())
-        }
-    }
-
     private var draggedId: Int? = null
 
     override fun onCleared() {
-        returns.values.forEach { it.cancel() }
         soundBoard.release()
     }
 }
