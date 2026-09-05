@@ -42,7 +42,7 @@ object IconDesign {
     /** Adaptive layer canvas, dp (the 108 dp full-bleed square). */
     const val ADAPTIVE_DP = 108.0
     /** Macro bleed of the mark on the adaptive canvas; knob and socket stay in the 66 dp circle. */
-    const val FG_SPAN_DP = 96.0
+    const val FG_SPAN_DP = 90.0
     /** Fraction of a full-art tile the mark spans. */
     const val TILE_SPAN = 0.98
     /** Legacy tile corner radius as a fraction of the tile. */
@@ -61,8 +61,8 @@ object IconDesign {
     const val BITE_W = 0.062
     const val BITE_D = 0.075
     const val BITE_R = 0.070
-    /** Both knobs wear the bite shape at this scale: a little bigger. */
-    const val KS = 1.15
+    /** Both knobs wear the bite shape at this scale: the measured ceiling. */
+    const val KS = 1.35
     const val KNOB_Y = (2.0 + BITE_R * KS) / 3.0
     const val SOCKET_Y = (1.0 - BITE_R * KS) / 3.0
 }

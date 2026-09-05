@@ -445,3 +445,5 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   middle, and bottom by a new test. No more hero scaling.
 - 2026-09-06: Shadows off white, both knobs up to scale 1.15 with gaps
   kept exact by formula consts. Fully flat mark, pins green.
+- 2026-09-06: Knobs to the measured ceiling, scale 1.35, doubling ruled
+  out with mask math. Equal gaps hold by formula, pins green.
