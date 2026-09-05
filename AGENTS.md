@@ -55,9 +55,18 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 - `applicationId` is permanently `app.puzzlet`. Play ties an app to its
   first package ID forever. The code namespace mirrors it.
-- `versionCode` only ever increases, from 1. `versionName` starts at 0.1;
-  1.0 is the first store release, named here when it ships.
+- `versionCode` only ever increases and is never reused, starting at 1.
+  `versionName` is `versionCode` divided by ten, one decimal: 1 means 0.1,
+  2 means 0.2, 9 means 0.9, 10 means 1.0, 11 means 1.1, and so on forever.
+  The first store build is versionCode 3 (0.3): 1 and 2 were never
+  uploaded, and Play never saw them.
 - `targetSdk` moves only together with an AGP that supports it.
+- The merged manifest carries one app-private, signature-scoped permission
+  (`app.puzzlet.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`), added by
+  androidx.core for dynamically registered receivers, exactly as in the
+  house's shipped apps. The zero-permissions rule means: we declare
+  nothing dangerous, nothing normal, nothing that touches the network.
+  Do not remove core-ktx to chase this line away.
 - The signing keystore lives outside the repo and will live in the
   `KEYSTORE_BASE64` GitHub secret once created. If it is lost the app can
   never be updated again. M0 has no keystore; CI builds unsigned.
@@ -275,7 +284,11 @@ console answers live in play-store/play-store-submission-guide.md.
   passwords in three more secrets. CI decodes, signs, verifies with
   keytool, and publishes the AAB + APK to the latest-build release. A lost
   keystore is an un-updatable app, so the vault file is sacred.
-- D-028 (2026-09-05): The shelf settles at eight scenes for launch:
+- D-029 (2026-09-05): The version walk is the owner's law: versionName
+  steps 0.1 per release, in lockstep with versionCode (3 equals 0.3, 10
+  equals 1.0). The first Google Play appearance is a CLOSED TESTING
+  release of versionCode 3 (0.3); its notes live in the submission guide.
+  Play's license-testing list keeps paid-app testers from being charged.
   sailboat, rocket, house, lighthouse, balloon, train, castle, fruit. A
   fruit plate on a wooden table earns its keep by texture: every piece on
   it differs from its neighbours. The capture set gains an eighth shot
@@ -320,6 +333,11 @@ console answers live in play-store/play-store-submission-guide.md.
   console answers, and the release flow. Privacy policy lives at
   docs/privacy.html, to be served once the owner enables GitHub Pages on
   the repo with the docs-folder root.
+- 2026-09-05: The AAB was verified before handoff (aapt2 badging on the
+  release APK, same config): versionCode 3, versionName 0.3, target 37.
+  The closed-testing console steps, the license-testing note, and the
+  paste-ready release notes joined the submission guide. Nothing in the
+  app changed; no version bump.
 - 2026-09-05: M4: three scenes, no code changes elsewhere. The gallery,
   the capture set, and the listing text all update from one data file
   (Scene.kt), which is the whole point of the vector scene language.

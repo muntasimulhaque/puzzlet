@@ -133,16 +133,51 @@ external links reachable by a child, no ads.
 
 **Government apps / Financial features / Health**: No to all.
 
-## Release flow
+## Version walk (the law)
+
+`versionName` steps 0.1 per release, in lockstep with `versionCode`:
+versionCode 3 is 0.3, versionCode 4 is 0.4, versionCode 10 is 1.0,
+versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
+store appearance (closed testing) is versionCode 3, versionName 0.3;
+versions 1 and 2 were internal only and Play never saw them.
+
+## Release notes for closed testing 0.3 (measured: N chars)
+
+```
+RELEASE_NOTES
+```
+
+## Closed testing: step by step
 
 1. Pull the signed AAB from the `latest-build` GitHub release:
    `gh release download latest-build -R muntasimulhaque/puzzlet -p "*.aab"`
-2. Play Console → create app (Game, paid, one-time price; merchant profile
-   required; try $0.99 or $1.19 first, both round nicely across regions).
-3. Fill the listing from this file, upload the art and screenshots.
-4. Complete the questionnaires above; add the privacy policy URL.
-5. Internal testing track first: upload, roll out to the tester email,
-   verify purchase and install, then promote to production when satisfied.
-6. After approval, bump `versionCode` +1 with every release-candidate
-   change; release notes go to chat as bare plain text that fits the
-   500-character field.
+   (Verified before handoff: versionCode 3, versionName 0.3, target 37.)
+2. Play Console: create the app. Name it from the listing, mark it a Game,
+   and set it PAID with a one-time price (a merchant payments profile is
+   required; $0.99 or $1.19 both round nicely across regions).
+3. Prepare the tester list as a Google Group (fastest to manage): add the
+   family and friends who will test, then also add the SAME group under
+   Setup, License testing, so testers of a paid app are not charged while
+   testing.
+4. Fill the store listing from this file (name, short and full
+   description), upload play-icon-512.png, feature-graphic-1024x500.png,
+   and the three screenshot folders.
+5. Complete App content: privacy policy URL (GitHub Pages must be live
+   first), Ads: No, App access: all, the IARC questionnaire (Game; No to
+   everything sensitive), Target audience: 5 and under, Data safety: no
+   data collected, Families self-certification.
+6. Testing, Closed testing: create the track (name it 0.3 closed build or
+   similar), paste the tester list, paste the release notes above, pick
+   the test countries, and save.
+7. Upload the AAB into the track, review, and roll out. Play sends the
+   opt-in link to the tester list; share it with a sentence: install, play
+   with your child, and write anything odd to muntasim.haque@gmail.com.
+8. If the console shows the personal-account requirement (at least 20
+   testers opted in for 14 days before production), this closed track is
+   exactly where that clock runs: keep the testers in, keep the app
+   installed. An account with published apps is usually past it; the
+   console decides, not this guide.
+9. After every future build: bump versionCode +1 and versionName by 0.1
+   (the law above), push to main, and CI refreshes the AAB at
+   latest-build. Release notes go to chat as bare plain text that fits the
+   500-character field, counted before handing them over, never assumed.
