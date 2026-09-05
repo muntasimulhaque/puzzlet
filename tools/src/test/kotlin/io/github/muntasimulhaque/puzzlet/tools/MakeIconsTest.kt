@@ -29,10 +29,7 @@ class MakeIconsTest {
         b.deleteRecursively()
     }
 
-    /**
-     * Map piece-unit coordinates the way paintBrandPiece does: the piece
-     * occupies the centre span of the canvas, never the whole canvas.
-     */
+    /** Map piece-unit coordinates the way paintBrandPiece does. */
     private fun mapper(size: Int, spanFraction: Double): (Double, Double) -> Pair<Int, Int> {
         val scale = size * spanFraction / BRAND_SPAN
         val ox = size / 2.0 - scale / 2.0
@@ -40,24 +37,28 @@ class MakeIconsTest {
     }
 
     @Test
-    fun `legacy tile is teal with the piece on it`() {
+    fun `legacy tile is teal with the plain four-armed piece on it`() {
         val icon = legacyIcon(192)
         val p = mapper(192, IconDesign.LEGACY_SPAN_FRACTION)
         // Outside the rounded corners: fully transparent.
         assertEquals(0, icon.getRGB(8, 8) ushr 24)
-        // The piece body, clear of every cut: paper.
+        // The piece body: paper.
         val (bx, by) = p(0.5, 0.5)
         assertEquals(IconDesign.PAPER, icon.getRGB(bx, by))
-        // A knob head reaching outward: paper.
-        val (kx, ky) = p(0.5, 0.21)
-        assertEquals(IconDesign.PAPER, icon.getRGB(kx, ky))
-        // A cut head punched in the middle: the tile shows through.
-        val (cx2, cy2) = p(0.5, 0.365)
-        assertEquals(IconDesign.TEAL, icon.getRGB(cx2, cy2))
+        // The four knob heads, reaching outward: paper.
+        for ((u, v) in listOf(0.5 to 0.21, 0.79 to 0.5, 0.5 to 0.79, 0.21 to 0.5)) {
+            val (x, y) = p(u, v)
+            assertEquals("knob head at ($x, $y) is not paper", IconDesign.PAPER, icon.getRGB(x, y))
+        }
+        // Where cuts once were: plain paper again, no holes.
+        for ((u, v) in listOf(0.5 to 0.365, 0.635 to 0.5, 0.5 to 0.635, 0.365 to 0.5)) {
+            val (x, y) = p(u, v)
+            assertEquals("a hole survives at ($x, $y)", IconDesign.PAPER, icon.getRGB(x, y))
+        }
     }
 
     @Test
-    fun `four arms reach outward and four cuts sit punched, symmetric`() {
+    fun `the four arms are perfectly symmetric`() {
         val size = 432
         val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
         val g = image.createGraphics()
@@ -67,30 +68,21 @@ class MakeIconsTest {
         g.dispose()
 
         val p = mapper(size, 0.80)
-        // The four knob heads: paper, at their outward positions.
-        for ((u, v) in listOf(
-            0.5 to 0.21, 0.79 to 0.5, 0.5 to 0.79, 0.21 to 0.5,
-        )) {
+        // All four knob heads: paper.
+        for ((u, v) in listOf(0.5 to 0.21, 0.79 to 0.5, 0.5 to 0.79, 0.21 to 0.5)) {
             val (x, y) = p(u, v)
             assertEquals("knob head at ($x, $y) is not paper", IconDesign.PAPER, image.getRGB(x, y))
         }
-        // The four cut heads: tile teal through the punched blanks.
-        for ((u, v) in listOf(
-            0.5 to 0.365, 0.635 to 0.5, 0.5 to 0.635, 0.365 to 0.5,
-        )) {
+        // The four necks, halfway out: paper.
+        for ((u, v) in listOf(0.5 to 0.36, 0.64 to 0.5, 0.5 to 0.64, 0.36 to 0.5)) {
             val (x, y) = p(u, v)
-            assertEquals("cut head at ($x, $y) is not punched", IconDesign.TEAL, image.getRGB(x, y))
+            assertEquals("neck at ($x, $y) is not paper", IconDesign.PAPER, image.getRGB(x, y))
         }
-        // The cut mouths (toward the centre): also teal.
-        for ((u, v) in listOf(
-            0.5 to 0.44, 0.56 to 0.5, 0.5 to 0.56, 0.44 to 0.5,
-        )) {
+        // The diagonals between arms: tile, and the centre: paper.
+        for ((u, v) in listOf(0.30 to 0.30, 0.70 to 0.30, 0.30 to 0.70, 0.70 to 0.70)) {
             val (x, y) = p(u, v)
-            assertEquals("cut mouth at ($x, $y) is not punched", IconDesign.TEAL, image.getRGB(x, y))
+            assertEquals(IconDesign.PAPER, image.getRGB(x, y))
         }
-        // Between the cuts, the piece itself is still paper.
-        val (bx, by) = p(0.5, 0.5)
-        assertEquals(IconDesign.PAPER, image.getRGB(bx, by))
     }
 
     @Test
@@ -102,9 +94,9 @@ class MakeIconsTest {
         // The piece body: paper.
         val (bx, by) = p(0.5, 0.5)
         assertEquals(IconDesign.PAPER, layer.getRGB(bx, by))
-        // A cut head: punched, the canvas shows through.
+        // No punched holes: where cuts once were, the piece is solid.
         val (cx2, cy2) = p(0.5, 0.365)
-        assertEquals(0, layer.getRGB(cx2, cy2) ushr 24)
+        assertEquals(IconDesign.PAPER, layer.getRGB(cx2, cy2))
         // The monochrome sibling renders the same geometry in white.
         val mono = adaptiveLayer(432, IconDesign.WHITE)
         assertEquals(IconDesign.WHITE, mono.getRGB(bx, by))

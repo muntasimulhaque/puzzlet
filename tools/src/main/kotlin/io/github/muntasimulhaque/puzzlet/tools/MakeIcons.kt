@@ -55,11 +55,9 @@ object IconDesign {
 
 /**
  * The friendship piece (the owner's design): ONE jigsaw piece, its four
- * arms reaching outward (top, right, bottom, left), and now also its four
- * cuts punched in the middle of the square: a real piece has a head on one
- * side and the same cut on the other, so each arm carries its matching cut
- * beneath it, mouth toward the centre, waiting for the next piece. The
- * piece spans 0.70 of the unit box, knob tip to knob tip.
+ * arms reaching outward (top, right, bottom, left): four identical arms,
+ * no holes, nothing else. The piece spans 0.70 of the unit box, knob tip
+ * to knob tip.
  */
 enum class Side { TOP, RIGHT, BOTTOM, LEFT }
 
@@ -77,17 +75,7 @@ fun brandPiece(): Area {
     body.add(Area(Ellipse2D.Double(0.44, 0.73, 0.12, 0.12)))
     body.add(Area(Rectangle2D.Double(0.18, 0.474, 0.12, 0.052)))
     body.add(Area(Ellipse2D.Double(0.15, 0.44, 0.12, 0.12)))
-    // The four cuts, one beneath each arm: a mouth (small circle) toward
-    // the centre and a head (bigger circle) deeper in, the same shape a
-    // real piece wears on its cut side. Spaced clear of the knob necks.
-    body.subtract(Area(Ellipse2D.Double(0.465, 0.405, 0.07, 0.07)))
-    body.subtract(Area(Ellipse2D.Double(0.448, 0.313, 0.104, 0.104)))
-    body.subtract(Area(Ellipse2D.Double(0.465, 0.525, 0.07, 0.07)))
-    body.subtract(Area(Ellipse2D.Double(0.448, 0.583, 0.104, 0.104)))
-    body.subtract(Area(Ellipse2D.Double(0.405, 0.465, 0.07, 0.07)))
-    body.subtract(Area(Ellipse2D.Double(0.313, 0.448, 0.104, 0.104)))
-    body.subtract(Area(Ellipse2D.Double(0.525, 0.465, 0.07, 0.07)))
-    body.subtract(Area(Ellipse2D.Double(0.583, 0.448, 0.104, 0.104)))
+
     return body
 }
 

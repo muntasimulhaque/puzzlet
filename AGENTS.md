@@ -331,7 +331,14 @@ a stale build can never sit there waiting to be uploaded twice.
   piece has a head on one side and the same cut on the other, so the icon
   now shows four heads and four cuts. Probes verify all of it. Lesson
   recorded: when the owner says keep the icon and add something, the icon
-  stays; only the something is added. The geometry
+  stays; only the something is added.
+- D-036 (2026-09-05): The mark is FINAL, owner's choice from a six-take
+  candidate sheet: the plain four-armed piece, NO holes. The punched cuts
+  are removed; D-035's cut design is superseded. The temporary candidate
+  generator (IconCandidates) and its previews were removed with the choice
+  made. The lesson the owner drew, recorded for every future design round:
+  do not describe takes in prose and hope; render takes as images, put
+  them in one folder, and let the owner point at one. The geometry
   is verified by pixel probes in MakeIconsTest (heads, cuts, seams,
   bodies), after two rounds of probe bugs taught the same lesson twice:
   ALWAYS map piece-unit coordinates through the piece's span and offset

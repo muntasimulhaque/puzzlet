@@ -56,6 +56,7 @@ tasks.register<JavaExec>("checkSounds") {
     args = listOf(rootDir.absolutePath, "--check")
 }
 
+
 tasks.register<JavaExec>("makeArt") {
     group = "tools"
     description = "Regenerate the store art (feature graphic, store icon)."
