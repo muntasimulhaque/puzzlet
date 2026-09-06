@@ -182,7 +182,7 @@ export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"   # not on PATH
 ./gradlew :tools:test :tools:checkIcons :tools:checkSounds       # pins, no hand-edited assets
 ./gradlew :app:assembleRelease                                   # R8 release (signed when the keystore is present)
 ./gradlew :tools:makeIcons :tools:makeSounds :tools:makeArt      # regenerate after a deliberate design change
-./gradlew :tools:makeScenes                                      # the picture sheet, for the owner to point at
+./gradlew :tools:makeScenes                                      # picture sheet into build/scenes, for review
 ```
 
 CI is the loop: `build.yml` gates every push to `main` on tests, lint,
@@ -359,8 +359,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   designed the mark from zero, then pointed at take C). The gather
   replaces the wooden block everywhere: launcher set, store tile,
   feature graphic. One hero colour per piece, flat fills only, drawn
-  smaller so launchers cannot truncate it. The v4 candidate sheet stays
-  in play-store/candidates/icon-v4 as decided history.
+  smaller so launchers cannot truncate it. The mark's one home is
+  tools/MarkGather.kt: the launcher set, the store tile and the feature
+  graphic all paint from it. The candidate sheets (icon-v3, icon-v4) were
+  deleted once the round was decided: takes are working scratch, and the
+  repo keeps no candidates folder.
 - D-046 The sound switch comes back, on the shelf only (owner-directed,
   reversing part of D-044). One quiet coin, bottom right of the picture
   shelf, persisting in DataStore; the two effects stop, haptics do not.
@@ -566,13 +569,15 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   pictures the game plays. Tray grid evened, board blanked with a peek
   panel, sound switch back on the shelf, counts under every card, twelve
   pictures on graded grounds with the no-flat-piece law pinned, and a
-  picture sheet under play-store/candidates/scenes for the owner to point
-  at. Cut 1.1 (versionCode 11) for closed testing.
+  picture sheet (build/scenes, never committed) for the owner to point at.
+  Cut 1.1 (versionCode 11) for closed testing.
 - 2026-09-07: Version 1.1 submitted for closed testing review; the AAB
   was deleted from play-store/aab/ per the folder rule. Housekeeping: the
   two icon-candidate generators whose sheets were already consumed are
   gone (MakeCandidates, MakeCandidatesV3, and their tasks), and the
-  README is current again. Next session picks up from: the 1.1 review
-  verdict, tester feedback, and the owner's call on the picture sheet in
-  play-store/candidates/scenes (icon-v4 stays as decided history until
-  the owner says otherwise).
+  README is current again. Then the whole candidates folder went: the
+  icon sheets and the picture sheet were working scratch, so
+  play-store/candidates is no more. The mark's geometry moved out of the
+  last candidate file into tools/MarkGather.kt, and :tools:makeScenes now
+  writes its review sheet to build/scenes. Next session picks up from: the
+  1.1 review verdict and tester feedback.

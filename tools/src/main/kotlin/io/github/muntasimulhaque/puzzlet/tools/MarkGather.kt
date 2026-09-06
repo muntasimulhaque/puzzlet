@@ -9,27 +9,18 @@ import java.awt.geom.Path2D
 import java.awt.geom.Rectangle2D
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
-import java.io.File
-import javax.imageio.ImageIO
 
 /**
- * Jobs-pass candidates, v4. The brief: what ships if Jobs designs the mark
- * from zero, free of the current four-colour 2x2. Every take is its own
- * argument, rendered as icons plus a feature graphic, into
- * play-store/candidates/icon-v4 for pointing. Nothing ships; the pinned
- * icons under app/src/main/res stay untouched until one wins.
+ * The gather: the mark the app ships, as flat fills of plain paths.
  *
- * Flat fills of plain paths only, no strokes, no boolean ops, no blur: they
- * drift across JDKs and would break future byte pins. Material depth is
- * faked with flat tones.
+ * Three wanderers (sky, coral, gold) closing on the honey home piece with
+ * its sockets open: the moment before the click. One painter owns every
+ * pixel of it, and the launcher set, the store tile and the feature
+ * graphic all come through here, so the mark is always the same mark.
  *
- * Directions:
- *  A UNIBODY - one lagoon block with a knob up and a socket right, on dark
- *      warm paper. The join itself is the whole mark.
- *  B ONEPIECE - one honey piece alone, big and calm. One silhouette, no
- *      grid, readable at favicon size.
- *  C GATHER - coral, gold and sky pieces closing on a honey home piece with
- *      open sockets, the moment before the click.
+ * Flat fills of plain paths only, no strokes, no boolean ops, no blur:
+ * those drift across JDKs and break the byte pins (AGENTS.md, Lessons).
+ * Material depth is faked with flat tones.
  */
 object V4 {
     const val PAPER: Int = 0xFFFAF6EF.toInt()
@@ -280,156 +271,4 @@ internal object Gather {
         g.dispose()
         return image
     }
-}
-
-// ---------------------------------------------------------------- features
-
-private fun paste(dst: BufferedImage, src: BufferedImage, x: Int, y: Int, alpha: Float) {
-    val g = dst.createGraphics()
-    g.composite = AlphaComposite.SrcOver.derive(alpha)
-    g.drawImage(src, x, y, null)
-    g.dispose()
-}
-
-private fun featureShell(w: Int, h: Int, ground: Int): BufferedImage {
-    val image = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
-    val g = beginV4(image)
-    fillGround(g, w, h, ground)
-    g.dispose()
-    return image
-}
-
-private fun v4FeatureUnibody(rootDir: File): BufferedImage {
-    val image = featureShell(1024, 500, V4.GROUND)
-    paste(image, Unibody.paint(390, tile = true, groundArgb = V4.GROUND), 84, 55, 1.0f)
-    text(image, rootDir, 520f, 258f, V4.PAPER, 524f, 338f, 0xD9FAF6EF.toInt())
-    return image
-}
-
-private fun v4FeatureOnepiece(rootDir: File): BufferedImage {
-    val image = featureShell(1024, 500, V4.PAPER)
-    paste(image, Onepiece.paint(760, angle = -7.0, pieceArgb = V4.HONEY, tile = false, groundArgb = 0), 500, 60, 1.0f)
-    text(image, rootDir, 78f, 250f, 0xFFDD7B12.toInt(), 82f, 332f, V4.INK)
-    return image
-}
-
-private fun v4FeatureGather(rootDir: File): BufferedImage {
-    val image = featureShell(1024, 500, V4.DEEP)
-    paste(image, Gather.paint(640, gapFrac = 0.55, tile = false, groundArgb = 0), 500, 44, 0.35f)
-    paste(image, Gather.paint(370, gapFrac = 0.17, tile = true, groundArgb = V4.DEEP), 76, 65, 1.0f)
-    text(image, rootDir, 490f, 252f, V4.PAPER, 494f, 330f, 0xD9FAF6EF.toInt())
-    return image
-}
-
-private fun text(image: BufferedImage, rootDir: File, x: Float, y: Float, argb: Int, sx: Float, sy: Float, subArgb: Int) {
-    val g = beginV4(image)
-    drawCleanString(g, "Puzzlet", "baloo2_extrabold.ttf", 118f, argb, x, y, rootDir)
-    drawCleanString(g, "A calm jigsaw for small hands.", "baloo2_bold.ttf", 29f, subArgb, sx, sy, rootDir)
-    g.dispose()
-}
-
-// ---------------------------------------------------------------- sheets
-
-private fun half(image: BufferedImage): BufferedImage {
-    val out = BufferedImage(image.width / 2, image.height / 2, BufferedImage.TYPE_INT_ARGB)
-    val g = beginV4(out)
-    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC)
-    g.drawImage(image, 0, 0, image.width / 2, image.height / 2, null)
-    g.dispose()
-    return out
-}
-
-private fun iconRow(icons: List<BufferedImage>): BufferedImage {
-    val pad = 24
-    val h = icons.maxOf { it.height } + pad * 2
-    val w = icons.sumOf { it.width } + pad * (icons.size + 1)
-    val image = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
-    val g = beginV4(image)
-    fillGround(g, w, h, 0xFFFFFFFF.toInt())
-    var x = pad
-    for (icon in icons) {
-        g.drawImage(icon, x, pad + (h - pad * 2 - icon.height) / 2, null)
-        x += icon.width + pad
-    }
-    g.dispose()
-    return image
-}
-
-private fun stack(rows: List<BufferedImage>): BufferedImage {
-    val pad = 24
-    val w = rows.maxOf { it.width } + pad * 2
-    val h = rows.sumOf { it.height } + pad * (rows.size + 1)
-    val image = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
-    val g = beginV4(image)
-    fillGround(g, w, h, 0xFFE9E4DA.toInt())
-    var y = pad
-    for (row in rows) {
-        g.drawImage(row, pad + (w - pad * 2 - row.width) / 2, y, null)
-        y += row.height + pad
-    }
-    g.dispose()
-    return image
-}
-
-fun main(args: Array<String>) {
-    val rootDir = File(args[0])
-    val out = File(rootDir, "play-store/candidates/icon-v4")
-    out.mkdirs()
-    // Individual artifacts, one per design.
-    ImageIO.write(Unibody.paint(512, tile = true, groundArgb = V4.GROUND), "png", File(out, "a_unibody_icon.png"))
-    ImageIO.write(Onepiece.paint(512, angle = -4.0, pieceArgb = V4.HONEY, tile = true, groundArgb = V4.PAPER), "png", File(out, "b_onepiece_icon.png"))
-    ImageIO.write(Gather.paint(512, gapFrac = 0.17, tile = true, groundArgb = V4.DEEP), "png", File(out, "c_gather_icon.png"))
-    ImageIO.write(v4FeatureUnibody(rootDir), "png", File(out, "a_unibody_feature.png"))
-    ImageIO.write(v4FeatureOnepiece(rootDir), "png", File(out, "b_onepiece_feature.png"))
-    ImageIO.write(v4FeatureGather(rootDir), "png", File(out, "c_gather_feature.png"))
-    // keep line: names stay short here because they are file-private.
-    // Per-take sheets: the argument, variants, small-size truth, banner.
-    val sheetA = stack(listOf(
-        iconRow(listOf(
-            Unibody.paint(512, tile = true, groundArgb = V4.GROUND),
-            Unibody.paint(512, tile = true, groundArgb = V4.DEEP),
-            Unibody.paint(512, tile = true, groundArgb = V4.INK),
-        )),
-        iconRow(listOf(
-            Unibody.paint(512, tile = false, groundArgb = 0),
-            Unibody.paint(96, tile = false, groundArgb = 0),
-            Unibody.paint(48, tile = false, groundArgb = 0),
-        )),
-        half(v4FeatureUnibody(rootDir)),
-    ))
-    val sheetB = stack(listOf(
-        iconRow(listOf(
-            Onepiece.paint(512, angle = -4.0, pieceArgb = V4.HONEY, tile = true, groundArgb = V4.PAPER),
-            Onepiece.paint(512, angle = -4.0, pieceArgb = V4.HONEY, tile = true, groundArgb = V4.LAGOON),
-            Onepiece.paint(512, angle = -4.0, pieceArgb = V4.HONEY, tile = true, groundArgb = V4.INK),
-        )),
-        iconRow(listOf(
-            Onepiece.paint(512, angle = 0.0, pieceArgb = V4.HONEY, tile = true, groundArgb = V4.PAPER),
-            Onepiece.paint(512, angle = -9.0, pieceArgb = V4.HONEY, tile = true, groundArgb = V4.PAPER),
-            Onepiece.paint(512, angle = -4.0, pieceArgb = V4.LAGOON, tile = true, groundArgb = V4.PAPER),
-        )),
-        iconRow(listOf(
-            Onepiece.paint(384, angle = -4.0, pieceArgb = V4.HONEY, tile = false, groundArgb = 0),
-            Onepiece.paint(96, angle = -4.0, pieceArgb = V4.HONEY, tile = false, groundArgb = 0),
-            Onepiece.paint(48, angle = -4.0, pieceArgb = V4.HONEY, tile = false, groundArgb = 0),
-        )),
-        half(v4FeatureOnepiece(rootDir)),
-    ))
-    val sheetC = stack(listOf(
-        iconRow(listOf(
-            Gather.paint(512, gapFrac = 0.17, tile = true, groundArgb = V4.DEEP),
-            Gather.paint(512, gapFrac = 0.17, tile = true, groundArgb = V4.PAPER),
-            Gather.paint(512, gapFrac = 0.34, tile = true, groundArgb = V4.DEEP),
-        )),
-        iconRow(listOf(
-            Gather.paint(384, gapFrac = 0.17, tile = false, groundArgb = 0),
-            Gather.paint(96, gapFrac = 0.17, tile = false, groundArgb = 0),
-            Gather.paint(48, gapFrac = 0.17, tile = false, groundArgb = 0),
-        )),
-        half(v4FeatureGather(rootDir)),
-    ))
-    ImageIO.write(sheetA, "png", File(out, "a_unibody_sheet.png"))
-    ImageIO.write(sheetB, "png", File(out, "b_onepiece_sheet.png"))
-    ImageIO.write(sheetC, "png", File(out, "c_gather_sheet.png"))
-    println("makeCandidatesV4: wrote takes under ${out.path}")
 }

@@ -24,8 +24,9 @@ import javax.imageio.ImageIO
  * a description of them (the D-045 lesson, applied to pictures).
  *
  * Plain JVM, Java2D, no third-party libraries, same as every other
- * generator here. Output goes to play-store/candidates/scenes: one big
- * contact sheet and one card per picture.
+ * generator here. Output goes to build/scenes (never committed: it is
+ * working scratch for a review round, and the repo keeps no candidate
+ * folders): one contact sheet and one card per picture.
  */
 private const val TILE = 300
 private const val GAP = 26
@@ -38,7 +39,7 @@ private val INK = Color(0x1F2B28)
 
 fun main(args: Array<String>) {
     val rootDir = File(args.firstOrNull() ?: ".").absoluteFile
-    val outDir = File(rootDir, "play-store/candidates/scenes")
+    val outDir = File(rootDir, "build/scenes")
     check(outDir.isDirectory || outDir.mkdirs()) { "Could not create $outDir" }
     val scenes = Scenes.all
     val ascii = args.contains("--ascii")

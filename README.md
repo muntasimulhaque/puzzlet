@@ -67,8 +67,10 @@ the regenerated files):
 
 ```
 ./gradlew :tools:makeIcons :tools:makeSounds :tools:makeArt
-./gradlew :tools:makeScenes     # the picture sheet, for review
 ```
+
+`:tools:makeScenes` draws every picture into `build/scenes` for review.
+It is scratch, never committed: the repo keeps no candidates folder.
 
 CI is the loop: `build.yml` gates every push to `main` on the tests,
 lint and the asset pins, then signs and publishes the AAB and APK to the
@@ -81,4 +83,3 @@ The listing kit lives in `play-store/`: the submission guide with the
 paste-ready listing, release notes and console answers, the feature
 graphic, the store icon, and screenshots per form factor (`phone/`,
 `tablet7/`, `tablet10/`) captured by CI from the app's own states.
-Candidate pictures for review live in `play-store/candidates/scenes/`.

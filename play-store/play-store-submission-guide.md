@@ -96,8 +96,9 @@ factor (`phone/`, `tablet7/`, `tablet10/`), captured by CI whenever UI files
 change and refreshed into those same subfolders in the same session. Upload
 each subfolder's PNGs to its Play Console slot, in filename order (01_home
 first, and 08_play_16 last); a Families-reviewed listing should match what
-ships. Candidate pictures for the owner to judge live under
-`play-store/candidates/scenes/`, rendered by `:tools:makeScenes`. The
+ships. To look at every picture before a content change, run
+`:tools:makeScenes`, which writes a sheet into `build/scenes` (never
+committed). The
 celebration scene is mid-animation by design, so its pixels wobble a little
 between refreshes; every other scene should come back byte-identical.
 

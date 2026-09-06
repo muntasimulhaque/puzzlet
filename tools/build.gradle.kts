@@ -67,17 +67,9 @@ tasks.register<JavaExec>("makeArt") {
     args = listOf(rootDir.absolutePath)
 }
 
-tasks.register<JavaExec>("makeCandidatesV4") {
-    group = "tools"
-    description = "Render Jobs-pass icon and feature graphic takes under play-store/candidates/icon-v4."
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeCandidatesV4Kt"
-    args = listOf(rootDir.absolutePath)
-}
-
 tasks.register<JavaExec>("makeScenes") {
     group = "tools"
-    description = "Render every picture on the shelf under play-store/candidates/scenes."
+    description = "Render every picture on the shelf into build/scenes, for review."
     classpath = sourceSets["main"].runtimeClasspath
     mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeScenesKt"
     args = listOf(rootDir.absolutePath)
