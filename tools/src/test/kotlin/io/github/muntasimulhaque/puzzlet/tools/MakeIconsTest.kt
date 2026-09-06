@@ -56,7 +56,7 @@ class MakeIconsTest {
     private fun Frame.centres(): List<Triple<Double, Double, Int>> = listOf(
         Triple(hx + s / 2.0, hy + s / 2.0, IconDesign.HONEY),
         Triple(hx + s / 2.0, hy - s - gap + s / 2.0, IconDesign.CORAL),
-        Triple(hx - s - gap + s / 2.0, hy + s / 2.0, IconDesign.HONEY_LIGHT),
+        Triple(hx - s - gap + s / 2.0, hy + s / 2.0, IconDesign.GRASS),
         Triple(hx - s - gap + s / 2.0, hy - s - gap + s / 2.0, IconDesign.SKY),
     )
 
@@ -73,7 +73,7 @@ class MakeIconsTest {
         val size = 384
         val icon = legacyIcon(size)
         val f = tileFrame(size)
-        val names = listOf("honey home", "coral top", "gold left", "sky corner")
+        val names = listOf("honey home", "coral top", "grass left", "sky corner")
         for ((i, c) in f.centres().withIndex()) {
             val x = c.first.toInt()
             val y = c.second.toInt()

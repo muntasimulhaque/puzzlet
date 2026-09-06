@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage
 /**
  * The gather: the mark the app ships, as flat fills of plain paths.
  *
- * Three wanderers (sky, coral, gold) closing on the honey home piece with
+ * Three wanderers (sky, coral, grass) closing on the honey home piece with
  * its sockets open: the moment before the click. One painter owns every
  * pixel of it, and the launcher set, the store tile and the feature
  * graphic all come through here, so the mark is always the same mark.
@@ -230,6 +230,15 @@ private object Onepiece {
 // ---------------------------------------------------------------- take C
 
 /**
+ * The four gather colours in walk order: sky corner, coral top, grass
+ * left, honey home. One list, so the palette can be read at a glance and
+ * a candidate sheet can try another without touching the painter.
+ */
+internal fun gatherPalette(mono: Boolean = false): List<Int> =
+    if (mono) listOf(IconDesign.WHITE, IconDesign.WHITE, IconDesign.WHITE, IconDesign.WHITE)
+    else listOf(IconDesign.SKY, IconDesign.CORAL, IconDesign.GRASS, IconDesign.HONEY)
+
+/**
  * The gather, shared with the shipped launcher: three wanderers closing
  * on the honey home piece. Defaults reproduce the approved candidate
  * pixels exactly; the launcher passes smaller insets so nothing clips.
@@ -243,6 +252,7 @@ internal object Gather {
         mono: Boolean = false,
         insetFrac: Double = 0.0,
         cornerFraction: Double = 0.19,
+        palette: List<Int> = gatherPalette(mono),
     ): BufferedImage {
         val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
         val g = beginV4(image)
@@ -256,17 +266,14 @@ internal object Gather {
         // The 2x2 field centred (gap runs through the middle): home bottom-right.
         val hx = o + se / 2.0 + gap / 2.0
         val hy = o + se / 2.0 + gap / 2.0
-        val sky = if (mono) IconDesign.WHITE else IconDesign.SKY
-        val coral = if (mono) IconDesign.WHITE else IconDesign.CORAL
-        val gold = if (mono) IconDesign.WHITE else IconDesign.HONEY_LIGHT
-        val honey = if (mono) IconDesign.WHITE else IconDesign.HONEY
+        val (sky, coral, grass, honey) = palette
         val home = pieceOutline(hx, hy, s, s * 0.12, listOf(-1, 0, 0, -1))
         val top = pieceOutline(hx, hy - s - gap, s, s * 0.12, listOf(0, 0, 1, 0))
         val left = pieceOutline(hx - s - gap, hy, s, s * 0.12, listOf(0, 1, 0, 0))
         val corner = pieceOutline(hx - s - gap, hy - s - gap, s, s * 0.12, listOf(0, 1, 1, 0))
         fillPiece(g, rotated(corner, hx - s / 2 - gap, hy - s / 2 - gap, -7.0), sky, bg, se, drop = false)
         fillPiece(g, rotated(top, hx + s / 2, hy - s / 2 - gap, 6.0), coral, bg, se, drop = false)
-        fillPiece(g, rotated(left, hx - s / 2 - gap, hy + s / 2, -5.0), gold, bg, se, drop = false)
+        fillPiece(g, rotated(left, hx - s / 2 - gap, hy + s / 2, -5.0), grass, bg, se, drop = false)
         fillPiece(g, home, honey, bg, se, drop = false)
         g.dispose()
         return image

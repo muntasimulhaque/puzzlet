@@ -8,7 +8,7 @@ import kotlin.system.exitProcess
 /**
  * The launcher icon, drawn from code so every PNG has exactly one author.
  *
- * Design: the gather. Three chunky pieces (sky, coral, gold) closing in
+ * Design: the gather. Three chunky pieces (sky, coral, grass) closing in
  * on the honey home piece with its sockets open, the moment before the
  * click. One hero colour per piece, generous air around the field, flat
  * fills only: drawn small on purpose so no launcher mask ever truncates
@@ -20,17 +20,29 @@ import kotlin.system.exitProcess
  *
  * Colors here mirror app/src/main/res/values/colors.xml plus the toy
  * palette below. Change both together, then run makeIcons and commit the
- * regenerated PNGs.
+ * regenerated PNGs. The store art reads the same constants, so shelf,
+ * home screen and store page can never drift apart.
  */
 object IconDesign {
     const val PAPER: Int = 0xFFFAF6EF.toInt()
     const val WHITE: Int = 0xFFFFFFFF.toInt()
     const val DEEP: Int = 0xFF085949.toInt()
+    /** The brand teal, the toy-box lid: the feature graphic's ground. */
+    const val LAGOON: Int = 0xFF0C7A64.toInt()
+    /** Ink, for type sitting on a light ground in the store art. */
+    const val INK: Int = 0xFF1F2B28.toInt()
 
-    /** The four gather pieces: sky and coral above, gold and honey home below. */
+    /**
+     * The four gather pieces: sky and coral above, grass and honey home
+     * below. The fourth used to be a second yellow, but gold and honey sat
+     * 12 deltaE apart where every other pair sits 52 to 101, so the mark
+     * read as three colours and a repeat. Grass is the leaf and mid-hill
+     * green the pictures already wear, the most used green in the scenes,
+     * so the mark is cut from the same cloth as the game.
+     */
     const val SKY: Int = 0xFF6BB7D6.toInt()
     const val CORAL: Int = 0xFFE4572E.toInt()
-    const val HONEY_LIGHT: Int = 0xFFF6C84F.toInt()
+    const val GRASS: Int = 0xFF6FB863.toInt()
     const val HONEY: Int = 0xFFF0B429.toInt()
 
     /** The densities the house ships, in scale order. */
