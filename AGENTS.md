@@ -511,3 +511,7 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   from the rendered icon-v4 sheet. Gather mark ships everywhere,
   drawn smaller with mask-circle and silhouette probes pinning the fit.
   Cut 1.0 (versionCode 10), notes 394 chars, all gates green.
+- 2026-09-06: Version 1.0 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ per the folder rule. Recaptured
+  screenshots came back byte-identical on all three form factors, so
+  the listing kit stands as is.
