@@ -138,6 +138,22 @@ class PuzzleCoreTest {
     }
 
     @Test
+    fun `dropAt is a drag then a drop, in one rule`() {
+        val p0 = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 42L)
+        val tol = p0.snapTolerance
+        // Carried straight from the tray seat to just inside tolerance: snaps.
+        var p = dropAt(p0, 0, p0.piece(0)!!.home + Vec2(tol * 0.4, 0.0))
+        assertTrue(p.piece(0)!!.placed)
+        assertEquals(p0.placedCount + 1, p.placedCount)
+        // Carried far: no snap, and the position is clamped inside the field.
+        p = dropAt(p0, 0, Vec2(-9000.0, -9000.0))
+        assertFalse(p.piece(0)!!.placed)
+        assertEquals(Vec2(0.0, 0.0), p.piece(0)!!.current)
+        // A drop that misses never completes the puzzle.
+        assertFalse(p.completed)
+    }
+
+    @Test
     fun `placed pieces are immune and grab lifts to the top`() {
         var p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 42L)
         p = drag(p, 0, p.piece(0)!!.home)

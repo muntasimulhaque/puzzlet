@@ -213,8 +213,7 @@ class ScreenshotTest {
 
     private val noActions = PlayActions(
         onGrabAt = { _, _ -> null },
-        onDragTo = {},
-        onDrop = { false },
+        onDropAt = { false },
         onLayout = { _, _ -> },
         onRestart = {},
     )

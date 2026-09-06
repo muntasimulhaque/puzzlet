@@ -109,20 +109,24 @@ private fun DrawScope.drawPulse(game: Puzzle, pulseId: Int, pulseT: Float) {
  * One piece slice, drawn in piece local coordinates. The caller scales the
  * scope (tray scale in the shelf, full size in hand), so this stays exact
  * at any size with no shared cache to go stale.
+ *
+ * Every piece is die-cut (D-054): artwork, a dark cut edge over the rim, a
+ * paper sliver outside that edge, and a soft shadow beneath. The pieces the
+ * scenes paint are pale, and on warm paper they melted into the table; the
+ * edge is what makes a piece read as a piece before anything else about it.
  */
 internal fun DrawScope.drawSlice(
     piece: Piece,
     path: Path,
     scene: SceneSpec,
     board: Area,
-    shadowAlpha: Float,
-    outlineAlpha: Float,
+    lifted: Boolean,
 ) {
-    if (shadowAlpha > 0f) {
-        withTransform({ translate(0f, 3f) }) {
-            drawPath(path, PuzzletColors.Ink.copy(alpha = shadowAlpha))
-        }
-    }
+    // Two offsets at one alpha read as one soft shadow. In hand the piece
+    // is off the table, so its shadow drops deeper and darker.
+    val drop = (if (lifted) 7.dp else 5.dp).toPx()
+    shadowPass(path, drop, SHADOW_ALPHA)
+    shadowPass(path, drop * 0.5f, SHADOW_ALPHA)
     clipPath(path) {
         withTransform({
             translate(
@@ -133,11 +137,19 @@ internal fun DrawScope.drawSlice(
             drawScene(scene, board.w)
         }
     }
-    drawPath(path, PuzzletColors.Card, style = Stroke(3.2.dp.toPx()))
-    drawPath(path, PuzzletColors.Ink.copy(alpha = outlineAlpha), style = Stroke(1.6.dp.toPx()))
+    drawPath(path, PuzzletColors.Card, style = Stroke(RIM_STROKE.toPx()))
+    drawPath(path, PuzzletColors.Ink.copy(alpha = EDGE_ALPHA), style = Stroke(EDGE_STROKE.toPx()))
 }
 
-internal fun pieceTargetTopLeft(piece: Piece, scale: Float): Vec2 {
-    val c = piece.currentCenter
-    return Vec2(c.x - piece.size.x * scale / 2.0, c.y - piece.size.y * scale / 2.0)
+private fun DrawScope.shadowPass(path: Path, drop: Float, alpha: Float) {
+    withTransform({ translate(0f, drop) }) {
+        drawPath(path, PuzzletColors.Ink.copy(alpha = alpha))
+    }
 }
+
+private val RIM_STROKE = 4.6.dp
+private val EDGE_STROKE = 2.8.dp
+private const val EDGE_ALPHA = 0.50f
+private const val SHADOW_ALPHA = 0.20f
+
+internal fun Vec2.toOffset(): Offset = Offset(x.toFloat(), y.toFloat())

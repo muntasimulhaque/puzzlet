@@ -18,8 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
-import io.github.muntasimulhaque.puzzlet.core.drag as dragPiece
-import io.github.muntasimulhaque.puzzlet.core.drop as dropPiece
+import io.github.muntasimulhaque.puzzlet.core.dropAt as dropAtPiece
 import io.github.muntasimulhaque.puzzlet.core.grab as grabPiece
 import io.github.muntasimulhaque.puzzlet.core.place as placePiece
 import io.github.muntasimulhaque.puzzlet.core.relayout as relayoutPuzzle
@@ -142,12 +141,16 @@ class PuzzleHost(app: Application) : ViewModel() {
         if (s !is Screen.Playing) return
         val changed = s.game.field.w != field.w || s.game.field.h != field.h
         if (changed) {
+            // A reshape is no place to hold a piece: the field rebuilds and
+            // the finger is gone. A stale in-hand id would draw a piece
+            // lifted forever after a mid-carry rotation.
+            draggedId = null
             _screen.value = s.copy(game = relayoutPuzzle(s.game, field, capPx))
         }
     }
 
-    /** Lift a piece; returns its bbox corner so the drag keeps the grip point. */
-    fun grabAt(pos: Vec2, hitRadius: Double): Vec2? {
+    /** Lift a piece under the finger; returns its id, or null for bare table. */
+    fun grabAt(pos: Vec2, hitRadius: Double): Int? {
         val s = _screen.value
         if (s !is Screen.Playing) return null
         val piece = pieceAt(s.game, pos, hitRadius, s.game.trayScale) ?: return null
@@ -157,24 +160,21 @@ class PuzzleHost(app: Application) : ViewModel() {
             draggedId = piece.id,
             peeking = false,
         )
-        return piece.current
+        return piece.id
     }
 
-    fun dragTo(topLeft: Vec2) {
-        val id = draggedId ?: return
-        val s = _screen.value
-        if (s is Screen.Playing) {
-            _screen.value = s.copy(game = dragPiece(s.game, id, topLeft))
-        }
-    }
-
-    /** Let go; true when the piece clicked home (the UI answers with a tick). */
-    fun drop(): Boolean {
+    /**
+     * Let go at [topLeft], where the finger last held the piece. The carry
+     * itself never wrote through the game state (the field drew it from its
+     * own finger state), so this one commit does everything: clamp, then the
+     * drop rule. True when the piece clicked home (the UI answers with a tick).
+     */
+    fun dropAt(topLeft: Vec2): Boolean {
         val id = draggedId
         draggedId = null
         val s = _screen.value
         if (s !is Screen.Playing || id == null) return false
-        val game = dropPiece(s.game, id)
+        val game = dropAtPiece(s.game, id, topLeft)
         val snapped = game.placedCount > s.game.placedCount
         // A miss sets the piece home at once in logic. The field animates
         // its tile from the drop point to the seat, so the truth never sits

@@ -4,9 +4,11 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.2 (versionCode 12) is submitted to the closed testing
-track. Release 1.2 is a store-art release: the launcher mark's fourth
-piece turned leaf green, and the feature graphic was rebuilt around it.
+Status: release 1.3 (versionCode 13) is the feel release: every piece now
+wears a die-cut edge and a soft shadow, so a piece stands off the tray and
+the table instead of melting into them, and the tray is a shade deeper.
+A touch lifts a piece at once (no drag distance to earn), the piece
+follows the finger with no lag, and a piece that misses glides home.
 Twelve pictures, five piece counts to choose from (4, 6, 9, 12, 16), a
 blank board with the finished picture behind one coin, an even tray grid,
 and a sound switch on the picture shelf. No timer, no score, no fail
@@ -32,10 +34,10 @@ ground so no piece ever comes out blank.
 The shelf shows the pictures with their names and a row of counts under
 each. Tap a picture and it plays at the count that row shows; tap a count
 and that choice sticks. Left alone, a win grows a picture from 4 to 6 to
-9 pieces. Pieces wait in a tray above a blank board: drag one anywhere
-near its place and it clicks home with a spring, a soft knock and a
-haptic tick. Forgotten the picture? The coin in the top bar holds it up,
-and tapping anywhere puts it away.
+9 pieces. Pieces wait in a tray above a blank board: a touch lifts a
+piece, and it clicks home when carried near its place, with a spring, a
+soft knock and a haptic tick. Forgotten the picture? The coin in the top
+bar holds it up, and tapping anywhere puts it away.
 
 ## Layout
 

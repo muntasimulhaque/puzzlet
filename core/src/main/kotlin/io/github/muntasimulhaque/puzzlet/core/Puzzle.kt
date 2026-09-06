@@ -184,6 +184,14 @@ fun drop(p: Puzzle, id: Int): Puzzle {
 }
 
 /**
+ * Let go at a finger position, as one rule: the position is clamped like any
+ * drag, then the drop rule runs on where the piece really sits. The play
+ * field calls this once, at release; while a piece is in hand the finger
+ * owns it and nothing writes through the game state (AGENTS.md, D-055).
+ */
+fun dropAt(p: Puzzle, id: Int, topLeft: Vec2): Puzzle = drop(drag(p, id, topLeft), id)
+
+/**
  * The window changed size or shape: rebuild the cut at the new board size
  * and carry the placed pieces to their new slots. Unplaced pieces re-seat in
  * the tray, which is where they live anyway.

@@ -23,8 +23,10 @@ object PuzzletColors {
     val Sky = Color(0xFF7FB8D4)
     /** Card surfaces that sit a step above the paper ground. */
     val Card = Color(0xFFFFFDF9)
-    /** The tray surface: one step deeper than the paper, where pieces wait. */
-    val Tray = Color(0xFFF2EBE0)
+    /** The tray surface, one clear step deeper than the paper (D-054): the
+     *  shelf is where pieces wait, and pale pieces must stand off it. Still
+     *  warm and paper-family, but never a twin of the table below. */
+    val Tray = Color(0xFFEBE0CC)
 }
 
 // The display face: Baloo 2, bundled offline (OFL text lives in docs/).

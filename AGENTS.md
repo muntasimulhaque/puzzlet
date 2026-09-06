@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 12, versionName 1.2, cut for
+  and so on. Current release: versionCode 13, versionName 1.3, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -86,9 +86,10 @@ the board at tray scale, on one even grid with the same gap everywhere;
 a piece in hand grows to board size under the finger. The board is blank,
 the way a table is: no picture, no glowing slot. A coin in the top bar
 holds the finished picture up on a deep scrim; tapping anywhere puts it
-away. Drag a piece anywhere near its place and it clicks home with a
-spring, a soft knock and a haptic tick; a miss glides back to its tray
-seat. No mid game restart: like a real puzzle, pieces move by hand and
+away. A touch lifts a piece where it lies, no drag distance to earn
+first; carry it anywhere near its place and it clicks home with a spring,
+a soft knock and a haptic tick; a miss glides back to its tray seat. No
+mid game restart: like a real puzzle, pieces move by hand and
 there is no easy undo. The tray jumbles fresh every new game, never
 serial, while the cut stays stable like a bought puzzle. Every picture
 sits on a graded ground, so no piece ever comes out blank. No timer, no
@@ -121,7 +122,11 @@ every state with no-op callbacks. The play field renders a backdrop Canvas
 (tray, frame, goal when peeked, click ring) with one small tile Canvas per
 piece; each tile draws its own slice of the scene clipped by its own
 outline, so there is not a single bitmap in gameplay and no shared outline
-cache to go stale.
+cache to go stale. One tile lives for the whole game and draw order is
+zIndex, so a grab, a release and a reorder never rebuild a piece mid
+flight. While a piece is held, the finger owns it: the field draws from a
+finger state with no recomposition, the clamp comes from core, and the
+game state hears about the carry once, at release (D-055).
 
 Scene content is pure data: `Scene.kt` holds the shape types and the
 registry; `ScenePaintings.kt`, `ScenePaintingsMore.kt` and
@@ -417,6 +422,30 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   the deeper `#085949`, which is twice the luminance and still 4.89:1
   against paper type. The mark dropped its dark card and sits straight
   on the ground. One mark, one name, one line, and air.
+- D-054 The die-cut pass (owner-directed: pieces blended into the
+  background and a child had to squint to tell piece from table). Every
+  piece now draws as a die-cut: artwork, a dark ink cut edge (2.8 dp at
+  half alpha), a paper rim outside that edge, and a two-pass soft shadow;
+  the held piece drops deeper. The tray went from `#F2EBE0` to `#EBE0CC`,
+  one clear step deeper than the paper, because the scenes paint pale
+  pieces (clouds are near-white) and the old outline (white 3.2 dp plus
+  ink at 16 percent) was invisible against the surfaces it sat on. Scene
+  data untouched: the no-flat-piece law and every palette stand.
+- D-055 The touch pass (owner-directed: a tap sometimes did not pick a
+  piece up, and the whole field had to be buttery smooth). Three real
+  causes: detectDragGestures waited for touch slop, so a first touch gave
+  nothing back; every drag frame round-tripped through the host and
+  recomposed the whole field; and the release path rebuilt the piece's
+  node in a different loop, so the D-040 glide home silently teleported
+  instead of playing. Now a touch lifts the piece (grab on pointer-down,
+  no slop, a light haptic answers), the carry is drawn from a finger
+  state the field owns with zero recomposition while the clamp comes from
+  the pure core, and one commit at release runs core dropAt (clamp then
+  the drop rule). One tile node per piece for the whole game, ordered by
+  zIndex, so grab, release and reorder are springs from where the piece
+  really was. layout() clears a stale in-hand piece on reshape. The
+  host's dragTo is gone: PlayActions is onGrabAt (piece id) plus
+  onDropAt.
 
 ## Lessons that still bite
 
@@ -632,3 +661,12 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   pushed, the tree is clean, the aab folder is empty, and the last CI run
   on main is green. Standing open item unchanged: piece-level TalkBack.
   Next session picks up from: the 1.2 review verdict and tester feedback.
+- 2026-09-07: The owner delegated judgment for the session and named two
+  targets: pieces that blend into the background, and a pick-up that
+  sometimes needs more than one tap, both fixed before the next play
+  release. Diagnosis and fix in D-054 (die-cut edges, deeper tray) and
+  D-055 (touch lifts the piece, the carry leaves the game state alone,
+  one commit at release, node persistence restores the glides). Core
+  gained dropAt with a test; the play field split into Play.kt and
+  PlayPieces.kt under the line laws. Cut 1.3 (versionCode 13) for closed
+  testing, notes measured at 468 chars, no contact line per D-038.

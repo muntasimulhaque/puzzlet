@@ -95,8 +95,7 @@ class MainActivity : ComponentActivity() {
 
     private fun playActions() = PlayActions(
         onGrabAt = host::grabAt,
-        onDragTo = host::dragTo,
-        onDrop = host::drop,
+        onDropAt = host::dropAt,
         onLayout = host::layout,
         onRestart = host::restart,
     )
