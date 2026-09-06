@@ -304,7 +304,12 @@ private fun PlayTopBar(
             BackIcon(color = PuzzletColors.Ink)
         }
         Spacer(Modifier.weight(1f))
-        PeekCoin(scene = scene, peeking = peeking, onPeek = onPeek)
+        // The finish holds the picture up by itself, so the coin steps aside.
+        if (game.completed) {
+            Spacer(Modifier.size(52.dp))
+        } else {
+            PeekCoin(scene = scene, peeking = peeking, onPeek = onPeek)
+        }
     }
 }
 

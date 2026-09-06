@@ -54,7 +54,16 @@ data class SceneSpec(
 
 object Scenes {
 
-    /** The shipped shelf: four pictures that cut fairly at every ladder step. */
-    val all: List<SceneSpec> = listOf(sail(), house(), balloon(), fruit()).map { it.withClues() }
+    /**
+     * The shipped shelf: twelve pictures that cut fairly at every count
+     * (AGENTS.md, D-049). Four opened with the app, four came back from
+     * retirement once they carried a graded ground, and four are new.
+     * All inanimate: vehicles, buildings, plants, food, sky and water.
+     */
+    val all: List<SceneSpec> = listOf(
+        sail(), house(), balloon(), fruit(),
+        train(), castle(), rocket(), lighthouse(),
+        truck(), plane(), flowers(), icecream(),
+    ).map { it.withClues() }
     fun byId(id: String): SceneSpec = all.first { it.id == id }
 }

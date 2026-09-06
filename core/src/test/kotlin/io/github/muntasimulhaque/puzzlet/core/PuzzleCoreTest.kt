@@ -307,6 +307,7 @@ class PuzzleCoreTest {
                 if (shape is EllipseSpec) assertTrue(shape.rx > 0 && shape.ry > 0)
             }
         }
-        assertEquals(4, Scenes.all.size)
+        // Twelve on the shelf (D-049), and every one must cut fairly.
+        assertEquals(12, Scenes.all.size)
     }
 }
