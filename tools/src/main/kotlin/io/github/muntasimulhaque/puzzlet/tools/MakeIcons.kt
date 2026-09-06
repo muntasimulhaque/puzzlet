@@ -16,13 +16,14 @@ import kotlin.system.exitProcess
 /**
  * The launcher icon, drawn from code so every PNG has exactly one author.
  *
- * Design: a real jigsaw piece carrying the finished delight. The piece
- * speaks the same joint language as the game's own cut (a mushroom knob:
- * neck narrower than head, one tab up, one socket right), and inside it
- * sails the little boat (paper sails, coral hull, honey sun). A child
- * sees a puzzle; a parent feels warmth. Rendered three ways: the legacy
- * tile for API 24-25, the adaptive foreground for API 26+ over the flat
- * teal background, and a white monochrome sibling (piece silhouette) for
+ * Design: a real jigsaw piece carrying the finished delight. The joints
+ * are true knob curves, not circles on stems: each leaves its edge on a
+ * concave flare, pinches to a neck, swells to a round head and returns
+ * the same way, one tab up, one socket right. Inside sails the little
+ * boat (paper sails, coral hull, honey sun). A child sees a puzzle; a
+ * parent feels warmth. Rendered three ways: the legacy tile for
+ * API 24-25, the adaptive foreground for API 26+ over the flat paper
+ * background, and a white monochrome sibling (piece silhouette) for
  * Android 13+ themed icons.
  *
  * Colors here mirror app/src/main/res/values/colors.xml plus the scene
