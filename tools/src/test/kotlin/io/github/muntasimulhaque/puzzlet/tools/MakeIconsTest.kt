@@ -44,39 +44,40 @@ class MakeIconsTest {
     }
 
     @Test
-    fun `the knob keeps the engine proportions, neck narrower than head`() {
+    fun `the knob is die true, circular head on tangent stems`() {
         val d = IconDesign
-        assertEquals(d.KNOB_NECK, 0.34, 1e-9)
-        assertEquals(d.KNOB_HEAD, 0.95, 1e-9)
-        assertTrue("neck must be narrower than the head", d.KNOB_NECK < d.KNOB_HEAD)
-        assertEquals("tab tip", d.PY0 - d.KNOB_H, 0.16, 1e-9)
+        assertTrue("stem must be narrower than the head", d.KNOB_NECK < d.KNOB_HEAD_R)
+        assertTrue("fillet must fit inside the stem", d.KNOB_FIL < d.KNOB_NECK)
     }
 
     @Test
-    fun `legacy tile carries the piece with its boat`() {
+    fun `the block holds four pieces, red gold yellow orange`() {
+        val d = IconDesign
+        val x0 = d.BLOCK_X
+        val y0 = d.BLOCK_Y
+        val s = d.PIECE
+        val g = d.GAP
+        // Centred square block.
+        assertEquals(x0, 1.0 - (x0 + s * 2.0 + g), 1e-9)
+        assertEquals(y0, 1.0 - (y0 + s * 2.0 + g), 1e-9)
         val icon = legacyIcon(192)
         val p = tileMapper(192)
-        // Far outside the piece: fully transparent.
-        assertEquals(0, icon.getRGB(8, 8) ushr 24)
-        // The tab head, reaching up: teal.
-        val (tx, ty) = p(0.50, 0.17)
-        assertEquals("tab at ($tx, $ty) is not teal", IconDesign.TEAL, icon.getRGB(tx, ty))
-        // The socket bite, carved from the right edge: open canvas.
-        val (sx, sy) = p(0.74, 0.55)
-        assertEquals("socket at ($sx, $sy) must be transparent", 0, icon.getRGB(sx, sy) ushr 24)
-        // The honey sun.
-        val (ux, uy) = p(0.63, 0.42)
-        assertEquals("sun at ($ux, $uy) is not honey", IconDesign.HONEY, icon.getRGB(ux, uy))
-        // The main sail: paper.
-        val (mx, my) = p(0.55, 0.55)
-        assertEquals("mainsail at ($mx, $my) is not paper", IconDesign.PAPER, icon.getRGB(mx, my))
-        // The hull: coral.
-        val (hx, hy) = p(0.50, 0.67)
-        assertEquals("hull at ($hx, $hy) is not coral", IconDesign.CORAL, icon.getRGB(hx, hy))
+        // Piece bodies.
+        val (rx, ry) = p(x0 + 0.10, y0 + 0.10)
+        assertEquals("red at ($rx, $ry)", IconDesign.RED, icon.getRGB(rx, ry))
+        val (gx, gy) = p(x0 + s + g + 0.30, y0 + 0.10)
+        assertEquals("gold at ($gx, $gy)", IconDesign.GOLD, icon.getRGB(gx, gy))
+        val (yx, yy) = p(x0 + 0.10, y0 + s + g + 0.10)
+        assertEquals("yellow at ($yx, $yy)", IconDesign.YELLOW, icon.getRGB(yx, yy))
+        val (ox, oy) = p(x0 + s + g + 0.30, y0 + s + g + 0.10)
+        assertEquals("orange at ($ox, $oy)", IconDesign.ORANGE, icon.getRGB(ox, oy))
+        // The groove between the columns.
+        val (sx, sy) = p(x0 + s, y0 + 0.10)
+        assertEquals("seam at ($sx, $sy)", IconDesign.SEAM, icon.getRGB(sx, sy))
     }
 
     @Test
-    fun `tab tip and hull survive inside the launcher mask circle`() {
+    fun `block survives inside the launcher mask circle`() {
         val size = 432
         val layer = adaptiveLayer(size, IconDesign.PAPER)
         val p = fgMapper(size)
@@ -85,28 +86,26 @@ class MakeIconsTest {
             val (x, y) = p(u, v)
             return hypot(x - cx, y - cx) <= size * 66.0 / 108.0
         }
-        assertTrue("tab tip leaves the mask circle", inside(0.50, 0.16))
-        assertTrue("hull leaves the mask circle", inside(0.50, 0.67))
-        val (tx, ty) = p(0.50, 0.17)
-        assertEquals(IconDesign.TEAL, layer.getRGB(tx, ty))
-        val (hx, hy) = p(0.50, 0.67)
-        assertEquals(IconDesign.CORAL, layer.getRGB(hx, hy))
+        val d = IconDesign
+        val mid = d.BLOCK_X + d.PIECE + d.GAP / 2.0
+        assertTrue("block middle leaves the mask circle", inside(mid, 0.30))
+        val (rx, ry) = p(d.BLOCK_X + 0.10, d.BLOCK_Y + 0.10)
+        assertEquals(IconDesign.RED, layer.getRGB(rx, ry))
     }
 
     @Test
-    fun `adaptive layer is transparent canvas with the piece only`() {
+    fun `adaptive layer is transparent canvas with the block only`() {
         val layer = adaptiveLayer(432, IconDesign.PAPER)
         val p = fgMapper(432)
-        // Far from the piece: untouched canvas.
-        val (rx, ry) = p(0.05, 0.50)
+        // Far from the block: untouched canvas.
+        val (rx, ry) = p(0.02, 0.02)
         assertEquals(0, layer.getRGB(rx, ry) ushr 24)
-        // The sail: paper.
-        val (bx, by) = p(0.55, 0.55)
-        assertEquals(IconDesign.PAPER, layer.getRGB(bx, by))
-        // The monochrome sibling is the piece silhouette in white.
+        // A gold body pixel.
+        val d = IconDesign
+        val (gx, gy) = p(d.BLOCK_X + d.PIECE + d.GAP + 0.30, d.BLOCK_Y + 0.10)
+        assertEquals(IconDesign.GOLD, layer.getRGB(gx, gy))
+        // The monochrome sibling is the block silhouette in white.
         val mono = adaptiveLayer(432, IconDesign.WHITE)
-        assertEquals(IconDesign.WHITE, mono.getRGB(bx, by))
-        val (tx, ty) = p(0.50, 0.16)
-        assertEquals(IconDesign.WHITE, mono.getRGB(tx, ty))
+        assertEquals(IconDesign.WHITE, mono.getRGB(gx, gy))
     }
 }

@@ -4,7 +4,7 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 0.8 (versionCode 8) is cut for the closed testing
+Status: release 0.9 (versionCode 9) is cut for the closed testing
 track. Four pictures, each growing 4 to 6 to 9 pieces with wins. The goal
 always shows faintly on the board and a held piece lights its home; no
 difficulty screen, no peek coin, no restart button, no sound switch, no
