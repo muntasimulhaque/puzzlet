@@ -488,3 +488,7 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   exactly). The knob is now the engine's own bezier pair, same 0.34
   neck and 0.95 head numbers as core PieceCut, no jitter. Folds into
   0.9, all gates green.
+- 2026-09-06: The mark became the wooden reference itself (owner's
+  photo): a 2x2 block of four chunky interlocked pieces, red gold
+  yellow orange, dark grooves, die-true circle heads on tangent stems.
+  Still 0.9, notes rewritten for it (359 chars), all gates green.
