@@ -1,12 +1,5 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
-import java.awt.Color
-import java.awt.Graphics2D
-import java.awt.RenderingHints
-import java.awt.geom.AffineTransform
-import java.awt.geom.Path2D
-import java.awt.geom.Rectangle2D
-import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -15,14 +8,14 @@ import kotlin.system.exitProcess
 /**
  * The launcher icon, drawn from code so every PNG has exactly one author.
  *
- * Design: the toy itself. A 2x2 block of four chunky pieces (red, gold,
- * yellow, orange) with big round knobs locked into matching sockets and
- * dark grooves between them, the way a toddler's wooden tray puzzle
- * looks. Every joint is a circular head on tangent stems with concave
- * fillets to the edge: die true, never clip art. Rendered three ways:
- * the legacy tile for API 24-25 (paper tile, block on top), the adaptive
- * foreground for API 26+ (block on transparency over the paper
- * background), and a white monochrome sibling (block silhouette) for
+ * Design: the gather. Three chunky pieces (sky, coral, gold) closing in
+ * on the honey home piece with its sockets open, the moment before the
+ * click. One hero colour per piece, generous air around the field, flat
+ * fills only: drawn small on purpose so no launcher mask ever truncates
+ * a piece. Rendered three ways: the legacy tile for API 24-25 (paper
+ * tile, gather on top), the adaptive foreground for API 26+ (gather on
+ * transparency over the paper background, wholly inside the 66 dp mask
+ * circle), and a white monochrome sibling (gather silhouette) for
  * Android 13+ themed icons.
  *
  * Colors here mirror app/src/main/res/values/colors.xml plus the toy
@@ -34,14 +27,11 @@ object IconDesign {
     const val WHITE: Int = 0xFFFFFFFF.toInt()
     const val DEEP: Int = 0xFF085949.toInt()
 
-    /** The four toy pieces, row by row from the top left. */
-    const val RED: Int = 0xFFD9382B.toInt()
-    const val GOLD: Int = 0xFFF0AD2E.toInt()
-    const val YELLOW: Int = 0xFFF2CE1B.toInt()
-    const val ORANGE: Int = 0xFFE05E1C.toInt()
-
-    /** The grooves between the pieces. */
-    const val SEAM: Int = 0xFF3A2418.toInt()
+    /** The four gather pieces: sky and coral above, gold and honey home below. */
+    const val SKY: Int = 0xFF6BB7D6.toInt()
+    const val CORAL: Int = 0xFFE4572E.toInt()
+    const val HONEY_LIGHT: Int = 0xFFF6C84F.toInt()
+    const val HONEY: Int = 0xFFF0B429.toInt()
 
     /** The densities the house ships, in scale order. */
     val DENSITY_DIRS = arrayOf("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")
@@ -51,321 +41,81 @@ object IconDesign {
     const val LEGACY_DP = 48.0
     /** Adaptive layer canvas, dp (the 108 dp full-bleed square). */
     const val ADAPTIVE_DP = 108.0
-    /** Macro bleed of the mark on the adaptive canvas. */
-    const val FG_SPAN_DP = 90.0
-    /** Fraction of a full-art tile the mark spans. */
-    const val TILE_SPAN = 0.98
+    /**
+     * Adaptive foreground inset as a canvas fraction: the whole gather
+     * sits inside the 66 dp mask circle with room to spare, so no
+     * launcher shape ever truncates a piece.
+     */
+    const val FG_INSET = 0.27
+    /** Fraction of a full-art tile the gather field spans: small, corners safe. */
+    const val TILE_SPAN = 0.88
+    /**
+     * Store tile field fraction: the store corner bites deeper, so the
+     * field tucks slightly larger into the surviving corner tips.
+     */
+    const val STORE_SPAN = 0.90
     /** Legacy tile corner radius as a fraction of the tile. */
     const val LEGACY_CORNER_FRACTION = 0.22
     /** Store tile corner radius as a fraction of the tile. */
     const val STORE_CORNER_FRACTION = 0.19
 
-    /** The 2x2 block: piece side and groove width, in tile units. */
-    const val PIECE = 0.44
-    const val GAP = 0.024
-    const val BLOCK_X = (1.0 - (PIECE * 2.0 + GAP)) / 2.0
-    const val BLOCK_Y = (1.0 - (PIECE * 2.0 + GAP)) / 2.0
-    const val PIECE_CORNER = 0.045
+    /** Wanderer gap as a share of the piece side. */
+    const val GAP_FRAC = 0.17
 
     /**
-     * The knob, the way a die rule bends it: circular head of radius
-     * HEAD_R on centre height HEAD_C, stem half-width NECK, fillet FIL.
+     * Knob profile on a unit edge: stem half-width, head centre height,
+     * head radius. Shared with the candidate renderer, one source.
      */
-    const val KNOB_NECK = 0.034
-    const val KNOB_HEAD_C = 0.066
-    const val KNOB_HEAD_R = 0.066
-    const val KNOB_FIL = 0.014
-
-    /** Outer groove width, in tile units. Fills only: strokes drift across JDKs. */
-    const val SEAM_W = 0.022
-
-    /** Tab inset: tabs draw slightly small, so a groove ring shows around them. */
-    const val TAB_SHRINK = 0.84
-}
-
-/** One toy piece: body rect, edge joints, fill color. */
-private data class ToyPiece(
-    val x: Double,
-    val y: Double,
-    val color: Int,
-    /** Joints per edge in walk order: top, right, bottom, left. +1 tab, -1 socket, 0 flat. */
-    val joints: List<Int>,
-)
-
-private fun toyPieces(): List<ToyPiece> {
-    val d = IconDesign
-    val x0 = d.BLOCK_X
-    val y0 = d.BLOCK_Y
-    val s = d.PIECE
-    return listOf(
-        ToyPiece(x0, y0, d.RED, listOf(0, -1, 1, 0)),
-        ToyPiece(x0 + s + d.GAP, y0, d.GOLD, listOf(0, 0, -1, 1)),
-        ToyPiece(x0, y0 + s + d.GAP, d.YELLOW, listOf(-1, 1, 0, 0)),
-        ToyPiece(x0 + s + d.GAP, y0 + s + d.GAP, d.ORANGE, listOf(1, 0, 0, -1)),
-    )
-}
-
-/**
- * One die joint. (ox, oy) is the edge start, (ux, uy) the edge
- * direction, (nx, ny) the outward normal; c is the joint centre in edge
- * distance from the start, sign +1 reaches outward, -1 carves inward.
- */
-private fun traceKnob(
-    path: Path2D.Double,
-    ox: Double, oy: Double,
-    ux: Double, uy: Double,
-    nx: Double, ny: Double,
-    c: Double, sign: Double,
-    nw: Double, hc: Double, r: Double, fil: Double,
-    shrink: Double,
-) {
-    dotTo(path, ox, oy, ux, uy, nx, ny, c - nw - fil, 0.0, c, shrink, sign)
-    knobCurve(path, ox, oy, ux, uy, nx, ny, c, sign, nw, hc, r, fil, shrink)
-}
-
-/** A plotted point with the tab inset mapping applied. */
-private fun dotTo(
-    path: Path2D.Double,
-    ox: Double, oy: Double,
-    ux: Double, uy: Double,
-    nx: Double, ny: Double,
-    t: Double, o: Double,
-    c: Double, shrink: Double, sign: Double,
-) {
-    val st = c + (t - c) * shrink
-    val so = o * shrink
-    path.lineTo(ox + ux * st + nx * so * sign, oy + uy * st + ny * so * sign)
-}
-
-/** The joint curve itself, from the current point (its start). */
-private fun knobCurve(
-    path: Path2D.Double,
-    ox: Double, oy: Double,
-    ux: Double, uy: Double,
-    nx: Double, ny: Double,
-    c: Double, sign: Double,
-    nw: Double, hc: Double, r: Double, fil: Double,
-    shrink: Double,
-) {
-    fun dot(t: Double, o: Double) {
-        dotTo(path, ox, oy, ux, uy, nx, ny, t, o, c, shrink, sign)
-    }
-    fun cub(t1: Double, o1: Double, t2: Double, o2: Double, t3: Double, o3: Double) {
-        path.curveTo(
-            ox + ux * (c + (t1 - c) * shrink) + nx * (o1 * shrink) * sign,
-            oy + uy * (c + (t1 - c) * shrink) + ny * (o1 * shrink) * sign,
-            ox + ux * (c + (t2 - c) * shrink) + nx * (o2 * shrink) * sign,
-            oy + uy * (c + (t2 - c) * shrink) + ny * (o2 * shrink) * sign,
-            ox + ux * (c + (t3 - c) * shrink) + nx * (o3 * shrink) * sign,
-            oy + uy * (c + (t3 - c) * shrink) + ny * (o3 * shrink) * sign,
-        )
-    }
-    // Tangent points from the stem feet to the head circle, solved exact:
-    // |T - C| = r with (T - P) perpendicular to (T - C), P = (-nw, 0).
-    val px = -nw
-    val k = r * r - hc * hc
-    val qa = hc * hc + px * px
-    val qb = 2 * k * hc - 2 * px * px * hc
-    val qc = k * k + px * px * hc * hc - r * r * px * px
-    val disc = qb * qb - 4 * qa * qc
-    require(disc >= 0) { "Stem misses the head circle" }
-    val v = (-qb + kotlin.math.sqrt(disc)) / (2 * qa)
-    val u = (k + hc * v) / px
-    // Fillet onto the stem foot, stem up to the tangent, round the head.
-    dot(c - nw - fil, 0.0)
-    cub(
-        c - nw, 0.0,
-        c - nw, fil,
-        c - nw, fil,
-    )
-    dot(c + u, v)
-    var deg = Math.toDegrees(kotlin.math.atan2(v - hc, u))
-    if (deg < 90.0) deg += 360.0
-    val endDeg = Math.toDegrees(kotlin.math.atan2(v - hc, -u))
-    var a = deg
-    while (a > endDeg) {
-        val rad = Math.toRadians(a)
-        dot(c + r * kotlin.math.cos(rad), hc + r * kotlin.math.sin(rad))
-        a -= 0.75
-    }
-    dot(c - u, v)
-    dot(c + nw, fil)
-    cub(
-        c + nw, fil,
-        c + nw, 0.0,
-        c + nw + fil, 0.0,
-    )
-}
-
-/** Closed groove negative of one joint, chorded just inside the edge. */
-private fun knobClosed(
-    ox: Double, oy: Double,
-    ux: Double, uy: Double,
-    nx: Double, ny: Double,
-    c: Double, sign: Double,
-    nw: Double, hc: Double, r: Double, fil: Double,
-): Path2D.Double {
-    val pre = 0.004
-    val chord = -0.004
-    val path = Path2D.Double()
-    path.moveTo(
-        ox + ux * (c - nw - fil - pre) + nx * chord * sign,
-        oy + uy * (c - nw - fil - pre) + ny * chord * sign,
-    )
-    path.lineTo(
-        ox + ux * (c - nw - fil) + nx * 0.0 * sign,
-        oy + uy * (c - nw - fil) + ny * 0.0 * sign,
-    )
-    knobCurve(path, ox, oy, ux, uy, nx, ny, c, sign, nw, hc, r, fil, 1.0)
-    path.lineTo(
-        ox + ux * (c + nw + fil + pre) + nx * chord * sign,
-        oy + uy * (c + nw + fil + pre) + ny * chord * sign,
-    )
-    path.closePath()
-    return path
-}
-
-/** Groove negatives of one piece's joints, in that piece's edge frames. */
-private fun pieceNegatives(p: ToyPiece): List<Path2D.Double> {
-    val d = IconDesign
-    val x0 = p.x
-    val y0 = p.y
-    val x1 = p.x + d.PIECE
-    val y1 = p.y + d.PIECE
-    val nw = d.KNOB_NECK
-    val hc = d.KNOB_HEAD_C
-    val hr = d.KNOB_HEAD_R
-    val fil = d.KNOB_FIL
-    val out = ArrayList<Path2D.Double>(2)
-    if (p.joints[0] != 0) out.add(knobClosed(x0, y0, 1.0, 0.0, 0.0, -1.0, d.PIECE / 2.0, p.joints[0].toDouble(), nw, hc, hr, fil))
-    if (p.joints[1] != 0) out.add(knobClosed(x1, y0, 0.0, 1.0, 1.0, 0.0, d.PIECE / 2.0, p.joints[1].toDouble(), nw, hc, hr, fil))
-    if (p.joints[2] != 0) out.add(knobClosed(x1, y1, -1.0, 0.0, 0.0, 1.0, d.PIECE / 2.0, p.joints[2].toDouble(), nw, hc, hr, fil))
-    if (p.joints[3] != 0) out.add(knobClosed(x0, y1, 0.0, -1.0, -1.0, 0.0, d.PIECE / 2.0, p.joints[3].toDouble(), nw, hc, hr, fil))
-    return out
-}
-/** Outline of one toy piece, with round outer corners. */
-private fun toyOutline(p: ToyPiece, trueShapes: Boolean = false): Path2D.Double {
-    fun shrinkForJoint(joint: Int) = if (trueShapes || joint <= 0) 1.0 else IconDesign.TAB_SHRINK
-    val d = IconDesign
-    val r = d.PIECE_CORNER
-    val x0 = p.x
-    val y0 = p.y
-    val x1 = p.x + d.PIECE
-    val y1 = p.y + d.PIECE
-    val nw = d.KNOB_NECK
-    val hc = d.KNOB_HEAD_C
-    val hr = d.KNOB_HEAD_R
-    val fil = d.KNOB_FIL
-    val path = Path2D.Double()
-    // Top edge, left to right.
-    path.moveTo(x0 + r, y0)
-    edgeInto(path, p.joints[0], x0, y0, 1.0, 0.0, 0.0, -1.0, d.PIECE / 2.0, nw, hc, hr, fil, shrinkForJoint(p.joints[0]))
-    path.lineTo(x1 - r, y0)
-    path.quadTo(x1, y0, x1, y0 + r)
-    // Right edge, top to bottom.
-    edgeInto(path, p.joints[1], x1, y0, 0.0, 1.0, 1.0, 0.0, d.PIECE / 2.0, nw, hc, hr, fil, shrinkForJoint(p.joints[1]))
-    path.lineTo(x1, y1 - r)
-    path.quadTo(x1, y1, x1 - r, y1)
-    // Bottom edge, right to left.
-    edgeInto(path, p.joints[2], x1, y1, -1.0, 0.0, 0.0, 1.0, d.PIECE / 2.0, nw, hc, hr, fil, shrinkForJoint(p.joints[2]))
-    path.lineTo(x0 + r, y1)
-    path.quadTo(x0, y1, x0, y1 - r)
-    // Left edge, bottom to top.
-    edgeInto(path, p.joints[3], x0, y1, 0.0, -1.0, -1.0, 0.0, d.PIECE / 2.0, nw, hc, hr, fil, shrinkForJoint(p.joints[3]))
-    path.lineTo(x0, y0 + r)
-    path.quadTo(x0, y0, x0 + r, y0)
-    path.closePath()
-    return path
-}
-
-/** One edge: flat line, or the joint at its middle. c is edge distance of the middle. */
-private fun edgeInto(
-    path: Path2D.Double,
-    joint: Int,
-    ox: Double, oy: Double,
-    ux: Double, uy: Double,
-    nx: Double, ny: Double,
-    c: Double,
-    nw: Double, hc: Double, r: Double, fil: Double,
-    shrink: Double,
-) {
-    if (joint == 0) {
-        path.lineTo(ox + ux * (c + IconDesign.PIECE / 2.0), oy + uy * (c + IconDesign.PIECE / 2.0))
-        return
-    }
-    traceKnob(path, ox, oy, ux, uy, nx, ny, c, joint.toDouble(), nw, hc, r, fil, shrink)
+    const val KNOB_STEM = 0.15
+    const val KNOB_HEAD_C = 0.085
+    const val KNOB_HEAD_R = 0.155
 }
 
 internal enum class Layer { TILE, FOREGROUND, MONO }
 
-private fun beginIcon(image: BufferedImage): Graphics2D {
-    val g = image.createGraphics()
-    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-    g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
-    g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
-    g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY)
-    return g
-}
-
-private fun unitTransform(size: Int, span: Double): AffineTransform {
-    val t = AffineTransform.getTranslateInstance(size / 2.0 - 0.5 * span, size / 2.0 - 0.5 * span)
-    t.concatenate(AffineTransform.getScaleInstance(span, span))
-    return t
-}
-
-/** One icon layer: paper tile with the block, bare block, or white block. Fills of plain paths only: no strokes, no booleans, so every JDK pins the same bytes. */
+/**
+ * One icon layer: paper tile with the gather, bare gather, or white
+ * gather. The gather painter owns every pixel; fills of plain paths
+ * only, no strokes, no booleans, so every JDK pins the same bytes.
+ */
 internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage {
     val d = IconDesign
-    val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
-    val g = beginIcon(image)
-    if (layer == Layer.TILE) {
-        val corner = size * cornerFraction * 2.0
-        g.color = Color(d.PAPER, true)
-        g.fill(RoundRectangle2D.Double(0.0, 0.0, size.toDouble(), size.toDouble(), corner, corner))
+    return when (layer) {
+        Layer.TILE -> {
+            // Legacy and store tiles share this branch; the corner
+            // fraction tells them apart, each with its fitted span.
+            val span = if (cornerFraction == d.LEGACY_CORNER_FRACTION) d.TILE_SPAN else d.STORE_SPAN
+            Gather.paint(
+                size,
+                tile = true,
+                groundArgb = d.PAPER,
+                cornerFraction = cornerFraction,
+                insetFrac = (1.0 - span) / 2.0,
+            )
+        }
+        Layer.FOREGROUND -> Gather.paint(
+            size,
+            tile = false,
+            groundArgb = 0,
+            insetFrac = d.FG_INSET,
+        )
+        Layer.MONO -> Gather.paint(
+            size,
+            tile = false,
+            groundArgb = 0,
+            mono = true,
+            insetFrac = d.FG_INSET,
+        )
     }
-    val span = if (layer == Layer.FOREGROUND) size * d.FG_SPAN_DP / d.ADAPTIVE_DP else size * d.TILE_SPAN
-    val t = unitTransform(size, span)
-    fun baked(shape: java.awt.Shape) = Path2D.Double(shape, t)
-    val mono = layer == Layer.MONO
-    val pieces = toyPieces()
-    if (mono) {
-        g.color = Color(d.WHITE, true)
-        for (p in pieces) g.fill(baked(toyOutline(p)))
-        g.dispose()
-        return image
-    }
-    val bx = d.BLOCK_X - d.SEAM_W / 2.0
-    val by = d.BLOCK_Y - d.SEAM_W / 2.0
-    val bs = d.PIECE * 2.0 + d.GAP + d.SEAM_W
-    val bc = (d.PIECE_CORNER + d.SEAM_W / 2.0) * 2.0
-    val midX = d.BLOCK_X + d.PIECE + d.GAP / 2.0
-    val midY = d.BLOCK_Y + d.PIECE + d.GAP / 2.0
-    val barX = midX - d.GAP / 2.0 - d.SEAM_W / 2.0
-    val barY = midY - d.GAP / 2.0 - d.SEAM_W / 2.0
-    val barW = d.GAP + d.SEAM_W
-    val barL = d.PIECE * 2.0 + d.GAP + d.SEAM_W
-    g.color = Color(d.SEAM, true)
-    // Outer groove, straight grooves, every joint groove.
-    g.fill(baked(RoundRectangle2D.Double(bx, by, bs, bs, bc, bc)))
-    g.fill(baked(Rectangle2D.Double(barX, by, barW, barL)))
-    g.fill(baked(Rectangle2D.Double(bx, barY, barL, barW)))
-    for (p in pieces) for (neg in pieceNegatives(p)) g.fill(baked(neg))
-    // The pieces on top; tabs sit small inside their sockets, ringed dark.
-    for (p in pieces) {
-        g.color = Color(p.color, true)
-        g.fill(baked(toyOutline(p)))
-    }
-    g.dispose()
-    return image
 }
 
-/** The legacy tile: paper tile with the block, for API 24-25. */
+/** The legacy tile: paper tile with the gather, for API 24-25. */
 fun legacyIcon(sizePx: Int): BufferedImage =
     paintLayer(sizePx, Layer.TILE, IconDesign.LEGACY_CORNER_FRACTION)
 
-/** One adaptive layer: the block on transparency. */
+/** One adaptive layer: the gather on transparency. */
 fun adaptiveLayer(sizePx: Int, pieceArgb: Int): BufferedImage {
-    // The monochrome sibling renders the block silhouette in white; the
+    // The monochrome sibling renders the gather silhouette in white; the
     // paper argument stays so every caller keeps one shape of call.
     if (pieceArgb == IconDesign.WHITE) return paintLayer(sizePx, Layer.MONO, 0.0)
     return paintLayer(sizePx, Layer.FOREGROUND, 0.0)

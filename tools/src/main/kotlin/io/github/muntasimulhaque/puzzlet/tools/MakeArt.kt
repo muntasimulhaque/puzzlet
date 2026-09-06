@@ -1,5 +1,6 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
+import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.RenderingHints
 import java.awt.geom.Rectangle2D
@@ -8,9 +9,10 @@ import java.io.File
 import javax.imageio.ImageIO
 
 /**
- * The Play Store art, drawn from the same boat as the launcher: lagoon
- * teal, warm paper, the little sailboat, and Baloo 2 lettering through
- * the clean-text path so large words never slice.
+ * The Play Store art, drawn from the same gather as the launcher: deep
+ * lagoon ground, the gather tile, a macro gather bleeding off the edge,
+ * and Baloo 2 lettering through the clean-text path so large words
+ * never slice.
  *
  * Outputs (never hand-edited; regenerate with :tools:makeArt):
  *   play-store/feature-graphic-1024x500.png
@@ -21,7 +23,7 @@ import javax.imageio.ImageIO
  */
 object MakeArt {
 
-    /** The 1024 x 500 feature graphic: the boat tile, the name, one line. */
+    /** The 1024 x 500 feature graphic: the gather tile, the name, one line. */
     fun featureGraphic(rootDir: File): BufferedImage {
         val w = 1024
         val h = 500
@@ -31,15 +33,26 @@ object MakeArt {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
         g.paint = Color(IconDesign.DEEP)
         g.fill(Rectangle2D.Double(0.0, 0.0, w.toDouble(), h.toDouble()))
-        g.drawImage(storeTile(380), 72, 60, null)
-        drawCleanString(g, "Puzzlet", "baloo2_extrabold.ttf", 140f, IconDesign.PAPER, 474f, 272f, rootDir)
-        drawCleanString(g, "A calm jigsaw for small hands.", "baloo2_bold.ttf", 30f, 0xE6FAF6EF.toInt(), 478f, 356f, rootDir)
         g.dispose()
+        pasteArt(image, Gather.paint(640, tile = false, groundArgb = 0, gapFrac = 0.55), 500, 44, 0.35f)
+        pasteArt(image, Gather.paint(370, tile = true, groundArgb = IconDesign.DEEP, gapFrac = 0.17), 76, 65, 1.0f)
+        val g2 = image.createGraphics()
+        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        drawCleanString(g2, "Puzzlet", "baloo2_extrabold.ttf", 116f, IconDesign.PAPER, 490f, 252f, rootDir)
+        drawCleanString(g2, "A calm jigsaw for small hands.", "baloo2_bold.ttf", 28f, 0xD9FAF6EF.toInt(), 494f, 330f, rootDir)
+        g2.dispose()
         return image
     }
 
     /** The 512 x 512 store icon: the launcher tile, full bleed. */
     fun storeIcon(): BufferedImage = storeTile(512)
+}
+
+private fun pasteArt(dst: BufferedImage, src: BufferedImage, x: Int, y: Int, alpha: Float) {
+    val g = dst.createGraphics()
+    g.composite = AlphaComposite.SrcOver.derive(alpha)
+    g.drawImage(src, x, y, null)
+    g.dispose()
 }
 
 fun main(args: Array<String>) {

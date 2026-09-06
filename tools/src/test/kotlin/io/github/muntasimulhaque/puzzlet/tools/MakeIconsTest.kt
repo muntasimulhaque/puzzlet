@@ -29,83 +29,128 @@ class MakeIconsTest {
         b.deleteRecursively()
     }
 
-    /** Map unit space the way paintLayer does for a full-art tile. */
-    private fun tileMapper(size: Int): (Double, Double) -> Pair<Int, Int> {
-        val span = size * IconDesign.TILE_SPAN
-        val o = size / 2.0 - 0.5 * span
-        return { u: Double, v: Double -> Pair((o + u * span).toInt(), (o + v * span).toInt()) }
+    /** The gather frame: content origin, content span, piece side, gap, home origin, in px. */
+    private data class Frame(
+        val se: Double,
+        val s: Double,
+        val gap: Double,
+        val hx: Double,
+        val hy: Double,
+    )
+
+    /** Map canvas pixels the way Gather.paint lays out its field for an inset fraction. */
+    private fun gatherFrame(size: Int, insetFrac: Double): Frame {
+        val o = size * insetFrac
+        val se = size * (1.0 - 2.0 * insetFrac)
+        val s = se * 0.40
+        val gap = s * IconDesign.GAP_FRAC
+        return Frame(se, s, gap, o + se / 2.0 + gap / 2.0, o + se / 2.0 + gap / 2.0)
     }
 
-    /** Map unit space the way paintLayer does for the adaptive foreground. */
-    private fun fgMapper(size: Int): (Double, Double) -> Pair<Int, Int> {
-        val span = size * IconDesign.FG_SPAN_DP / IconDesign.ADAPTIVE_DP
-        val o = size / 2.0 - 0.5 * span
-        return { u: Double, v: Double -> Pair((o + u * span).toInt(), (o + v * span).toInt()) }
-    }
+    private fun fgFrame(size: Int): Frame = gatherFrame(size, IconDesign.FG_INSET)
+
+    private fun tileFrame(size: Int): Frame =
+        gatherFrame(size, (1.0 - IconDesign.TILE_SPAN) / 2.0)
+
+    /** Piece body centres: home, top wanderer, left wanderer, corner wanderer. */
+    private fun Frame.centres(): List<Triple<Double, Double, Int>> = listOf(
+        Triple(hx + s / 2.0, hy + s / 2.0, IconDesign.HONEY),
+        Triple(hx + s / 2.0, hy - s - gap + s / 2.0, IconDesign.CORAL),
+        Triple(hx - s - gap + s / 2.0, hy + s / 2.0, IconDesign.HONEY_LIGHT),
+        Triple(hx - s - gap + s / 2.0, hy - s - gap + s / 2.0, IconDesign.SKY),
+    )
 
     @Test
-    fun `the knob is die true, circular head on tangent stems`() {
+    fun `the knob profile stays sane`() {
         val d = IconDesign
-        assertTrue("stem must be narrower than the head", d.KNOB_NECK < d.KNOB_HEAD_R)
-        assertTrue("fillet must fit inside the stem", d.KNOB_FIL < d.KNOB_NECK)
+        assertTrue("stem must be narrower than the head", d.KNOB_STEM < d.KNOB_HEAD_R)
+        assertTrue("the head must fit its edge half", d.KNOB_HEAD_C + d.KNOB_HEAD_R < 0.5)
+        assertTrue("wanderers need a positive gap", d.GAP_FRAC > 0.0)
     }
 
     @Test
-    fun `the block holds four pieces, red gold yellow orange`() {
-        val d = IconDesign
-        val x0 = d.BLOCK_X
-        val y0 = d.BLOCK_Y
-        val s = d.PIECE
-        val g = d.GAP
-        // Centred square block.
-        assertEquals(x0, 1.0 - (x0 + s * 2.0 + g), 1e-9)
-        assertEquals(y0, 1.0 - (y0 + s * 2.0 + g), 1e-9)
-        val icon = legacyIcon(192)
-        val p = tileMapper(192)
-        // Piece bodies.
-        val (rx, ry) = p(x0 + 0.10, y0 + 0.10)
-        assertEquals("red at ($rx, $ry)", IconDesign.RED, icon.getRGB(rx, ry))
-        val (gx, gy) = p(x0 + s + g + 0.30, y0 + 0.10)
-        assertEquals("gold at ($gx, $gy)", IconDesign.GOLD, icon.getRGB(gx, gy))
-        val (yx, yy) = p(x0 + 0.10, y0 + s + g + 0.10)
-        assertEquals("yellow at ($yx, $yy)", IconDesign.YELLOW, icon.getRGB(yx, yy))
-        val (ox, oy) = p(x0 + s + g + 0.30, y0 + s + g + 0.10)
-        assertEquals("orange at ($ox, $oy)", IconDesign.ORANGE, icon.getRGB(ox, oy))
-        // The groove between the columns.
-        val (sx, sy) = p(x0 + s + g / 2.0, y0 + 0.10)
-        assertEquals("seam at ($sx, $sy)", IconDesign.SEAM, icon.getRGB(sx, sy))
+    fun `the gather holds four pieces in their colours`() {
+        val size = 384
+        val icon = legacyIcon(size)
+        val f = tileFrame(size)
+        val names = listOf("honey home", "coral top", "gold left", "sky corner")
+        for ((i, c) in f.centres().withIndex()) {
+            val x = c.first.toInt()
+            val y = c.second.toInt()
+            assertEquals("${names[i]} at ($x, $y)", c.third, icon.getRGB(x, y))
+        }
     }
 
     @Test
-    fun `block survives inside the launcher mask circle`() {
+    fun `the foreground survives inside the launcher mask circle`() {
         val size = 432
         val layer = adaptiveLayer(size, IconDesign.PAPER)
-        val p = fgMapper(size)
         val cx = size / 2.0
-        fun inside(u: Double, v: Double): Boolean {
-            val (x, y) = p(u, v)
-            return hypot(x - cx, y - cx) <= size * 66.0 / 108.0
+        // 32 dp of the 108 dp canvas: 1 dp of air inside the 66 dp mask.
+        val limit = size * 32.0 / 108.0
+        for (y in 0 until size) {
+            for (x in 0 until size) {
+                if ((layer.getRGB(x, y) ushr 24) > 16) {
+                    assertTrue(
+                        "art escapes the mask circle at ($x, $y)",
+                        hypot(x - cx, y - cx) <= limit,
+                    )
+                }
+            }
         }
-        val d = IconDesign
-        val mid = d.BLOCK_X + d.PIECE + d.GAP / 2.0
-        assertTrue("block middle leaves the mask circle", inside(mid, 0.30))
-        val (rx, ry) = p(d.BLOCK_X + 0.10, d.BLOCK_Y + 0.10)
-        assertEquals(IconDesign.RED, layer.getRGB(rx, ry))
     }
 
     @Test
-    fun `adaptive layer is transparent canvas with the block only`() {
-        val layer = adaptiveLayer(432, IconDesign.PAPER)
-        val p = fgMapper(432)
-        // Far from the block: untouched canvas.
-        val (rx, ry) = p(0.02, 0.02)
-        assertEquals(0, layer.getRGB(rx, ry) ushr 24)
-        // A gold body pixel.
-        val d = IconDesign
-        val (gx, gy) = p(d.BLOCK_X + d.PIECE + d.GAP + 0.30, d.BLOCK_Y + 0.10)
-        assertEquals(IconDesign.GOLD, layer.getRGB(gx, gy))
-        // The monochrome sibling is the block silhouette in white.
-        val mono = adaptiveLayer(432, IconDesign.WHITE)
-        assertEquals(IconDesign.WHITE, mono.getRGB(gx, gy))
+    fun `tile art stays inside the tile silhouette`() {
+        checkSilhouette(storeTile(512), 512, IconDesign.STORE_CORNER_FRACTION, "store")
+        checkSilhouette(legacyIcon(192), 192, IconDesign.LEGACY_CORNER_FRACTION, "legacy")
+    }
+
+    private fun checkSilhouette(
+        tile: java.awt.image.BufferedImage,
+        size: Int,
+        cornerFraction: Double,
+        name: String,
+    ) {
+        // Signed distance outside the rounded tile, in px: antialiasing
+        // paints a sub-pixel rim exactly on the boundary, so solid pixels
+        // pass within a 1.5 px tolerance while a real poke stands far out.
+        fun outside(x: Double, y: Double): Double {
+            val r = size * cornerFraction
+            val qx = kotlin.math.abs(x - size / 2.0) - (size / 2.0 - r)
+            val qy = kotlin.math.abs(y - size / 2.0) - (size / 2.0 - r)
+            val ax = kotlin.math.max(qx, 0.0)
+            val ay = kotlin.math.max(qy, 0.0)
+            return kotlin.math.hypot(ax, ay) + kotlin.math.min(kotlin.math.max(qx, qy), 0.0) - r
+        }
+        for (y in 0 until size step 2) {
+            for (x in 0 until size step 2) {
+                if ((tile.getRGB(x, y) ushr 24) > 200) {
+                    assertTrue(
+                        "$name art pokes past the tile silhouette at ($x, $y)",
+                        outside(x.toDouble(), y.toDouble()) <= 1.5,
+                    )
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `adaptive layer is transparent canvas with the gather only`() {
+        val size = 432
+        val layer = adaptiveLayer(size, IconDesign.PAPER)
+        // Far from the gather: untouched canvas.
+        assertEquals(0, layer.getRGB(4, 4) ushr 24)
+        assertEquals(0, layer.getRGB(size - 5, 4) ushr 24)
+        // A honey home body pixel.
+        val f = fgFrame(size)
+        val home = f.centres()[0]
+        assertEquals(IconDesign.HONEY, layer.getRGB(home.first.toInt(), home.second.toInt()))
+        // The monochrome sibling is the gather silhouette in white.
+        val mono = adaptiveLayer(size, IconDesign.WHITE)
+        for (c in f.centres()) {
+            assertEquals(IconDesign.WHITE, mono.getRGB(c.first.toInt(), c.second.toInt()))
+        }
+        assertEquals(0, mono.getRGB(4, 4) ushr 24)
     }
 }

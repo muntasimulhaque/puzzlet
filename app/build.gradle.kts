@@ -13,8 +13,8 @@ android {
         applicationId = "io.github.muntasimulhaque.puzzlet"
         minSdk = 24
         targetSdk = 37
-        versionCode = 9
-        versionName = "0.9"
+        versionCode = 10
+        versionName = "1.0"
 
         // Instrumented tests (the emulator screenshot capture, arriving with
         // M1 gameplay) use AndroidX's runner.
