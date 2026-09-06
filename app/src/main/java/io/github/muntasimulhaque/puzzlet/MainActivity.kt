@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
         keepBarsHidden()
         setContent {
             val screen by host.screen.collectAsStateWithLifecycle()
+            val shelf by host.shelf.collectAsStateWithLifecycle()
             // A toy-box, not a document: text follows the system font setting,
             // but only so far. Past this cap the words stop fitting the fixed
             // play surfaces and begin to overlap them, which serves nobody, so
@@ -70,7 +71,10 @@ class MainActivity : ComponentActivity() {
                 PuzzletTheme {
                     when (val s = screen) {
                         Screen.Home -> Gallery(
+                            shelf = shelf,
                             onChoose = host::play,
+                            onChooseAt = host::playAt,
+                            onSound = host::setSound,
                         )
                         is Screen.Playing -> PlayScreen(
                             game = s.game,
@@ -78,7 +82,9 @@ class MainActivity : ComponentActivity() {
                             pulseId = s.pulseId,
                             pulseAt = s.pulseAt,
                             restartAt = s.restartAt,
+                            peeking = s.peeking,
                             actions = playActions(),
+                            onPeek = host::setPeek,
                             onBack = host::home,
                         )
                     }

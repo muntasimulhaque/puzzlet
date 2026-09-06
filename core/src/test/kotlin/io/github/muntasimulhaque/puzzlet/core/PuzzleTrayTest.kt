@@ -2,6 +2,7 @@ package io.github.muntasimulhaque.puzzlet.core
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import java.lang.Math.abs
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -62,6 +63,52 @@ class PuzzleTrayTest {
                     w <= 1e-6 || h <= 1e-6,
                 )
             }
+        }
+    }
+
+    @Test
+    fun `the seats form one even grid, on every screen shape`() {
+        val eps = 1e-6
+        for (seed in 1L..10L) for ((rows, cols) in difficulties) for (field in fields) {
+            val p = createPuzzle("sail", rows, cols, field, cap, seed)
+            val rowsOfSeats = ArrayList<MutableList<Vec2>>()
+            for (seat in p.seats.sortedBy { it.y }) {
+                val row = rowsOfSeats.lastOrNull()
+                if (row == null || abs(seat.y - row[0].y) > 1.0) rowsOfSeats.add(mutableListOf(seat))
+                else row.add(seat)
+            }
+            var stepX = 0.0
+            var stepY = 0.0
+            for (row in rowsOfSeats) {
+                val xs = row.map { it.x }.sorted()
+                for (i in 1 until xs.size) {
+                    val step = xs[i] - xs[i - 1]
+                    if (stepX == 0.0) stepX = step
+                    assertTrue(
+                        "seed=$seed ${rows}x$cols uneven gap $step vs $stepX",
+                        abs(step - stepX) < eps,
+                    )
+                }
+            }
+            val ys = rowsOfSeats.map { it[0].y }
+            for (i in 1 until ys.size) {
+                val step = ys[i] - ys[i - 1]
+                if (stepY == 0.0) stepY = step
+                assertTrue(
+                    "seed=$seed ${rows}x$cols uneven row gap $step vs $stepY",
+                    abs(step - stepY) < eps,
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `the snug shelf never depends on the jumble`() {
+        for ((rows, cols) in difficulties) for (field in fields) {
+            val a = createPuzzle("house", rows, cols, field, cap, 7L, 21L)
+            val b = createPuzzle("house", rows, cols, field, cap, 7L, 22L)
+            assertEquals(a.tray.h, b.tray.h, 1e-6)
+            assertEquals(a.board.w, b.board.w, 1e-6)
         }
     }
 

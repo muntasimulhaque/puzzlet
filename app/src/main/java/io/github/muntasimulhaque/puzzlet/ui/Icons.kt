@@ -83,6 +83,63 @@ fun MenuIcon(modifier: Modifier = Modifier, color: Color) {
     }
 }
 
+/**
+ * The sound switch's own mark: a speaker cone, with its two waves when
+ * sound is on and a cross when it is off. Drawn here like every other
+ * icon, no pack and no font.
+ */
+@Composable
+fun SpeakerIcon(modifier: Modifier = Modifier, on: Boolean, color: Color) {
+    GeoIcon(modifier, color, size = 26.dp) { w, h ->
+        val cone = Path().apply {
+            moveTo(w * 0.22f, h * 0.40f)
+            lineTo(w * 0.38f, h * 0.40f)
+            lineTo(w * 0.56f, h * 0.22f)
+            lineTo(w * 0.56f, h * 0.78f)
+            lineTo(w * 0.38f, h * 0.60f)
+            lineTo(w * 0.22f, h * 0.60f)
+            close()
+        }
+        drawPath(cone, color)
+        if (on) {
+            drawArc(
+                color,
+                startAngle = -50f,
+                sweepAngle = 100f,
+                useCenter = false,
+                topLeft = Offset(w * 0.62f, h * 0.29f),
+                size = Size(w * 0.20f, h * 0.42f),
+                style = stroke(w),
+            )
+            drawArc(
+                color,
+                startAngle = -55f,
+                sweepAngle = 110f,
+                useCenter = false,
+                topLeft = Offset(w * 0.72f, h * 0.20f),
+                size = Size(w * 0.26f, h * 0.60f),
+                style = stroke(w),
+            )
+        } else {
+            val slash = Stroke(width = w * 0.11f, cap = StrokeCap.Round)
+            drawLine(
+                color,
+                start = Offset(w * 0.66f, h * 0.28f),
+                end = Offset(w * 0.94f, h * 0.72f),
+                strokeWidth = slash.width,
+                cap = StrokeCap.Round,
+            )
+            drawLine(
+                color,
+                start = Offset(w * 0.94f, h * 0.28f),
+                end = Offset(w * 0.66f, h * 0.72f),
+                strokeWidth = slash.width,
+                cap = StrokeCap.Round,
+            )
+        }
+    }
+}
+
 private fun stroke(w: Float) = Stroke(
     width = w * 0.11f,
     cap = StrokeCap.Round,
@@ -90,8 +147,13 @@ private fun stroke(w: Float) = Stroke(
 )
 
 @Composable
-private fun GeoIcon(modifier: Modifier, color: Color, content: DrawScope.(Float, Float) -> Unit) {
-    Canvas(modifier = modifier.size(24.dp)) {
-        content(size.width, size.height)
+private fun GeoIcon(
+    modifier: Modifier,
+    color: Color,
+    size: androidx.compose.ui.unit.Dp = 24.dp,
+    content: DrawScope.(Float, Float) -> Unit,
+) {
+    Canvas(modifier = modifier.size(size)) {
+        content(this.size.width, this.size.height)
     }
 }

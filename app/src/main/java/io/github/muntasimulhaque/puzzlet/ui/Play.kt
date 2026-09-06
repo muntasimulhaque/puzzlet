@@ -10,6 +10,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -22,6 +23,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -32,12 +35,15 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import io.github.muntasimulhaque.puzzlet.R
@@ -65,15 +71,14 @@ class PlayActions(
     val onRestart: () -> Unit,
 )
 
-/** The goal picture always shows faintly on the board: memory, not mystery. */
-private const val GOAL_ALPHA = 0.28f
-
 /**
- * The play field: a shelf above, a board below. Each piece is its own tile
- * (one small Canvas per piece), so a stale cache can never blank the tray
- * again: a tile rebuilds its outline from its own shape whenever the cut
- * grows. Tiles glide home with a spring; logic already sits home, so a
- * cancel can strand nothing.
+ * The play field: a shelf above, a board below. The board stays blank, the
+ * way a table does, and the picture lives behind one coin in the top bar
+ * (D-048): look, then put it away. Each piece is its own tile (one small
+ * Canvas per piece), so a stale cache can never blank the tray again: a
+ * tile rebuilds its outline from its own shape whenever the cut grows.
+ * Tiles glide home with a spring; logic already sits home, so a cancel can
+ * strand nothing.
  */
 @Composable
 fun PlayScreen(
@@ -82,13 +87,18 @@ fun PlayScreen(
     pulseId: Int,
     pulseAt: Long,
     restartAt: Long,
+    peeking: Boolean,
     actions: PlayActions,
+    onPeek: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
-    BackHandler(onBack = onBack)
+    BackHandler(onBack = { if (peeking) onPeek(false) else onBack() })
     Column(modifier = Modifier.fillMaxSize().background(PuzzletColors.Paper)) {
-        PlayTopBar(onBack = onBack)
-        PlayField(game, draggedId, pulseId, pulseAt, restartAt, actions, onBack, Modifier.fillMaxWidth().weight(1f))
+        PlayTopBar(game, peeking, onPeek, onBack)
+        PlayField(
+            game, draggedId, pulseId, pulseAt, restartAt, peeking, actions, onPeek, onBack,
+            Modifier.fillMaxWidth().weight(1f),
+        )
     }
 }
 
@@ -99,7 +109,9 @@ private fun PlayField(
     pulseId: Int,
     pulseAt: Long,
     restartAt: Long,
+    peeking: Boolean,
     actions: PlayActions,
+    onPeek: (Boolean) -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -118,7 +130,9 @@ private fun PlayField(
                 pulse.animateTo(1f, tween(380, easing = LinearOutSlowInEasing))
             }
         }
-        GestureBoard(game, draggedId, pulseId, pulse.value, restartAt, hitPx, actions, onBack)
+        GestureBoard(
+            game, draggedId, pulseId, pulse.value, restartAt, peeking, hitPx, actions, onPeek, onBack,
+        )
     }
 }
 
@@ -129,16 +143,49 @@ private fun GestureBoard(
     pulseId: Int,
     pulseT: Float,
     restartAt: Long,
+    peeking: Boolean,
     hitRadiusPx: Double,
     actions: PlayActions,
+    onPeek: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
     val scene = remember(game.sceneId) { Scenes.byId(game.sceneId) }
     Box(Modifier.fillMaxSize().fieldGestures(game, hitRadiusPx, actions)) {
-        BoardBackdrop(game, scene, GOAL_ALPHA, pulseId, pulseT, draggedId)
+        BoardBackdrop(game, pulseId, pulseT)
         PieceLayer(game, scene, draggedId, restartAt)
+        if (peeking && !game.completed) {
+            PeekPanel(scene, onDismiss = { onPeek(false) })
+        }
         if (game.completed) {
             Celebration(game, onAgain = actions.onRestart, onHome = onBack)
+        }
+    }
+}
+
+/**
+ * The finished picture, held up over the field on a deep scrim. Tapping
+ * anywhere puts it away: one rule, the biggest target on the screen.
+ */
+@Composable
+private fun PeekPanel(scene: SceneSpec, onDismiss: () -> Unit) {
+    val label = stringResource(R.string.peek_hide)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(PuzzletColors.Ink.copy(alpha = 0.72f))
+            .semantics { contentDescription = label }
+            .clickable(onClick = onDismiss),
+        contentAlignment = Alignment.Center,
+    ) {
+        BoxWithConstraints {
+            val side = minOf(maxWidth * 0.78f, maxHeight * 0.78f)
+            Box(Modifier.background(PuzzletColors.Card, RoundedCornerShape(30.dp)).padding(9.dp)) {
+                ScenePicture(
+                    spec = scene,
+                    modifier = Modifier.width(side),
+                    cornerRadius = 22.dp,
+                )
+            }
         }
     }
 }
@@ -233,10 +280,15 @@ private fun PieceNode(
     }
 }
 
+/** Back on the left, the picture itself on the right: tap it to look. */
 @Composable
 private fun PlayTopBar(
+    game: Puzzle,
+    peeking: Boolean,
+    onPeek: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
+    val scene = remember(game.sceneId) { Scenes.byId(game.sceneId) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -252,5 +304,26 @@ private fun PlayTopBar(
             BackIcon(color = PuzzletColors.Ink)
         }
         Spacer(Modifier.weight(1f))
+        PeekCoin(scene = scene, peeking = peeking, onPeek = onPeek)
+    }
+}
+
+@Composable
+private fun PeekCoin(scene: SceneSpec, peeking: Boolean, onPeek: (Boolean) -> Unit) {
+    val label = stringResource(if (peeking) R.string.peek_hide else R.string.peek_show)
+    Box(
+        modifier = Modifier
+            .size(52.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .background(if (peeking) PuzzletColors.Teal else PuzzletColors.Card)
+            .semantics { contentDescription = label }
+            .clickable { onPeek(!peeking) },
+        contentAlignment = Alignment.Center,
+    ) {
+        ScenePicture(
+            spec = scene,
+            modifier = Modifier.fillMaxSize().padding(if (peeking) 8.dp else 5.dp),
+            cornerRadius = 10.dp,
+        )
     }
 }

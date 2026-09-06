@@ -1,5 +1,7 @@
 package io.github.muntasimulhaque.puzzlet.core
 
+import kotlin.math.abs
+import kotlin.math.ln
 import kotlin.random.Random
 
 /**
@@ -13,8 +15,9 @@ import kotlin.random.Random
 /** The tray's vertical share of the field; bigger ladders get a deeper tray. */
 fun trayHeightFor(fieldH: Double, pieces: Int): Double = fieldH * when {
     pieces <= 6 -> 0.32
-    pieces <= 12 -> 0.36
-    else -> 0.38
+    pieces <= 9 -> 0.36
+    pieces <= 12 -> 0.40
+    else -> 0.44
 }
 
 /** The board side: generous, never into the tray, capped for tablets. */
@@ -24,13 +27,65 @@ fun boardSideFor(fieldW: Double, fieldH: Double, trayH: Double, capPx: Double): 
 /** Where pieces wait: one scale for the whole tray and a seat centre per piece. */
 data class TrayPack(val scale: Double, val seats: List<Vec2>)
 
+/** The cell of every seat is the same size, so the gaps read as one grid. */
+private const val TRAY_GAP = 0.13
+/** Breathing room at the tray's sides and its top and bottom (D-043). */
+private const val TRAY_MARGIN_X = 0.045
+private const val TRAY_PAD_Y = 0.07
+/** A tray piece is never drawn larger than the piece it becomes on the board. */
+private const val MAX_TRAY_SCALE = 1.0
+
+/** One arrangement of cells: how many across, how many down, at what scale. */
+data class TrayGrid(val cols: Int, val rows: Int, val scale: Double)
+
+/** The one cell of the grid: the largest piece, so nothing can touch. */
+private fun cellOf(sizes: List<Vec2>): Vec2 =
+    Vec2(sizes.maxOf { it.x }, sizes.maxOf { it.y })
+
+/** The gap between cells, one value for both directions. */
+private fun gapOf(sizes: List<Vec2>): Double {
+    val cell = cellOf(sizes)
+    return TRAY_GAP * maxOf(cell.x, cell.y)
+}
+
 /**
- * Shelf rows of pieces, bottom-aligned like toys on a shelf, each row
- * centred, the whole pack centred in the tray. The piece order is shuffled
- * from the seed and never left in serial (D-041): the tray is a jumble,
- * like a bought puzzle tipped from its box. The scale is the largest that
- * fits every row inside the tray: a bounded binary search over a greedy
- * pack, so it can never loop forever.
+ * The arrangement this tray wants, whatever order the pieces wait in. The
+ * same sizes always give the same grid, which is what lets the field decide
+ * how tall the shelf is before it knows the jumble (and keeps the cut
+ * stable across jumbles, AGENTS.md, D-041).
+ */
+fun trayGridFor(tray: Area, sizes: List<Vec2>): TrayGrid {
+    require(sizes.isNotEmpty()) { "A tray needs at least one piece" }
+    val cell = cellOf(sizes)
+    val gap = gapOf(sizes)
+    val usableW = tray.w * (1.0 - 2 * TRAY_MARGIN_X)
+    val usableH = tray.h * (1.0 - 2 * TRAY_PAD_Y)
+    return bestGrid(sizes.size, cell.x, cell.y, gap, usableW, usableH)
+}
+
+/** How much height an arrangement fills at its own scale. */
+fun trayGridHeight(grid: TrayGrid, sizes: List<Vec2>): Double {
+    val cellH = sizes.maxOf { it.y }
+    val gap = gapOf(sizes)
+    return grid.rows * cellH * grid.scale + (grid.rows - 1) * gap * grid.scale
+}
+
+/**
+ * The tray after the pack is known: as tall as the pieces need, with their
+ * padding, and never taller than the share the ladder asked for. A snug
+ * shelf hands the rest of the field back to the board, so a wide tablet
+ * plays a bigger picture instead of a deeper empty strip.
+ */
+fun snugTrayHeight(fieldH: Double, share: Double, used: Double): Double {
+    val wanted = used / (1.0 - 2 * TRAY_PAD_Y)
+    return wanted.coerceIn(fieldH * 0.16, share)
+}
+
+/**
+ * The order pieces wait in: shuffled from the seed and never left in
+ * serial (D-041). The tray is a jumble, like a bought puzzle tipped from
+ * its box, but it opens on an even grid (D-046): every seat is the same
+ * distance from its neighbours, so the shelf reads as a set, not a spill.
  */
 fun shuffledTrayOrder(count: Int, seed: Long): List<Int> {
     if (count <= 1) return List(count) { it }
@@ -50,77 +105,74 @@ fun shuffledTrayOrder(count: Int, seed: Long): List<Int> {
     return order
 }
 
+/**
+ * Where the pieces wait: one even grid of cells, each piece centred in its
+ * own cell, the same gap across and down (D-046). The cell is the largest
+ * piece's box, so no two pieces can ever touch, and the scale is the most
+ * generous that fits the chosen arrangement inside the tray.
+ */
 fun trayPack(tray: Area, sizes: List<Vec2>, seed: Long): TrayPack {
     require(sizes.isNotEmpty()) { "A tray needs at least one piece" }
     val order = shuffledTrayOrder(sizes.size, seed)
-
-    fun gap(s: Double) = 10.0 * s
-    fun rowGap(s: Double) = 6.0 * s
-    val marginX = tray.w * 0.045
-    val vPad = tray.h * 0.10
-
-    // Greedy rows at this scale; null when some single row cannot fit.
-    fun rows(s: Double): List<List<Int>>? {
-        if (s <= 0.0) return null
-        val out = ArrayList<List<Int>>()
-        var current = ArrayList<Int>()
-        var x = tray.x + marginX
-        for (idx in order) {
-            val w = sizes[idx].x * s
-            if (current.isNotEmpty() && x + w > tray.x + tray.w - marginX) {
-                out.add(current)
-                current = ArrayList()
-                x = tray.x + marginX
-            }
-            current.add(idx)
-            x += w + gap(s)
-        }
-        if (current.isNotEmpty()) out.add(current)
-        for (row in out) {
-            val rowW = row.sumOf { sizes[it].x * s } + gap(s) * (row.size - 1)
-            if (rowW > tray.w - 2 * marginX) return null
-        }
-        return out
-    }
-
-    fun height(rs: List<List<Int>>, s: Double): Double =
-        rs.sumOf { row -> row.maxOf { sizes[it].y } * s } + rowGap(s) * (rs.size - 1)
-
-    val usableH = tray.h - 2 * vPad
-    var lo = 0.24
-    var hi = 1.0
-    val scale = rows(hi)?.let { if (height(it, hi) <= usableH) hi else null } ?: run {
-        repeat(20) {
-            val mid = (lo + hi) / 2.0
-            val rs = rows(mid)
-            if (rs != null && height(rs, mid) <= usableH) lo = mid else hi = mid
-        }
-        lo
-    }
-    val rs = rows(scale)
-    if (rs == null) {
-        // A tray too small even at the floor: one piece per row, centred;
-        // defensive, and the field clamp catches any residue.
-        var y = tray.y + vPad
-        val seats = order.map { idx ->
-            val c = Vec2(tray.x + tray.w / 2.0, y + sizes[idx].y * 0.24 / 2.0)
-            y += sizes[idx].y * 0.24
-            c
-        }
-        return TrayPack(0.24, seats)
-    }
+    val cellW = sizes.maxOf { it.x }
+    val cellH = sizes.maxOf { it.y }
+    val gap = gapOf(sizes)
+    val grid = trayGridFor(tray, sizes)
+    val s = grid.scale
+    val stepX = (cellW + gap) * s
+    val stepY = (cellH + gap) * s
+    val gridW = grid.cols * cellW * s + (grid.cols - 1) * gap * s
+    val gridH = grid.rows * cellH * s + (grid.rows - 1) * gap * s
+    val x0 = tray.x + (tray.w - gridW) / 2.0
+    val y0 = tray.y + (tray.h - gridH) / 2.0
     val seats = MutableList(sizes.size) { Vec2(0.0, 0.0) }
-    var y = tray.y + vPad
-    for (row in rs) {
-        val rowH = row.maxOf { sizes[it].y } * scale
-        val rowW = row.sumOf { sizes[it].x * scale } + gap(scale) * (row.size - 1)
-        var x = tray.x + (tray.w - rowW) / 2.0
-        for (idx in row) {
-            val s = sizes[idx]
-            seats[idx] = Vec2(x + s.x * scale / 2.0, y + rowH - s.y * scale / 2.0)
-            x += s.x * scale + gap(scale)
-        }
-        y += rowH + rowGap(scale)
+    for ((slot, idx) in order.withIndex()) {
+        val col = slot % grid.cols
+        val row = slot / grid.cols
+        // A short last row stays centred under the full rows above it.
+        val inRow = minOf(grid.cols, sizes.size - row * grid.cols)
+        val rowShift = (grid.cols - inRow) * stepX / 2.0
+        seats[idx] = Vec2(
+            x0 + rowShift + col * stepX + cellW * s / 2.0,
+            y0 + row * stepY + cellH * s / 2.0,
+        )
     }
-    return TrayPack(scale, seats)
+    return TrayPack(s, seats)
+}
+
+/**
+ * The arrangement that gives the biggest pieces. Ties go to the grid whose
+ * shape is closest to the tray's own, so a wide tray opens wide and a tall
+ * tray opens tall instead of collapsing into one column.
+ */
+private fun bestGrid(
+    count: Int,
+    cellW: Double,
+    cellH: Double,
+    gap: Double,
+    usableW: Double,
+    usableH: Double,
+): TrayGrid {
+    val wanted = if (usableH > 0.0) usableW / usableH else 1.0
+    var best = TrayGrid(1, count, 0.0)
+    for (cols in 1..count) {
+        val rows = (count + cols - 1) / cols
+        val spanW = cols * cellW + (cols - 1) * gap
+        val spanH = rows * cellH + (rows - 1) * gap
+        val s = minOf(usableW / spanW, usableH / spanH, MAX_TRAY_SCALE)
+        val shape = abs(ln((spanW / spanH) / wanted))
+        if (s > best.scale + 1e-9) {
+            best = TrayGrid(cols, rows, s)
+        } else if (s > best.scale - 1e-9) {
+            val bestShape = run {
+                val bc = best.cols
+                val br = best.rows
+                val bw = bc * cellW + (bc - 1) * gap
+                val bh = br * cellH + (br - 1) * gap
+                abs(ln((bw / bh) / wanted))
+            }
+            if (shape < bestShape) best = TrayGrid(cols, rows, s)
+        }
+    }
+    return best
 }

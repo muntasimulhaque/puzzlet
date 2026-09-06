@@ -54,6 +54,13 @@ private val BrandTypography = Typography(
         fontSize = 28.sp,
         lineHeight = 34.sp,
     ),
+    // The piece counts on the shelf: small, but still Baloo.
+    titleMedium = TextStyle(
+        fontFamily = Baloo,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
+        lineHeight = 24.sp,
+    ),
     bodyLarge = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 18.sp,

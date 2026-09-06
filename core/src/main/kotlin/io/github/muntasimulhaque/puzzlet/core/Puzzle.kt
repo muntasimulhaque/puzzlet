@@ -76,7 +76,29 @@ fun createPuzzle(
 ): Puzzle {
     require(capPx > 0) { "Board cap must be positive" }
     require(field.w > 0 && field.h > 0) { "Field must have positive size" }
-    val trayH = trayHeightFor(field.h, rows * cols)
+    // The ladder's share is a ceiling, not a promise: the first pack shows
+    // how much shelf the pieces really need, and the second one is built
+    // around that, which hands the spare height to the board.
+    val share = trayHeightFor(field.h, rows * cols)
+    val probe = buildField(sceneId, rows, cols, field, capPx, seed, seatSeed, share)
+    val sizes = probe.pieces.map { it.size }
+    val used = trayGridHeight(trayGridFor(probe.tray, sizes), sizes)
+    val trayH = snugTrayHeight(field.h, share, used)
+    if (trayH >= share - 0.5) return probe
+    return buildField(sceneId, rows, cols, field, capPx, seed, seatSeed, trayH)
+}
+
+/** One field: a tray of that height, the board under it, the cut and seats. */
+private fun buildField(
+    sceneId: String,
+    rows: Int,
+    cols: Int,
+    field: Area,
+    capPx: Double,
+    seed: Long,
+    seatSeed: Long,
+    trayH: Double,
+): Puzzle {
     val tray = Area(field.x, field.y, field.w, trayH)
     val side = boardSideFor(field.w, field.h, trayH, capPx)
     val stage = Area(field.x, field.y + trayH, field.w, maxOf(field.h - trayH, 1.0))

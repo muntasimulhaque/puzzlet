@@ -6,8 +6,21 @@
     <string name="home">Home</string>
     <string name="go_back">Go back</string>
     <string name="restart">Start this picture again</string>
+    <string name="peek_show">Show the finished picture</string>
+    <string name="peek_hide">Put the picture away</string>
+    <string name="sound_on">Sound is on</string>
+    <string name="sound_off">Sound is off</string>
+    <string name="pieces_count">%1$d pieces</string>
     <string name="scene_sail">Sailboat</string>
     <string name="scene_house">House</string>
     <string name="scene_balloon">Balloon</string>
     <string name="scene_fruit">Fruit</string>
+    <string name="scene_train">Train</string>
+    <string name="scene_castle">Castle</string>
+    <string name="scene_rocket">Rocket</string>
+    <string name="scene_lighthouse">Lighthouse</string>
+    <string name="scene_truck">Truck</string>
+    <string name="scene_plane">Airplane</string>
+    <string name="scene_flowers">Flowers</string>
+    <string name="scene_icecream">Ice cream</string>
 </resources>

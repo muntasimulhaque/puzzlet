@@ -6,14 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
-import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.dp
 import io.github.muntasimulhaque.puzzlet.core.Area
@@ -41,33 +38,25 @@ internal fun outlinePath(segments: List<Cubic>): Path {
     return path
 }
 
-/** Everything behind the pieces: tray, frame, goal, held home glow, click ring. */
+/**
+ * Everything behind the pieces: the tray, the board's frame, and the ring
+ * that answers a click home. No picture and no slot glow: the table is
+ * blank, and the only thing that lights up is what the child just did.
+ */
 @Composable
 internal fun BoardBackdrop(
     game: Puzzle,
-    scene: SceneSpec,
-    ghostAlpha: Float,
     pulseId: Int,
     pulseT: Float,
-    heldId: Int?,
 ) {
     Canvas(Modifier.fillMaxSize()) {
-        drawBackdrop(game, scene, ghostAlpha, pulseId, pulseT, heldId)
+        drawBackdrop(game, pulseId, pulseT)
     }
 }
 
-internal fun DrawScope.drawBackdrop(
-    game: Puzzle,
-    scene: SceneSpec,
-    ghostAlpha: Float,
-    pulseId: Int,
-    pulseT: Float,
-    heldId: Int?,
-) {
+internal fun DrawScope.drawBackdrop(game: Puzzle, pulseId: Int, pulseT: Float) {
     drawTray(game.tray)
     drawMat(game.board)
-    drawGhost(game.board, scene, ghostAlpha)
-    drawHoldGlow(game, heldId)
     drawPulse(game, pulseId, pulseT)
 }
 
@@ -100,42 +89,6 @@ private fun DrawScope.drawMat(board: Area) {
         size = Size((board.w + 2 * mat).toFloat(), (board.h + 2 * mat).toFloat()),
         cornerRadius = CornerRadius(10.dp.toPx()),
         style = Stroke(width = 2.dp.toPx()),
-    )
-}
-
-private fun DrawScope.drawGhost(board: Area, scene: SceneSpec, ghostAlpha: Float) {
-    if (ghostAlpha <= 0.001f) return
-    val boardR = Rect(
-        board.x.toFloat(), board.y.toFloat(),
-        (board.x + board.w).toFloat(), (board.y + board.h).toFloat(),
-    )
-    drawIntoCanvas { canvas ->
-        val paint = Paint()
-        paint.alpha = ghostAlpha
-        canvas.saveLayer(boardR, paint)
-    }
-    withTransform({ translate(board.x.toFloat(), board.y.toFloat()) }) {
-        drawScene(scene, board.w)
-    }
-    drawIntoCanvas { it.restore() }
-}
-
-private fun DrawScope.drawHoldGlow(game: Puzzle, heldId: Int?) {
-    if (heldId == null) return
-    val held = game.piece(heldId) ?: return
-    if (held.placed) return
-    val c = held.homeCenter
-    val r = held.halfDiagonal.toFloat() * 0.72f
-    drawCircle(
-        PuzzletColors.Honey.copy(alpha = 0.20f),
-        radius = r,
-        center = Offset(c.x.toFloat(), c.y.toFloat()),
-    )
-    drawCircle(
-        PuzzletColors.Honey.copy(alpha = 0.55f),
-        radius = r,
-        center = Offset(c.x.toFloat(), c.y.toFloat()),
-        style = Stroke(width = 3.dp.toPx()),
     )
 }
 

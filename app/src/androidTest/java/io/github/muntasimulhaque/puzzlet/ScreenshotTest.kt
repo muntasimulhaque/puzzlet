@@ -20,6 +20,7 @@ import io.github.muntasimulhaque.puzzlet.core.Puzzle
 import io.github.muntasimulhaque.puzzlet.core.Vec2
 import io.github.muntasimulhaque.puzzlet.core.restorePuzzle
 import io.github.muntasimulhaque.puzzlet.host.Screen
+import io.github.muntasimulhaque.puzzlet.host.ShelfState
 import io.github.muntasimulhaque.puzzlet.ui.Gallery
 import io.github.muntasimulhaque.puzzlet.ui.PlayActions
 import io.github.muntasimulhaque.puzzlet.ui.PlayScreen
@@ -124,21 +125,21 @@ class ScreenshotTest {
             }
         }
 
-        // The shelf: the four shipped pictures with their names.
+        // The shelf: every shipped picture with its name and its counts.
         shot("01_home") {
-            Gallery(onChoose = {})
+            Gallery(ShelfState(), {}, { _, _ -> }, {})
         }
 
         // A chunky game, barely begun: four huge sailboat pieces.
         val four = buildGame(pane, "sail", 2, 2)
         shot("02_play_4") {
-            PlayScreen(four, null, -1, 0L, 0L, noActions, {})
+            PlayScreen(four, null, -1, 0L, 0L, false, noActions, {}, {})
         }
 
         // Mid-game on the nine-piece house: five of nine placed.
         val nine = buildGame(pane, "house", 3, 3, placed = (0..4).toSet())
         shot("03_play_9") {
-            PlayScreen(nine, null, -1, 0L, 0L, noActions, {})
+            PlayScreen(nine, null, -1, 0L, 0L, false, noActions, {}, {})
         }
 
         // A piece in hand, carried from the tray toward the board. It must
@@ -146,19 +147,32 @@ class ScreenshotTest {
         // and drawing a placed piece twice reads as a glitch.
         val dragging = dragState(nine, pieceId = 7, at = Vec2(pane.w * 0.22, pane.h * 0.52))
         shot("04_play_drag") {
-            PlayScreen(dragging.game, 7, -1, 0L, 0L, noActions, {})
+            PlayScreen(dragging.game, 7, -1, 0L, 0L, false, noActions, {}, {})
         }
 
         // The finish: the picture complete, held up with confetti falling.
         val done = buildGame(pane, "sail", 2, 2, placed = (0 until 4).toSet())
         shot("05_celebration") {
-            PlayScreen(done, null, -1, 0L, 0L, noActions, {})
+            PlayScreen(done, null, -1, 0L, 0L, false, noActions, {}, {})
         }
 
         // The fruit plate at nine pieces: six placed, texture galore.
         val fruit = buildGame(pane, "fruit", 3, 3, placed = (0..5).toSet())
         shot("06_play_fruit") {
-            PlayScreen(fruit, null, -1, 0L, 0L, noActions, {})
+            PlayScreen(fruit, null, -1, 0L, 0L, false, noActions, {}, {})
+        }
+
+        // Looking at the picture: the board stays blank, the peek panel
+        // holds the whole thing up over it until the child taps away.
+        val peek = buildGame(pane, "sail", 3, 3, placed = (0..1).toSet())
+        shot("07_play_peek") {
+            PlayScreen(peek, null, -1, 0L, 0L, true, noActions, {}, {})
+        }
+
+        // Sixteen pieces: the biggest count the shelf offers.
+        val sixteen = buildGame(pane, "balloon", 4, 4, placed = (0..5).toSet())
+        shot("08_play_16") {
+            PlayScreen(sixteen, null, -1, 0L, 0L, false, noActions, {}, {})
         }
 
         scenario.close()
