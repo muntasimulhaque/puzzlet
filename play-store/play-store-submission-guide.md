@@ -133,6 +133,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 0.9 (measured: 365 chars)
+
+```
+New app icon in this build: a real puzzle piece with the little boat inside, so the game is recognizable on the home screen. Everything else is the 0.8 game: tap a picture and play, 4 pieces growing to 6 then 9 with wins, faint goal with a glowing home for held pieces, two soft sounds, four pictures, no new permissions, still fully offline. Thank you for testing.
+```
+
 ## Release notes for closed testing 0.8 (measured: 434 chars)
 
 ```
