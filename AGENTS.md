@@ -497,3 +497,6 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   photo): a 2x2 block of four chunky interlocked pieces, red gold
   yellow orange, dark grooves, die-true circle heads on tangent stems.
   Still 0.9, notes rewritten for it (359 chars), all gates green.
+- 2026-09-06: Version 0.9 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ per the folder rule. Next: the
+  review verdict and tester feedback on the Jobs build.
