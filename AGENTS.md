@@ -360,6 +360,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   bug before any human saw a crooked piece; guards like it stay.
 - Kotlin's `Path.readBytes` lives in `kotlin.io.path`, not on
   `java.nio.file.Path`.
+- Icon bytes pin across JDKs only for flat fills of plain paths. Wide
+  `BasicStroke` outlines and `Area` booleans rasterize differently on
+  the CI Temurin build than on the local JBR, failing `checkIcons`
+  while green at home. Grooves are filled paths now (bars, joint
+  negatives, outer bed); strokes and booleans are out, forever.
 
 ## Standing exercises
 
