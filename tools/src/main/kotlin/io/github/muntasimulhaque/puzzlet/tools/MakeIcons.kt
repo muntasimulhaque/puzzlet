@@ -1,12 +1,12 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
-import java.awt.BasicStroke
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.geom.AffineTransform
 import java.awt.geom.Area
 import java.awt.geom.Path2D
+import java.awt.geom.Rectangle2D
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -77,8 +77,11 @@ object IconDesign {
     const val KNOB_HEAD_R = 0.066
     const val KNOB_FIL = 0.014
 
-    /** Groove stroke width, in tile units. */
+    /** Outer groove width, in tile units. Fills only: strokes drift across JDKs. */
     const val SEAM_W = 0.022
+
+    /** Tab inset: tabs draw slightly small, so a groove ring shows around them. */
+    const val TAB_SHRINK = 0.84
 }
 
 /** One toy piece: body rect, edge joints, fill color. */
@@ -115,9 +118,25 @@ private fun traceKnob(
     nx: Double, ny: Double,
     c: Double, sign: Double,
     nw: Double, hc: Double, r: Double, fil: Double,
+    shrink: Double,
 ) {
+    // A tab may draw slightly small about its own middle, opening a
+    // groove ring inside its socket; sockets always draw true.
     fun dot(t: Double, o: Double) {
-        path.lineTo(ox + ux * t + nx * o * sign, oy + uy * t + ny * o * sign)
+        val st = c + (t - c) * shrink
+        val so = o * shrink
+        path.lineTo(ox + ux * st + nx * so * sign, oy + uy * st + ny * so * sign)
+    }
+    fun cub(t1: Double, o1: Double, t2: Double, o2: Double, t3: Double, o3: Double) {
+        // Same shrink mapping as dot, as true curve controls.
+        path.curveTo(
+            ox + ux * (c + (t1 - c) * shrink) + nx * (o1 * shrink) * sign,
+            oy + uy * (c + (t1 - c) * shrink) + ny * (o1 * shrink) * sign,
+            ox + ux * (c + (t2 - c) * shrink) + nx * (o2 * shrink) * sign,
+            oy + uy * (c + (t2 - c) * shrink) + ny * (o2 * shrink) * sign,
+            ox + ux * (c + (t3 - c) * shrink) + nx * (o3 * shrink) * sign,
+            oy + uy * (c + (t3 - c) * shrink) + ny * (o3 * shrink) * sign,
+        )
     }
     // Tangent points from the stem feet to the head circle, solved exact:
     // |T - C| = r with (T - P) perpendicular to (T - C), P = (-nw, 0).
@@ -132,10 +151,10 @@ private fun traceKnob(
     val u = (k + hc * v) / px
     // Fillet onto the stem foot, stem up to the tangent, round the head.
     dot(c - nw - fil, 0.0)
-    path.curveTo(
-        ox + ux * (c - nw) + nx * 0.0 * sign, oy + uy * (c - nw) + ny * 0.0 * sign,
-        ox + ux * (c - nw) + nx * fil * sign, oy + uy * (c - nw) + ny * fil * sign,
-        ox + ux * (c - nw) + nx * fil * sign, oy + uy * (c - nw) + ny * fil * sign,
+    cub(
+        c - nw, 0.0,
+        c - nw, fil,
+        c - nw, fil,
     )
     dot(c + u, v)
     var deg = Math.toDegrees(kotlin.math.atan2(v - hc, u))
@@ -149,15 +168,16 @@ private fun traceKnob(
     }
     dot(c - u, v)
     dot(c + nw, fil)
-    path.curveTo(
-        ox + ux * (c + nw) + nx * fil * sign, oy + uy * (c + nw) + ny * fil * sign,
-        ox + ux * (c + nw) + nx * 0.0 * sign, oy + uy * (c + nw) + ny * 0.0 * sign,
-        ox + ux * (c + nw + fil) + nx * 0.0 * sign, oy + uy * (c + nw + fil) + ny * 0.0 * sign,
+    cub(
+        c + nw, fil,
+        c + nw, 0.0,
+        c + nw + fil, 0.0,
     )
 }
 
 /** Outline of one toy piece, with round outer corners. */
-private fun toyOutline(p: ToyPiece): Path2D.Double {
+private fun toyOutline(p: ToyPiece, trueShapes: Boolean = false): Path2D.Double {
+    fun shrinkForJoint(joint: Int) = if (trueShapes || joint <= 0) 1.0 else IconDesign.TAB_SHRINK
     val d = IconDesign
     val r = d.PIECE_CORNER
     val x0 = p.x
@@ -171,19 +191,19 @@ private fun toyOutline(p: ToyPiece): Path2D.Double {
     val path = Path2D.Double()
     // Top edge, left to right.
     path.moveTo(x0 + r, y0)
-    edgeInto(path, p.joints[0], x0, y0, 1.0, 0.0, 0.0, -1.0, d.PIECE / 2.0, nw, hc, hr, fil)
+    edgeInto(path, p.joints[0], x0, y0, 1.0, 0.0, 0.0, -1.0, d.PIECE / 2.0, nw, hc, hr, fil, shrinkForJoint(p.joints[0]))
     path.lineTo(x1 - r, y0)
     path.quadTo(x1, y0, x1, y0 + r)
     // Right edge, top to bottom.
-    edgeInto(path, p.joints[1], x1, y0, 0.0, 1.0, 1.0, 0.0, d.PIECE / 2.0, nw, hc, hr, fil)
+    edgeInto(path, p.joints[1], x1, y0, 0.0, 1.0, 1.0, 0.0, d.PIECE / 2.0, nw, hc, hr, fil, shrinkForJoint(p.joints[1]))
     path.lineTo(x1, y1 - r)
     path.quadTo(x1, y1, x1 - r, y1)
     // Bottom edge, right to left.
-    edgeInto(path, p.joints[2], x1, y1, -1.0, 0.0, 0.0, 1.0, d.PIECE / 2.0, nw, hc, hr, fil)
+    edgeInto(path, p.joints[2], x1, y1, -1.0, 0.0, 0.0, 1.0, d.PIECE / 2.0, nw, hc, hr, fil, shrinkForJoint(p.joints[2]))
     path.lineTo(x0 + r, y1)
     path.quadTo(x0, y1, x0, y1 - r)
     // Left edge, bottom to top.
-    edgeInto(path, p.joints[3], x0, y1, 0.0, -1.0, -1.0, 0.0, d.PIECE / 2.0, nw, hc, hr, fil)
+    edgeInto(path, p.joints[3], x0, y1, 0.0, -1.0, -1.0, 0.0, d.PIECE / 2.0, nw, hc, hr, fil, shrinkForJoint(p.joints[3]))
     path.lineTo(x0, y0 + r)
     path.quadTo(x0, y0, x0 + r, y0)
     path.closePath()
@@ -199,12 +219,13 @@ private fun edgeInto(
     nx: Double, ny: Double,
     c: Double,
     nw: Double, hc: Double, r: Double, fil: Double,
+    shrink: Double,
 ) {
     if (joint == 0) {
         path.lineTo(ox + ux * (c + IconDesign.PIECE / 2.0), oy + uy * (c + IconDesign.PIECE / 2.0))
         return
     }
-    traceKnob(path, ox, oy, ux, uy, nx, ny, c, joint.toDouble(), nw, hc, r, fil)
+    traceKnob(path, ox, oy, ux, uy, nx, ny, c, joint.toDouble(), nw, hc, r, fil, shrink)
 }
 
 internal enum class Layer { TILE, FOREGROUND, MONO }
@@ -224,7 +245,7 @@ private fun unitTransform(size: Int, span: Double): AffineTransform {
     return t
 }
 
-/** One icon layer: paper tile with the block, bare block, or white block. */
+/** One icon layer: paper tile with the block, bare block, or white block. No strokes anywhere: flat fills pin identically on every JDK. */
 internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage {
     val d = IconDesign
     val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
@@ -238,17 +259,38 @@ internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): Buffer
     val t = unitTransform(size, span)
     val mono = layer == Layer.MONO
     val pieces = toyPieces()
-    // Fills first, so no fill ever covers a groove.
-    for (p in pieces) {
-        g.color = Color(if (mono) d.WHITE else p.color, true)
-        g.fill(Area(toyOutline(p)).createTransformedArea(t))
-    }
-    if (!mono) {
-        g.color = Color(d.SEAM, true)
-        g.stroke = BasicStroke((d.SEAM_W * span).toFloat(), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND)
+    if (mono) {
         for (p in pieces) {
-            g.draw(Area(toyOutline(p)).createTransformedArea(t))
+            g.color = Color(d.WHITE, true)
+            g.fill(Area(toyOutline(p)).createTransformedArea(t))
         }
+        g.dispose()
+        return image
+    }
+    // The groove bed: the whole block silhouette in seam color, peeking
+    // out around an expanded round rect for the outer groove.
+    val bed = Area()
+    for (p in pieces) bed.add(Area(toyOutline(p, trueShapes = true)))
+    val bx = d.BLOCK_X - d.SEAM_W / 2.0
+    val by = d.BLOCK_Y - d.SEAM_W / 2.0
+    val bs = d.PIECE * 2.0 + d.GAP + d.SEAM_W
+    val bc = (d.PIECE_CORNER + d.SEAM_W / 2.0) * 2.0
+    g.color = Color(d.SEAM, true)
+    g.fill(Area(RoundRectangle2D.Double(bx, by, bs, bs, bc, bc)).createTransformedArea(t))
+    g.fill(bed.createTransformedArea(t))
+    // The straight grooves: seam bars underlapping both edges.
+    val midX = d.BLOCK_X + d.PIECE + d.GAP / 2.0
+    val midY = d.BLOCK_Y + d.PIECE + d.GAP / 2.0
+    val barX = midX - d.GAP / 2.0 - d.SEAM_W / 2.0
+    val barY = midY - d.GAP / 2.0 - d.SEAM_W / 2.0
+    val barW = d.GAP + d.SEAM_W
+    val barL = d.PIECE * 2.0 + d.GAP + d.SEAM_W
+    g.fill(Area(Rectangle2D.Double(barX, by, barW, barL)).createTransformedArea(t))
+    g.fill(Area(Rectangle2D.Double(bx, barY, barL, barW)).createTransformedArea(t))
+    // The pieces on top; tabs sit small inside their sockets, ringed dark.
+    for (p in pieces) {
+        g.color = Color(p.color, true)
+        g.fill(Area(toyOutline(p)).createTransformedArea(t))
     }
     g.dispose()
     return image

@@ -72,7 +72,7 @@ class MakeIconsTest {
         val (ox, oy) = p(x0 + s + g + 0.30, y0 + s + g + 0.10)
         assertEquals("orange at ($ox, $oy)", IconDesign.ORANGE, icon.getRGB(ox, oy))
         // The groove between the columns.
-        val (sx, sy) = p(x0 + s, y0 + 0.10)
+        val (sx, sy) = p(x0 + s + g / 2.0, y0 + 0.10)
         assertEquals("seam at ($sx, $sy)", IconDesign.SEAM, icon.getRGB(sx, sy))
     }
 
