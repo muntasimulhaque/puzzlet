@@ -1,6 +1,5 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
-import java.awt.AlphaComposite
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.RenderingHints
@@ -20,22 +19,7 @@ import java.awt.image.BufferedImage
  *
  * Flat fills of plain paths only, no strokes, no boolean ops, no blur:
  * those drift across JDKs and break the byte pins (AGENTS.md, Lessons).
- * Material depth is faked with flat tones.
  */
-object V4 {
-    const val PAPER: Int = 0xFFFAF6EF.toInt()
-    const val INK: Int = 0xFF1F2B28.toInt()
-    const val LAGOON: Int = 0xFF0C7A64.toInt()
-    const val DEEP: Int = 0xFF085949.toInt()
-    const val GROUND: Int = 0xFF241E16.toInt()
-    const val HONEY: Int = 0xFFF0B429.toInt()
-    const val HONEY_LIGHT: Int = 0xFFF6C84F.toInt()
-    const val CORAL: Int = 0xFFE4572E.toInt()
-    const val SKY: Int = 0xFF6BB7D6.toInt()
-}
-
-private const val TILE_CORNER = 0.19
-
 // ---------------------------------------------------------------- geometry
 
 /**
@@ -118,7 +102,7 @@ internal fun rotated(shape: java.awt.Shape, cx: Double, cy: Double, angleDeg: Do
 
 // ---------------------------------------------------------------- paint
 
-internal fun beginV4(image: BufferedImage): Graphics2D {
+internal fun beginMark(image: BufferedImage): Graphics2D {
     val g = image.createGraphics()
     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
     g.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY)
@@ -139,93 +123,13 @@ internal fun roundedTile(g: Graphics2D, size: Int, cornerFraction: Double, argb:
     g.fill(RoundRectangle2D.Double(0.0, 0.0, size.toDouble(), size.toDouble(), corner, corner))
 }
 
-internal fun darken(argb: Int, k: Double): Int {
-    val a = (argb ushr 24) and 0xFF
-    val r = (((argb shr 16) and 0xFF) * k).toInt()
-    val gc = (((argb shr 8) and 0xFF) * k).toInt()
-    val b = ((argb and 0xFF) * k).toInt()
-    return (a shl 24) or (r shl 16) or (gc shl 8) or b
-}
-
-private fun lighten(argb: Int, add: Int): Int {
-    val a = (argb ushr 24) and 0xFF
-    val r = Math.min(255, ((argb shr 16) and 0xFF) + add)
-    val gc = Math.min(255, ((argb shr 8) and 0xFF) + add)
-    val b = Math.min(255, (argb and 0xFF) + add)
-    return (a shl 24) or (r shl 16) or (gc shl 8) or b
-}
-
-/** Fill a piece with a flat drop tone: a darker ground shade shifted a hair, no blur. */
-internal fun fillPiece(
-    g: Graphics2D,
-    shape: java.awt.Shape,
-    argb: Int,
-    groundArgb: Int,
-    sizePx: Double,
-    drop: Boolean,
-) {
-    if (drop) {
-        val moved = Path2D.Double(shape, AffineTransform.getTranslateInstance(0.0, sizePx * 0.016))
-        g.color = Color(darken(groundArgb, 0.55), true)
-        g.fill(moved)
-    }
+/** Fill one piece flat: nothing in the shipped mark carries depth. */
+internal fun fillPiece(g: Graphics2D, shape: java.awt.Shape, argb: Int) {
     g.color = Color(argb, true)
     g.fill(shape)
 }
 
-/** Flat lit cap: clip to the silhouette, paint a light band on top, restore clip. */
-private fun litCap(g: Graphics2D, shape: java.awt.Shape, argb: Int, bandFrac: Double) {
-    val b = shape.bounds2D
-    val oldClip = g.clip
-    g.clip(shape)
-    g.color = Color(argb, true)
-    g.fill(Rectangle2D.Double(b.minX, b.minY, b.width, b.height * bandFrac))
-    g.clip = oldClip
-}
-
-private fun paintBody(g: Graphics2D, size: Int, tile: Boolean, groundArgb: Int) {
-    if (tile) roundedTile(g, size, TILE_CORNER, groundArgb)
-    else if (groundArgb != 0) fillGround(g, size, size, groundArgb)
-}
-
-// ---------------------------------------------------------------- take A
-
-private object Unibody {
-    fun paint(size: Int, tile: Boolean, groundArgb: Int): BufferedImage {
-        val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
-        val g = beginV4(image)
-        paintBody(g, size, tile, groundArgb)
-        val span = size * 0.60
-        val t = AffineTransform.getTranslateInstance(size * 0.5 - span * 0.5, size * 0.53 - span * 0.5)
-        t.concatenate(AffineTransform.getScaleInstance(span, span))
-        val piece = Path2D.Double(pieceOutline(0.0, 0.0, 1.0, 0.14, listOf(1, -1, 0, 0)), t)
-        fillPiece(g, piece, V4.LAGOON, if (groundArgb != 0) groundArgb else V4.GROUND, size.toDouble(), drop = true)
-        litCap(g, piece, lighten(V4.LAGOON, 24), 0.16)
-        g.dispose()
-        return image
-    }
-}
-
-// ---------------------------------------------------------------- take B
-
-private object Onepiece {
-    fun paint(size: Int, angle: Double, pieceArgb: Int, tile: Boolean, groundArgb: Int): BufferedImage {
-        val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
-        val g = beginV4(image)
-        paintBody(g, size, tile, groundArgb)
-        val s = size * 0.56
-        val raw = pieceOutline(0.0, 0.0, s, s * 0.25, listOf(1, -1, 0, 0))
-        val b = raw.bounds2D
-        val cx = size / 2.0
-        val cy = size / 2.0 + size * 0.01
-        val t = AffineTransform.getTranslateInstance(cx - b.centerX, cy - b.centerY)
-        val placed = rotated(Path2D.Double(raw, t), cx.toDouble(), cy.toDouble(), angle)
-        fillPiece(g, placed, pieceArgb, if (groundArgb != 0) groundArgb else V4.PAPER, size.toDouble(), drop = true)
-        litCap(g, placed, lighten(pieceArgb, 28), 0.16)
-        g.dispose()
-        return image
-    }
-}
+// ---------------------------------------------------------------- take C
 
 // ---------------------------------------------------------------- take C
 
@@ -255,14 +159,13 @@ internal object Gather {
         palette: List<Int> = gatherPalette(mono),
     ): BufferedImage {
         val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
-        val g = beginV4(image)
+        val g = beginMark(image)
         if (tile) roundedTile(g, size, cornerFraction, groundArgb)
         else if (groundArgb != 0) fillGround(g, size, size, groundArgb)
         val o = size * insetFrac
         val se = size * (1.0 - 2.0 * insetFrac)
         val s = se * 0.40
         val gap = s * gapFrac
-        val bg = if (groundArgb != 0) groundArgb else IconDesign.DEEP
         // The 2x2 field centred (gap runs through the middle): home bottom-right.
         val hx = o + se / 2.0 + gap / 2.0
         val hy = o + se / 2.0 + gap / 2.0
@@ -271,10 +174,10 @@ internal object Gather {
         val top = pieceOutline(hx, hy - s - gap, s, s * 0.12, listOf(0, 0, 1, 0))
         val left = pieceOutline(hx - s - gap, hy, s, s * 0.12, listOf(0, 1, 0, 0))
         val corner = pieceOutline(hx - s - gap, hy - s - gap, s, s * 0.12, listOf(0, 1, 1, 0))
-        fillPiece(g, rotated(corner, hx - s / 2 - gap, hy - s / 2 - gap, -7.0), sky, bg, se, drop = false)
-        fillPiece(g, rotated(top, hx + s / 2, hy - s / 2 - gap, 6.0), coral, bg, se, drop = false)
-        fillPiece(g, rotated(left, hx - s / 2 - gap, hy + s / 2, -5.0), grass, bg, se, drop = false)
-        fillPiece(g, home, honey, bg, se, drop = false)
+        fillPiece(g, rotated(corner, hx - s / 2 - gap, hy - s / 2 - gap, -7.0), sky)
+        fillPiece(g, rotated(top, hx + s / 2, hy - s / 2 - gap, 6.0), coral)
+        fillPiece(g, rotated(left, hx - s / 2 - gap, hy + s / 2, -5.0), grass)
+        fillPiece(g, home, honey)
         g.dispose()
         return image
     }

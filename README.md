@@ -4,16 +4,17 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.1 (versionCode 11) is submitted to the closed testing
-track. Twelve pictures, five piece counts to choose from (4, 6, 9, 12,
-16), a blank board with the finished picture behind one coin, an even
-tray grid, and a sound switch on the picture shelf. No timer, no score,
-no fail state, no reading required. Two synthesized sounds (a click and a
-bell, no music). Wins, the count a parent picked and the sound switch
-survive process death; an unfinished game does not. Store screenshots
-render in CI from the app's own states; the listing kit and the console
-answers are ready. See AGENTS.md for the working rules and the decision
-log.
+Status: release 1.2 (versionCode 12) is submitted to the closed testing
+track. Release 1.2 is a store-art release: the launcher mark's fourth
+piece turned leaf green, and the feature graphic was rebuilt around it.
+Twelve pictures, five piece counts to choose from (4, 6, 9, 12, 16), a
+blank board with the finished picture behind one coin, an even tray grid,
+and a sound switch on the picture shelf. No timer, no score, no fail
+state, no reading required. Two synthesized sounds (a click and a bell,
+no music). Wins, the count a parent picked and the sound switch survive
+process death; an unfinished game does not. Store screenshots render in
+CI from the app's own states; the listing kit and the console answers are
+ready. See AGENTS.md for the working rules and the decision log.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
@@ -75,7 +76,8 @@ It is scratch, never committed: the repo keeps no candidates folder.
 CI is the loop: `build.yml` gates every push to `main` on the tests,
 lint and the asset pins, then signs and publishes the AAB and APK to the
 `latest-build` release. `screenshots.yml` recaptures the store
-screenshots whenever the UI changes.
+screenshots whenever the UI changes, or the version file does, so a
+release always pays for a three-emulator capture run.
 
 ## Play Store
 
@@ -83,3 +85,13 @@ The listing kit lives in `play-store/`: the submission guide with the
 paste-ready listing, release notes and console answers, the feature
 graphic, the store icon, and screenshots per form factor (`phone/`,
 `tablet7/`, `tablet10/`) captured by CI from the app's own states.
+
+## The mark
+
+The launcher icon is the gather: three wanderers, sky, coral and leaf
+green, closing in on the honey home piece with its sockets open, the
+moment before the click. Four colours that read as four colours. The
+feature graphic carries the same mark on the brand teal, with the name
+given the whole right side and nothing behind it. Both are drawn from
+code by `:tools:makeIcons` and `:tools:makeArt`, never hand-edited, and
+`checkIcons` fails the build if a committed PNG ever drifts.
