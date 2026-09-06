@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, and so on.
-  Current release: versionCode 10, versionName 1.0, cut for closed testing.
+  Current release: versionCode 11, versionName 1.1, cut for closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
   twin in the `KEYSTORE_BASE64` GitHub secret and the passwords in three
@@ -73,30 +73,39 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 ## The game
 
-Tray, drag, snap, celebrate. Four pictures: sailboat, house, balloon,
-fruit. All inanimate: no humans, no animals, no faces, no eyes. Tapping
-a picture starts it at once at its ladder step: the first game is 4
-pieces, a win grows it to 6, another to 9, and 9 is the ceiling. The
-pieces wait in a tray above the board at tray scale; a piece in hand
-grows to board size under the finger. The goal picture always shows
-faintly on the board so the child must match, not memorize; while a
-piece is in hand its own home glows softly. Drag it anywhere near its
-place and it clicks home with a spring, a soft knock and a haptic tick;
-a miss glides back to its tray seat. No mid game restart: like a real
-puzzle, pieces move by hand and there is no easy undo. The tray jumbles
-fresh every new game, never serial, while the cut stays stable like a
-bought puzzle. No timer, no score, no fail state, no reading required,
-no tutorial: the tray-and-board layout is the whole lesson. No piece
-ever starts within snap tolerance of its own slot; the tray sits above
-the board, so the guarantee is structural. Finish, and the picture is
-held up with confetti on a deep scrim with Again leading. Wins per
-picture persist (DataStore) and choose the next step; unfinished games
-do not: every launch starts fresh on the shelf.
+Tray, drag, snap, celebrate. Twelve pictures: sailboat, house, balloon,
+fruit, train, castle, rocket, lighthouse, truck, airplane, flowers, ice
+cream. All inanimate: no humans, no animals, no faces, no eyes. A row of
+counts sits under every picture on the shelf (4, 6, 9, 12, 16); tapping
+a picture starts it at the count that row is showing, and tapping a count
+plays that count and remembers it for that picture. Where nobody has
+picked, wins walk the ladder: a first picture opens at 4, a win deals 6,
+another 9, and there the ladder stops. The pieces wait in a tray above
+the board at tray scale, on one even grid with the same gap everywhere;
+a piece in hand grows to board size under the finger. The board is blank,
+the way a table is: no picture, no glowing slot. A coin in the top bar
+holds the finished picture up on a deep scrim; tapping anywhere puts it
+away. Drag a piece anywhere near its place and it clicks home with a
+spring, a soft knock and a haptic tick; a miss glides back to its tray
+seat. No mid game restart: like a real puzzle, pieces move by hand and
+there is no easy undo. The tray jumbles fresh every new game, never
+serial, while the cut stays stable like a bought puzzle. Every picture
+sits on a graded ground, so no piece ever comes out blank. No timer, no
+score, no fail state, no reading required, no tutorial: the tray-and-board
+layout is the whole lesson. No piece ever starts within snap tolerance of
+its own slot; the tray sits above the board, so the guarantee is
+structural. Finish, and the picture is held up with confetti on a deep
+scrim with Again leading. Wins, the chosen counts and the sound switch
+persist (DataStore); unfinished games do not: every launch starts fresh
+on the shelf.
 
 ## Architecture
 
 ```
-core/     pure Kotlin, zero Android imports: cut, scenes, ladder, board rules
+core/     its own Gradle module, pure Kotlin, zero Android imports:
+          cut, scenes, ladder, board and tray rules. :app and :tools
+          both depend on it, so the generators draw the same pictures
+          the game plays and the compiler enforces the purity.
 host/     ViewModel: which screen, which piece in hand, wins, sounds
 ui/       Compose: picture shelf, play field, celebration
 theme     PuzzletColors + Baloo 2 typography; icons drawn as geometry
@@ -114,13 +123,16 @@ outline, so there is not a single bitmap in gameplay and no shared outline
 cache to go stale.
 
 Scene content is pure data: `Scene.kt` holds the shape types and the
-registry; `ScenePaintings.kt` and `ScenePaintingsMore.kt` hold the four
-shipped paintings (sail, house, balloon, fruit); the retired rocket,
-lighthouse, train and castle builders stay in the files, unlisted, until
-they earn their way back by cutting fairly. Adding a picture means
-adding one builder and listing it; the capture set and the listing text
-follow. `Ladder.kt` holds the auto ladder (4, 6, 9): wins choose the
-step, the child never picks a count.
+registry; `ScenePaintings.kt`, `ScenePaintingsMore.kt` and
+`ScenePaintingsNew.kt` hold the twelve shipped paintings (sail, house,
+balloon, fruit, train, castle, rocket, lighthouse, truck, plane, flowers,
+icecream). Adding a picture means adding one builder, listing it in
+`Scenes.all`, naming it in `strings.xml` and `sceneNameRes`, and passing
+the no-flat-piece test; the capture set and the listing text follow.
+`Ladder.kt` holds the five counts (4, 6, 9, 12, 16) and the gentle walk
+wins take through the first three of them. `SceneGround.kt` holds the
+graded grounds, the rolling hills and the texture scatter every picture
+stands on; `SceneClues.kt` holds the small per-picture extras.
 
 Outside the code, two asset homes: `play-store/` holds the listing kit
 (screenshots in per-form-factor subfolders, feature graphic, store icon,
@@ -166,10 +178,11 @@ Pages and the bundled font's OFL license. Nothing else lives loose.
 
 ```
 export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"   # not on PATH
-./gradlew :app:testReleaseUnitTest :app:lintRelease              # tests, full lint
+./gradlew :core:test :app:testReleaseUnitTest :app:lintRelease   # tests, full lint
 ./gradlew :tools:test :tools:checkIcons :tools:checkSounds       # pins, no hand-edited assets
 ./gradlew :app:assembleRelease                                   # R8 release (signed when the keystore is present)
 ./gradlew :tools:makeIcons :tools:makeSounds :tools:makeArt      # regenerate after a deliberate design change
+./gradlew :tools:makeScenes                                      # the picture sheet, for the owner to point at
 ```
 
 CI is the loop: `build.yml` gates every push to `main` on tests, lint,
@@ -348,6 +361,39 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   feature graphic. One hero colour per piece, flat fills only, drawn
   smaller so launchers cannot truncate it. The v4 candidate sheet stays
   in play-store/candidates/icon-v4 as decided history.
+- D-046 The sound switch comes back, on the shelf only (owner-directed,
+  reversing part of D-044). One quiet coin, bottom right of the picture
+  shelf, persisting in DataStore; the two effects stop, haptics do not.
+  It lives on the home shelf and nowhere else: a parent sets it once,
+  and the play field stays clear for the child.
+- D-047 The piece counts are chosen, not automatic (owner-directed,
+  reversing part of D-044). Five of them, 4, 6, 9, 12 and 16 (2x2 up to
+  4x4), the sizes a real jigsaw comes in for this age; 16 is the ceiling,
+  past which pieces stop being chunks. A row of chips under each picture
+  on the shelf; tapping the picture still plays at once at the count the
+  row shows. Wins walk pictures nobody has set through 4, 6 and 9; a
+  parent's pick outranks the ladder and stays put.
+- D-048 The blank board (owner-directed, reversing the goal and the glow
+  in D-044 and restoring the D-041 board in a bigger form). No picture on
+  the board, no honey glow on any slot, ever: a real table shows nothing.
+  The finished picture lives behind one coin in the top bar, which is the
+  picture itself, and comes up on a deep scrim; tapping anywhere puts it
+  away. The landing ring stays, because it answers a click rather than
+  hinting at one.
+- D-049 Twelve pictures (owner-directed). The retired train, castle,
+  rocket and lighthouse come back now that they stand on graded grounds,
+  and four are new: truck, airplane, flowers, ice cream. All inanimate,
+  per the owner's rule.
+- D-050 No piece may be blank (owner-directed: too much empty space makes
+  a picture vague). Every picture stands on a graded ground (bands of
+  colour, core/SceneGround.kt) with rolling hills and small inanimate
+  texture over its big areas, and a test samples every piece of every
+  picture at every count and fails when one colour covers more than 82
+  percent of it.
+- D-051 The tray is one even grid (owner-directed: pieces sat some close,
+  some far). One cell size, every piece centred in its cell, one gap in
+  both directions, and the tray snug to what the pack really needs so the
+  spare height goes to the board. Pinned by a test that walks the seats.
 
 ## Lessons that still bite
 
@@ -515,3 +561,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   was deleted from play-store/aab/ per the folder rule. Recaptured
   screenshots came back byte-identical on all three form factors, so
   the listing kit stands as is.
+- 2026-09-07: Six owner observations, six decisions (D-046 to D-051).
+  Core became its own Gradle module so the generators draw the same
+  pictures the game plays. Tray grid evened, board blanked with a peek
+  panel, sound switch back on the shelf, counts under every card, twelve
+  pictures on graded grounds with the no-flat-piece law pinned, and a
+  picture sheet under play-store/candidates/scenes for the owner to point
+  at. Cut 1.1 (versionCode 11) for closed testing.

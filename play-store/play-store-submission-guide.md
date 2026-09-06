@@ -55,14 +55,18 @@ Puzzlet is a real jigsaw, made small enough for a three-year-old. One
 child, one picture, and pieces that click home with a soft knock.
 
 How it plays:
-Tap a picture and the game begins. The first game is 4 big pieces.
-Finishing grows the same picture to 6, then 9, so the challenge arrives
-exactly when the child is ready.
-Drag a piece near its place and it clicks in with a little burst of
-light. The whole picture always shows faintly underneath, and while a
-piece is in hand its own place glows softly.
+Tap a picture and the game begins. Every picture offers 4, 6, 9, 12 or
+16 pieces: pick a count, or tap the picture to play the one it shows.
+Left alone, a win grows a picture from 4 to 6, then 9, so the challenge
+arrives exactly when the child is ready.
+The board is blank, the way a table is. Drag a piece near its place and
+it clicks in with a little burst of light. Forgotten what the picture
+is? Tap the little picture up top to look, then tap anywhere to put it
+away. No hints, no arrows, nothing pointing at the answer.
 Finish, and the picture is held up proudly with confetti. No timer, no
 score, no fail state: nothing to rush, nothing to lose.
+Twelve calm pictures, vehicles, houses, plants and fruit, every one of
+them full of colour and small details, so no piece is ever a blank.
 
 Made safe for small hands:
 No ads, no in-app purchases, no accounts, no links out.
@@ -71,7 +75,8 @@ no way to.
 Nothing collected, nothing shared, nothing tracked. Everything stays on
 your device.
 Big, forgiving touch targets; pieces land where small fingers mean them.
-Two soft sounds, a click and a bell. There is no music, by design.
+Two soft sounds, a click and a bell, and a switch to turn them off on
+the picture shelf. There is no music, by design.
 
 Made by a parent, for parents who want the calm kind of screen time. Paid
 once, and never asked for again.
@@ -90,7 +95,9 @@ All three sets live under `play-store/screenshots/`, one subfolder per form
 factor (`phone/`, `tablet7/`, `tablet10/`), captured by CI whenever UI files
 change and refreshed into those same subfolders in the same session. Upload
 each subfolder's PNGs to its Play Console slot, in filename order (01_home
-first); a Families-reviewed listing should match what ships. The
+first, and 08_play_16 last); a Families-reviewed listing should match what
+ships. Candidate pictures for the owner to judge live under
+`play-store/candidates/scenes/`, rendered by `:tools:makeScenes`. The
 celebration scene is mid-animation by design, so its pixels wobble a little
 between refreshes; every other scene should come back byte-identical.
 
@@ -117,8 +124,9 @@ No.
 
 **App content → Data safety**: the app collects and shares **no user data**.
 Nothing transmitted, nothing stored beyond local preferences (wins per
-picture, which choose the next piece count), no SDKs, no network calls,
-zero manifest permissions.
+picture, which walk the piece count up, the count a parent picked per
+picture, and the sound switch), no SDKs, no network calls, zero manifest
+permissions.
 
 **App content → Families Policy / child safety**: self-certify compliance.
 Contact: muntasim.haque@gmail.com. No user-generated content, no chat, no
@@ -132,6 +140,12 @@ external links reachable by a child, no ads.
 versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
+
+## Release notes for closed testing 1.1 (measured: 476 chars)
+
+```
+This build answers six things testers asked for. Sound can be switched off from the picture shelf. Every picture now offers 4, 6, 9, 12 or 16 pieces: pick one, or tap the picture to play the count it shows. The board is blank now, like a real table, with no glowing hint, and the whole picture sits behind one coin up top: tap to look, tap anywhere to put it away. Twelve pictures, each with more colour so no piece is blank. Even tray gaps. No new permissions, still offline.
+```
 
 ## Release notes for closed testing 1.0 (measured: 394 chars)
 
