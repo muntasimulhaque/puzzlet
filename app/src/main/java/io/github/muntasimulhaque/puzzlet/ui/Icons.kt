@@ -83,64 +83,6 @@ fun MenuIcon(modifier: Modifier = Modifier, color: Color) {
     }
 }
 
-/** The sound switch on the shelf: speaker with two waves when on. */
-@Composable
-fun SoundOnIcon(modifier: Modifier = Modifier, color: Color) {
-    GeoIcon(modifier, color) { w, h ->
-        val speaker = Path().apply {
-            moveTo(w * 0.10f, h * 0.38f)
-            lineTo(w * 0.28f, h * 0.38f)
-            lineTo(w * 0.48f, h * 0.20f)
-            lineTo(w * 0.48f, h * 0.80f)
-            lineTo(w * 0.28f, h * 0.62f)
-            lineTo(w * 0.10f, h * 0.62f)
-            close()
-        }
-        drawPath(speaker, color)
-        val cy = h * 0.5f
-        drawArc(
-            color,
-            startAngle = -50f,
-            sweepAngle = 100f,
-            useCenter = false,
-            topLeft = Offset(w * 0.44f - w * 0.10f, cy - w * 0.10f),
-            size = Size(w * 0.20f, w * 0.20f),
-            style = stroke(w),
-        )
-        drawArc(
-            color,
-            startAngle = -50f,
-            sweepAngle = 100f,
-            useCenter = false,
-            topLeft = Offset(w * 0.44f - w * 0.19f, cy - w * 0.19f),
-            size = Size(w * 0.38f, w * 0.38f),
-            style = stroke(w),
-        )
-    }
-}
-
-/** The sound switch, off: the same speaker under a calm slash. */
-@Composable
-fun SoundOffIcon(modifier: Modifier = Modifier, color: Color) {
-    GeoIcon(modifier, color) { w, h ->
-        val speaker = Path().apply {
-            moveTo(w * 0.10f, h * 0.38f)
-            lineTo(w * 0.28f, h * 0.38f)
-            lineTo(w * 0.48f, h * 0.20f)
-            lineTo(w * 0.48f, h * 0.80f)
-            lineTo(w * 0.28f, h * 0.62f)
-            lineTo(w * 0.10f, h * 0.62f)
-            close()
-        }
-        drawPath(speaker, color)
-        val line = Path().apply {
-            moveTo(w * 0.58f, h * 0.32f)
-            lineTo(w * 0.90f, h * 0.68f)
-        }
-        drawPath(line, color, style = stroke(w))
-    }
-}
-
 private fun stroke(w: Float) = Stroke(
     width = w * 0.11f,
     cap = StrokeCap.Round,

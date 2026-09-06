@@ -54,6 +54,7 @@ data class SceneSpec(
 
 object Scenes {
 
-    val all: List<SceneSpec> = listOf(sail(), rocket(), house(), lighthouse(), balloon(), train(), castle(), fruit()).map { it.withClues() }
+    /** The shipped shelf: four pictures that cut fairly at every ladder step. */
+    val all: List<SceneSpec> = listOf(sail(), house(), balloon(), fruit()).map { it.withClues() }
     fun byId(id: String): SceneSpec = all.first { it.id == id }
 }

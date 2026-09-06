@@ -41,7 +41,7 @@ internal fun outlinePath(segments: List<Cubic>): Path {
     return path
 }
 
-/** Everything behind the pieces: tray, frame, goal when peeked, click ring. */
+/** Everything behind the pieces: tray, frame, goal, held home glow, click ring. */
 @Composable
 internal fun BoardBackdrop(
     game: Puzzle,
@@ -49,9 +49,10 @@ internal fun BoardBackdrop(
     ghostAlpha: Float,
     pulseId: Int,
     pulseT: Float,
+    heldId: Int?,
 ) {
     Canvas(Modifier.fillMaxSize()) {
-        drawBackdrop(game, scene, ghostAlpha, pulseId, pulseT)
+        drawBackdrop(game, scene, ghostAlpha, pulseId, pulseT, heldId)
     }
 }
 
@@ -61,10 +62,12 @@ internal fun DrawScope.drawBackdrop(
     ghostAlpha: Float,
     pulseId: Int,
     pulseT: Float,
+    heldId: Int?,
 ) {
     drawTray(game.tray)
     drawMat(game.board)
     drawGhost(game.board, scene, ghostAlpha)
+    drawHoldGlow(game, heldId)
     drawPulse(game, pulseId, pulseT)
 }
 
@@ -115,6 +118,25 @@ private fun DrawScope.drawGhost(board: Area, scene: SceneSpec, ghostAlpha: Float
         drawScene(scene, board.w)
     }
     drawIntoCanvas { it.restore() }
+}
+
+private fun DrawScope.drawHoldGlow(game: Puzzle, heldId: Int?) {
+    if (heldId == null) return
+    val held = game.piece(heldId) ?: return
+    if (held.placed) return
+    val c = held.homeCenter
+    val r = held.halfDiagonal.toFloat() * 0.72f
+    drawCircle(
+        PuzzletColors.Honey.copy(alpha = 0.20f),
+        radius = r,
+        center = Offset(c.x.toFloat(), c.y.toFloat()),
+    )
+    drawCircle(
+        PuzzletColors.Honey.copy(alpha = 0.55f),
+        radius = r,
+        center = Offset(c.x.toFloat(), c.y.toFloat()),
+        style = Stroke(width = 3.dp.toPx()),
+    )
 }
 
 private fun DrawScope.drawPulse(game: Puzzle, pulseId: Int, pulseT: Float) {

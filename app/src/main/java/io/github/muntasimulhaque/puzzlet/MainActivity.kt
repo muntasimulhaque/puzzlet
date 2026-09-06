@@ -7,9 +7,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import androidx.compose.runtime.remember
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -19,7 +19,6 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import io.github.muntasimulhaque.puzzlet.host.PuzzleHost
 import io.github.muntasimulhaque.puzzlet.host.Screen
-import io.github.muntasimulhaque.puzzlet.ui.DifficultyChooser
 import io.github.muntasimulhaque.puzzlet.ui.Gallery
 import io.github.muntasimulhaque.puzzlet.ui.PlayActions
 import io.github.muntasimulhaque.puzzlet.ui.PlayScreen
@@ -59,7 +58,6 @@ class MainActivity : ComponentActivity() {
         keepBarsHidden()
         setContent {
             val screen by host.screen.collectAsStateWithLifecycle()
-            val muted by host.muted.collectAsStateWithLifecycle()
             // A toy-box, not a document: text follows the system font setting,
             // but only so far. Past this cap the words stop fitting the fixed
             // play surfaces and begin to overlap them, which serves nobody, so
@@ -72,15 +70,7 @@ class MainActivity : ComponentActivity() {
                 PuzzletTheme {
                     when (val s = screen) {
                         Screen.Home -> Gallery(
-                            onChoose = host::choose,
-                            hasProgress = host::hasProgress,
-                            muted = muted,
-                            onToggleMute = host::toggleMuted,
-                        )
-                        is Screen.Choose -> DifficultyChooser(
-                            sceneId = s.sceneId,
-                            onBack = host::home,
-                            onPlay = { rows, cols -> host.play(s.sceneId, rows, cols) },
+                            onChoose = host::play,
                         )
                         is Screen.Playing -> PlayScreen(
                             game = s.game,
@@ -89,7 +79,7 @@ class MainActivity : ComponentActivity() {
                             pulseAt = s.pulseAt,
                             restartAt = s.restartAt,
                             actions = playActions(),
-                            onBack = host::backToChoose,
+                            onBack = host::home,
                         )
                     }
                 }
@@ -108,13 +98,6 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         keepBarsHidden()
-    }
-
-    // The shelf copy of an unfinished game goes to disk here, so a process
-    // death mid-play costs at most the current picture's scattered piles.
-    override fun onStop() {
-        super.onStop()
-        host.persistNow()
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {

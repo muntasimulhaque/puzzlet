@@ -9,8 +9,8 @@ import io.github.muntasimulhaque.puzzlet.core.Vec2
 import io.github.muntasimulhaque.puzzlet.core.createPuzzle
 import io.github.muntasimulhaque.puzzlet.core.cutSeedFor
 import io.github.muntasimulhaque.puzzlet.core.pieceAt
+import io.github.muntasimulhaque.puzzlet.core.stepFor
 import io.github.muntasimulhaque.puzzlet.core.redeal as redealPuzzle
-import io.github.muntasimulhaque.puzzlet.core.restorePuzzle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,12 +21,10 @@ import io.github.muntasimulhaque.puzzlet.core.drop as dropPiece
 import io.github.muntasimulhaque.puzzlet.core.grab as grabPiece
 import io.github.muntasimulhaque.puzzlet.core.place as placePiece
 import io.github.muntasimulhaque.puzzlet.core.relayout as relayoutPuzzle
-import io.github.muntasimulhaque.puzzlet.core.restart as restartPuzzle
 
-/** Where in the app we are. Home is the picture menu. */
+/** Where in the app we are. Home is the picture shelf; tap one and play. */
 sealed interface Screen {
     data object Home : Screen
-    data class Choose(val sceneId: String) : Screen
     data class Playing(
         val game: Puzzle,
         /** The piece currently in hand, if any; the field draws it lifted. */
@@ -40,15 +38,13 @@ sealed interface Screen {
 }
 
 /**
- * The host performs what the domain decides. It owns which screen is up,
- * which piece is in hand, the sound switch, the one unfinished picture that
- * survives both backing out and a process death, and the play choreography:
- * the missed-drop glide home and the fresh deal after a finish. Nothing
- * teaches; the tray-and-board layout is the whole lesson (AGENTS.md,
- * D-037). A miss sets the piece home at once in logic while the field
- * springs its tile there, so no cancellation can strand a piece; a new deal
- * keeps the same cut and jumbles fresh seats, and the field staggers the
- * visible pour from restartAt.
+ * The host performs what the domain decides. It owns which screen is up
+ * and which piece is in hand. Tapping a picture starts it at its ladder
+ * step (4, then 6, then 9 with wins); finishing records one win. A miss
+ * sets the piece home at once in logic while the field springs its tile
+ * there, so no cancellation can strand a piece. Nothing teaches; the
+ * tray-and-board layout is the whole lesson. There is no saved picture
+ * and no sound switch: every launch starts fresh on the shelf.
  */
 class PuzzleHost(app: Application) : ViewModel() {
 
@@ -58,33 +54,7 @@ class PuzzleHost(app: Application) : ViewModel() {
     private val _screen = MutableStateFlow<Screen>(Screen.Home)
     val screen: StateFlow<Screen> = _screen.asStateFlow()
 
-    private val _muted = MutableStateFlow(false)
-    val muted: StateFlow<Boolean> = _muted.asStateFlow()
-
-    private val resumes = HashMap<String, Puzzle>()
-
-    init {
-        viewModelScope.launch {
-            _muted.value = store.loadMuted()
-            store.loadResume()?.let { snap ->
-                resumes[resumeKey(snap.sceneId, snap.rows, snap.cols)] = restorePuzzle(
-                    sceneId = snap.sceneId,
-                    rows = snap.rows,
-                    cols = snap.cols,
-                    placedIds = snap.placed,
-                    field = Area(0.0, 0.0, 1.0, 1.0),
-                    capPx = 1e6,
-                    seed = cutSeedFor(snap.sceneId, snap.rows, snap.cols),
-                    seatSeed = snap.seatSeed,
-                )
-            }
-        }
-    }
-
-    fun choose(sceneId: String) {
-        draggedId = null
-        _screen.value = Screen.Choose(sceneId)
-    }
+    private val wins = HashMap<String, Int>()
 
     fun home() {
         draggedId = null
@@ -92,28 +62,31 @@ class PuzzleHost(app: Application) : ViewModel() {
     }
 
     /**
-     * Enter a picture. The real field size arrives with the first frame
-     * (the play screen measures itself), so a placeholder game is created
-     * here and immediately reshaped by layout(); progress survives that.
+     * Start a picture at its ladder step. The real field size arrives with
+     * the first frame (the play screen measures itself), so a placeholder
+     * game is created here and immediately reshaped by layout().
      */
-    fun play(sceneId: String, rows: Int, cols: Int) {
+    fun play(sceneId: String) {
         draggedId = null
-        val key = resumeKey(sceneId, rows, cols)
-        val resumed = resumes.remove(key)
-        val game = resumed ?: createPuzzle(
-            sceneId = sceneId,
-            rows = rows,
-            cols = cols,
-            field = Area(0.0, 0.0, 1.0, 1.0),
-            capPx = 1e6,
-            seed = cutSeedFor(sceneId, rows, cols),
-            seatSeed = Random.Default.nextLong(),
-        )
-        _screen.value = Screen.Playing(game)
+        viewModelScope.launch {
+            val known = wins[sceneId] ?: runCatching { store.loadWins(sceneId) }.getOrDefault(0)
+            wins[sceneId] = known
+            val step = stepFor(known)
+            _screen.value = Screen.Playing(
+                createPuzzle(
+                    sceneId = sceneId,
+                    rows = step.rows,
+                    cols = step.cols,
+                    field = Area(0.0, 0.0, 1.0, 1.0),
+                    capPx = 1e6,
+                    seed = cutSeedFor(sceneId, step.rows, step.cols),
+                    seatSeed = Random.Default.nextLong(),
+                ),
+            )
+        }
     }
 
     fun layout(field: Area, capPx: Double) {
-        if (_screen.value !is Screen.Playing) return
         val s = _screen.value
         if (s !is Screen.Playing) return
         val changed = s.game.field.w != field.w || s.game.field.h != field.h
@@ -132,7 +105,6 @@ class PuzzleHost(app: Application) : ViewModel() {
             game = grabPiece(s.game, piece.id),
             draggedId = piece.id,
         )
-        sfx(Sfx.PICK)
         return piece.current
     }
 
@@ -163,22 +135,22 @@ class PuzzleHost(app: Application) : ViewModel() {
             pulseAt = if (snapped) System.nanoTime() else s.pulseAt,
         )
         if (snapped) {
-            sfx(Sfx.SNAP)
+            soundBoard.play(Sfx.SNAP)
             if (settled.completed) {
-                sfx(Sfx.CHIME)
-                viewModelScope.launch { store.clearResume() }
+                soundBoard.play(Sfx.CHIME)
+                viewModelScope.launch {
+                    val total = runCatching { store.addWin(settled.sceneId) }.getOrDefault(0)
+                    wins[settled.sceneId] = total
+                }
             }
-        } else {
-            sfx(Sfx.DROP)
         }
         return snapped
     }
 
+    /** A fresh jumble after a finish: same cut, new seating, nothing placed. */
     fun restart() {
         val s = _screen.value
         if (s is Screen.Playing) {
-            resumes.remove(resumeKey(s.game))
-            viewModelScope.launch { store.clearResume() }
             _screen.value = s.copy(
                 game = redealPuzzle(s.game, Random.Default.nextLong()),
                 draggedId = null,
@@ -187,44 +159,6 @@ class PuzzleHost(app: Application) : ViewModel() {
                 restartAt = System.nanoTime(),
             )
         }
-    }
-
-    /** Leave the game; unfinished work stays on the shelf for this session. */
-    fun backToChoose() {
-        val s = _screen.value
-        if (s is Screen.Playing) {
-            if (!s.game.completed && s.game.placedCount > 0) {
-                val key = resumeKey(s.game)
-                resumes[key] = s.game
-                viewModelScope.launch { store.saveResume(s.game) }
-            }
-            _screen.value = Screen.Choose(s.game.sceneId)
-        } else {
-            _screen.value = Screen.Home
-        }
-        draggedId = null
-    }
-
-    /** Called from onStop: the shelf copy of an unfinished game goes to disk. */
-    fun persistNow() {
-        val s = _screen.value
-        if (s is Screen.Playing && !s.game.completed && s.game.placedCount > 0) {
-            val key = resumeKey(s.game)
-            resumes[key] = s.game
-            viewModelScope.launch { store.saveResume(s.game) }
-        }
-    }
-
-    fun toggleMuted() {
-        val next = !_muted.value
-        _muted.value = next
-        viewModelScope.launch { store.saveMuted(next) }
-    }
-
-    fun hasProgress(sceneId: String): Boolean = resumes.keys.any { it.startsWith("$sceneId:") }
-
-    private fun sfx(sfx: Sfx) {
-        if (!_muted.value) soundBoard.play(sfx)
     }
 
     private fun seatTopLeft(game: Puzzle, id: Int): Vec2 {
@@ -239,7 +173,3 @@ class PuzzleHost(app: Application) : ViewModel() {
         soundBoard.release()
     }
 }
-
-private fun resumeKey(sceneId: String, rows: Int, cols: Int) = "$sceneId:$rows:$cols"
-
-private fun resumeKey(game: Puzzle) = resumeKey(game.sceneId, game.rows, game.cols)

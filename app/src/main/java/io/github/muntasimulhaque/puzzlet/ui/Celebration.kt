@@ -59,7 +59,7 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
         Box(
             Modifier
                 .fillMaxSize()
-                .background(PuzzletColors.Ink.copy(alpha = 0.34f)),
+                .background(PuzzletColors.Ink.copy(alpha = 0.62f)),
         )
         Canvas(Modifier.fillMaxSize()) {
             if (fall.value < 1f) drawConfetti(confetti, fall.value)
@@ -87,7 +87,7 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
             Text(
                 text = stringResource(R.string.well_done),
                 style = MaterialTheme.typography.displayMedium,
-                color = PuzzletColors.Honey,
+                color = PuzzletColors.Paper,
             )
             Spacer(Modifier.height(26.dp))
             Row {

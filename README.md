@@ -4,17 +4,16 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 0.7 (versionCode 7) is submitted for the closed testing
-track. Eight pictures, each cut into 4 to 24 pieces. The board starts
-blank so the child must think; a peek coin reveals the full picture. No
-drag hints, no mid game restart: pieces move by hand like a real puzzle,
-while the tray jumbles fresh every game and celebration deals a fresh one.
-The menu is pictures only, and every difficulty row shows its picture cut
-exactly as the game will cut it. Four synthesized sounds (no music)
-behind a sound switch, and one unfinished picture that survives process
-death. Store screenshots render in CI from the app's own states; the
-listing kit, the console answers and the signing flow are ready. See
-AGENTS.md for the working rules and the decision log.
+Status: release 0.8 (versionCode 8) is cut for the closed testing
+track. Four pictures, each growing 4 to 6 to 9 pieces with wins. The goal
+always shows faintly on the board and a held piece lights its home; no
+difficulty screen, no peek coin, no restart button, no sound switch, no
+saved picture. The menu is pictures with their names, and tapping one
+plays at once. Two synthesized sounds (a click and a bell, no music),
+and wins per picture that survive process death. Store screenshots render
+in CI from the app's own states; the listing kit, the console answers and
+the signing flow are ready. See AGENTS.md for the working rules and the
+decision log.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
@@ -23,9 +22,9 @@ AGENTS.md for the working rules and the decision log.
 
 ## The game
 
-Eight pictures: sailboat, rocket, house, lighthouse, balloon, train,
-castle, fruit. All inanimate, no faces, no eyes, drawn as vectors in code.
-Each cuts into 4, 6, 9, 12, 16, 20 or 24 pieces. No timer, no score, no
+Four pictures: sailboat, house, balloon, fruit. All inanimate, no faces,
+no eyes, drawn as vectors in code. Tapping a picture starts it at once:
+4 pieces first, wins grow it to 6, then 9. No timer, no score, no
 fail state, no reading required: drag a piece anywhere near its place and
 it clicks home with a spring, a soft knock and a haptic tick.
 

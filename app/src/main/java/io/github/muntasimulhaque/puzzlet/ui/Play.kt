@@ -65,6 +65,9 @@ class PlayActions(
     val onRestart: () -> Unit,
 )
 
+/** The goal picture always shows faintly on the board: memory, not mystery. */
+private const val GOAL_ALPHA = 0.28f
+
 /**
  * The play field: a shelf above, a board below. Each piece is its own tile
  * (one small Canvas per piece), so a stale cache can never blank the tray
@@ -83,16 +86,9 @@ fun PlayScreen(
     onBack: () -> Unit,
 ) {
     BackHandler(onBack = onBack)
-    var peek by remember { mutableStateOf(false) }
-    val ghostAlpha by animateFloatAsState(if (peek) 1f else 0f, label = "ghost")
     Column(modifier = Modifier.fillMaxSize().background(PuzzletColors.Paper)) {
-        PlayTopBar(
-            sceneId = game.sceneId,
-            peek = peek,
-            onPeek = { peek = !peek },
-            onBack = onBack,
-        )
-        PlayField(game, draggedId, pulseId, pulseAt, restartAt, ghostAlpha, actions, onBack, Modifier.fillMaxWidth().weight(1f))
+        PlayTopBar(onBack = onBack)
+        PlayField(game, draggedId, pulseId, pulseAt, restartAt, actions, onBack, Modifier.fillMaxWidth().weight(1f))
     }
 }
 
@@ -103,7 +99,6 @@ private fun PlayField(
     pulseId: Int,
     pulseAt: Long,
     restartAt: Long,
-    ghostAlpha: Float,
     actions: PlayActions,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
@@ -123,7 +118,7 @@ private fun PlayField(
                 pulse.animateTo(1f, tween(380, easing = LinearOutSlowInEasing))
             }
         }
-        GestureBoard(game, draggedId, pulseId, pulse.value, restartAt, ghostAlpha, hitPx, actions, onBack)
+        GestureBoard(game, draggedId, pulseId, pulse.value, restartAt, hitPx, actions, onBack)
     }
 }
 
@@ -134,14 +129,13 @@ private fun GestureBoard(
     pulseId: Int,
     pulseT: Float,
     restartAt: Long,
-    ghostAlpha: Float,
     hitRadiusPx: Double,
     actions: PlayActions,
     onBack: () -> Unit,
 ) {
     val scene = remember(game.sceneId) { Scenes.byId(game.sceneId) }
     Box(Modifier.fillMaxSize().fieldGestures(game, hitRadiusPx, actions)) {
-        BoardBackdrop(game, scene, ghostAlpha, pulseId, pulseT)
+        BoardBackdrop(game, scene, GOAL_ALPHA, pulseId, pulseT, draggedId)
         PieceLayer(game, scene, draggedId, restartAt)
         if (game.completed) {
             Celebration(game, onAgain = actions.onRestart, onHome = onBack)
@@ -241,9 +235,6 @@ private fun PieceNode(
 
 @Composable
 private fun PlayTopBar(
-    sceneId: String,
-    peek: Boolean,
-    onPeek: () -> Unit,
     onBack: () -> Unit,
 ) {
     Row(
@@ -261,20 +252,5 @@ private fun PlayTopBar(
             BackIcon(color = PuzzletColors.Ink)
         }
         Spacer(Modifier.weight(1f))
-        // Peek: the finished picture on a coin, big enough for small thumbs.
-        // Tap to reveal the goal on the board; the picture itself is the
-        // affordance, no eye icon.
-        CircleButton(
-            onClick = onPeek,
-            background = if (peek) PuzzletColors.Honey else PuzzletColors.Card,
-            size = 56.dp,
-            label = stringResource(R.string.peek),
-        ) {
-            ScenePicture(
-                spec = Scenes.byId(sceneId),
-                modifier = Modifier.padding(5.dp),
-                cornerRadius = 40.dp,
-            )
-        }
     }
 }

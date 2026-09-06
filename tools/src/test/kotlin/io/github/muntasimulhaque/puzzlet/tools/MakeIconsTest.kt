@@ -1,7 +1,6 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -44,43 +43,28 @@ class MakeIconsTest {
         return { u: Double, v: Double -> Pair((o + u * span).toInt(), (o + v * span).toInt()) }
     }
 
-    /** Head centres derived from the generator consts, never hardcoded. */
-    private fun knobHeadX() = IconDesign.SEAM_X + (IconDesign.BITE_D + 0.015) * IconDesign.KS
-    private fun socketHeadX() = IconDesign.SEAM_X - (IconDesign.BITE_D + 0.015) * IconDesign.KS
-
     @Test
-    fun `both knobs share one size and equal gaps to each other and the edges`() {
-        val d = IconDesign
-        val r = d.BITE_R * d.KS
-        val top = d.SOCKET_Y - r
-        val mid = d.KNOB_Y - d.SOCKET_Y - 2 * r
-        val bottom = 1.0 - d.KNOB_Y - r
-        assertEquals(top, mid, 1e-9)
-        assertEquals(mid, bottom, 1e-9)
-    }
-
-    @Test
-    fun `legacy tile carries the seam with knob and socket`() {
+    fun `legacy tile carries the boat on teal`() {
         val icon = legacyIcon(192)
         val p = tileMapper(192)
         // Outside the rounded corners: fully transparent.
         assertEquals(0, icon.getRGB(8, 8) ushr 24)
-        // The paper field, left of the seam.
-        val (fx, fy) = p(0.25, 0.5)
-        assertEquals(IconDesign.PAPER, icon.getRGB(fx, fy))
-        // The hero knob head, reaching right: paper.
-        val (kx, ky) = p(knobHeadX(), IconDesign.KNOB_Y)
-        assertEquals("knob head at ($kx, $ky) is not paper", IconDesign.PAPER, icon.getRGB(kx, ky))
-        // The socket bite, opening above the knob: not paper.
-        val (sx, sy) = p(socketHeadX(), IconDesign.SOCKET_Y)
-        assertNotEquals("socket at ($sx, $sy) should be carved out", IconDesign.PAPER, icon.getRGB(sx, sy))
-        // Far right of the seam: tile, never paper.
-        val (tx, ty) = p(0.92, 0.5)
-        assertNotEquals(IconDesign.PAPER, icon.getRGB(tx, ty))
+        // Far corner water, away from the boat: the teal tile itself.
+        val (bx, by) = p(0.08, 0.92)
+        assertEquals("background at ($bx, $by) is not teal", IconDesign.TEAL, icon.getRGB(bx, by))
+        // The honey sun.
+        val (sx, sy) = p(0.76, 0.20)
+        assertEquals("sun at ($sx, $sy) is not honey", IconDesign.HONEY, icon.getRGB(sx, sy))
+        // The main sail: paper.
+        val (mx, my) = p(0.59, 0.51)
+        assertEquals("mainsail at ($mx, $my) is not paper", IconDesign.PAPER, icon.getRGB(mx, my))
+        // The hull: coral.
+        val (hx, hy) = p(0.50, 0.72)
+        assertEquals("hull at ($hx, $hy) is not coral", IconDesign.CORAL, icon.getRGB(hx, hy))
     }
 
     @Test
-    fun `knob and socket survive inside the launcher mask circle`() {
+    fun `boat survives inside the launcher mask circle`() {
         val size = 432
         val layer = adaptiveLayer(size, IconDesign.PAPER)
         val p = fgMapper(size)
@@ -89,33 +73,28 @@ class MakeIconsTest {
             val (x, y) = p(u, v)
             return hypot(x - cx, y - cx) <= size * 66.0 / 108.0
         }
-        assertTrue("knob leaves the mask circle", inside(knobHeadX(), IconDesign.KNOB_Y))
-        assertTrue("socket leaves the mask circle", inside(socketHeadX(), IconDesign.SOCKET_Y))
-        val (kx, ky) = p(knobHeadX(), IconDesign.KNOB_Y)
-        assertEquals(IconDesign.PAPER, layer.getRGB(kx, ky))
+        assertTrue("sail tip leaves the mask circle", inside(0.53, 0.30))
+        assertTrue("hull leaves the mask circle", inside(0.50, 0.72))
+        val (mx, my) = p(0.59, 0.51)
+        assertEquals(IconDesign.PAPER, layer.getRGB(mx, my))
+        val (hx, hy) = p(0.50, 0.72)
+        assertEquals(IconDesign.CORAL, layer.getRGB(hx, hy))
     }
 
     @Test
-    fun `adaptive layer is transparent canvas with the seam only`() {
+    fun `adaptive layer is transparent canvas with the boat only`() {
         val layer = adaptiveLayer(432, IconDesign.PAPER)
         val p = fgMapper(432)
-        // Far right of the seam: untouched canvas. (The macro field
-        // bleeds top and bottom by design; the mask crops it.)
-        val (rx, ry) = p(0.97, 0.5)
+        // Far from the boat: untouched canvas.
+        val (rx, ry) = p(0.05, 0.50)
         assertEquals(0, layer.getRGB(rx, ry) ushr 24)
-        // The paper field: paper.
-        val (bx, by) = p(0.25, 0.5)
+        // The sail: paper.
+        val (bx, by) = p(0.59, 0.51)
         assertEquals(IconDesign.PAPER, layer.getRGB(bx, by))
-        // The socket bite: carved open. Only the seam's own soft shadow may
-        // veil it, never paper and never more than a breath of deep.
-        val (sx, sy) = p(socketHeadX(), IconDesign.SOCKET_Y)
-        val socketArgb = layer.getRGB(sx, sy)
-        assertNotEquals("socket at ($sx, $sy) must not be paper", IconDesign.PAPER, socketArgb)
-        assertTrue("socket at ($sx, $sy) must stay essentially open, alpha was ${socketArgb ushr 24}", (socketArgb ushr 24) < 48)
         // The monochrome sibling renders the same silhouette in white.
         val mono = adaptiveLayer(432, IconDesign.WHITE)
         assertEquals(IconDesign.WHITE, mono.getRGB(bx, by))
-        val (mx, my) = p(knobHeadX(), IconDesign.KNOB_Y)
-        assertEquals(IconDesign.WHITE, mono.getRGB(mx, my))
+        val (hx, hy) = p(0.50, 0.72)
+        assertEquals(IconDesign.WHITE, mono.getRGB(hx, hy))
     }
 }

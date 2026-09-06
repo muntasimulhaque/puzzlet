@@ -6,10 +6,10 @@ import java.awt.RenderingHints
 import java.awt.geom.AffineTransform
 import java.awt.geom.Area
 import java.awt.geom.Ellipse2D
+import java.awt.geom.Path2D
 import java.awt.geom.Rectangle2D
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
 import java.io.File
 import javax.imageio.ImageIO
 import kotlin.system.exitProcess
@@ -17,21 +17,22 @@ import kotlin.system.exitProcess
 /**
  * The launcher icon, drawn from code so every PNG has exactly one author.
  *
- * Design (the owner's pick, S): one seam, two tones. A paper field fills
- * the left of the tile and a hero knob reaches right into the deep, while
- * a socket bite opens above it. Knob and socket, the whole joint language,
- * nothing else. Rendered three ways: the legacy tile for API 24-25, the
- * adaptive foreground for API 26+ over the flat teal background, and a
- * white monochrome sibling for Android 13+ themed icons.
+ * Design: the finished delight, not the joint. A little sailboat (paper
+ * sails, coral hull, honey sun) on the lagoon teal tile. A child points
+ * at it; a parent feels warmth. Rendered three ways: the legacy tile for
+ * API 24-25, the adaptive foreground for API 26+ over the flat teal
+ * background, and a white monochrome sibling for Android 13+ themed icons.
  *
- * Colors here mirror app/src/main/res/values/colors.xml. Change both
- * together, then run makeIcons and commit the regenerated PNGs.
+ * Colors here mirror app/src/main/res/values/colors.xml plus the scene
+ * palette (coral, honey). Change both together, then run makeIcons and
+ * commit the regenerated PNGs.
  */
 object IconDesign {
     const val TEAL: Int = 0xFF0C7A64.toInt()
-    const val DEEP: Int = 0xFF085949.toInt()
     const val PAPER: Int = 0xFFFAF6EF.toInt()
     const val WHITE: Int = 0xFFFFFFFF.toInt()
+    const val HONEY: Int = 0xFFF0B429.toInt()
+    const val CORAL: Int = 0xFFE4572EL.toInt()
 
     /** The densities the house ships, in scale order. */
     val DENSITY_DIRS = arrayOf("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")
@@ -41,7 +42,7 @@ object IconDesign {
     const val LEGACY_DP = 48.0
     /** Adaptive layer canvas, dp (the 108 dp full-bleed square). */
     const val ADAPTIVE_DP = 108.0
-    /** Macro bleed of the mark on the adaptive canvas; knob and socket stay in the 66 dp circle. */
+    /** Macro bleed of the mark on the adaptive canvas; boat stays in the 66 dp circle. */
     const val FG_SPAN_DP = 90.0
     /** Fraction of a full-art tile the mark spans. */
     const val TILE_SPAN = 0.98
@@ -49,58 +50,35 @@ object IconDesign {
     const val LEGACY_CORNER_FRACTION = 0.22
     /** Store tile corner radius as a fraction of the tile. */
     const val STORE_CORNER_FRACTION = 0.19
-
-    /**
-     * The seam, unit space: boundary x, hero knob cy, socket cy. Both
-     * knobs share one size and one scale, and the three gaps read equal:
-     * tile top to socket head, socket head to knob head, knob head down.
-     */
-    const val SEAM_X = 0.56
-    // Green-approved bite numbers, frozen. The white hero is this exact
-    // shape mirrored, congruent, so the pair matches by construction.
-    const val BITE_W = 0.062
-    const val BITE_D = 0.075
-    const val BITE_R = 0.070
-    /** Both knobs wear the bite shape at this scale: the measured ceiling. */
-    const val KS = 1.35
-    const val KNOB_Y = (2.0 + BITE_R * KS) / 3.0
-    const val SOCKET_Y = (1.0 - BITE_R * KS) / 3.0
 }
 
-/**
- * The green socket, byte-identical to the approved take: channel mouth at
- * the seam, round chamber inside. Never touch without the owner pointing.
- */
-fun socketBite(): Area {
-    val t = AffineTransform.getTranslateInstance(IconDesign.SEAM_X, IconDesign.SOCKET_Y)
-    t.concatenate(AffineTransform.getScaleInstance(IconDesign.KS, IconDesign.KS))
-    return biteUnit().createTransformedArea(t)
+/** Boat parts in tile unit space (0..1), drawn back to front. */
+private fun boatAreas(): List<Pair<String, Area>> {
+    fun circle(cx: Double, cy: Double, r: Double): Area =
+        Area(Ellipse2D.Double(cx - r, cy - r, r * 2.0, r * 2.0))
+    fun triangle(ax: Double, ay: Double, bx: Double, by: Double, cx: Double, cy: Double): Area =
+        Area(Path2D.Double().apply {
+            moveTo(ax, ay); lineTo(bx, by); lineTo(cx, cy); closePath()
+        })
+    fun quad(ax: Double, ay: Double, bx: Double, by: Double, cx: Double, cy: Double, dx: Double, dy: Double): Area =
+        Area(Path2D.Double().apply {
+            moveTo(ax, ay); lineTo(bx, by); lineTo(cx, cy); lineTo(dx, dy); closePath()
+        })
+    return listOf(
+        "sun" to circle(0.76, 0.20, 0.09),
+        "jib" to triangle(0.47, 0.38, 0.47, 0.62, 0.33, 0.62),
+        "main" to triangle(0.53, 0.30, 0.53, 0.62, 0.72, 0.62),
+        "hull" to quad(0.30, 0.66, 0.70, 0.66, 0.62, 0.79, 0.38, 0.79),
+    )
 }
 
-/** The bite in local coords: mouth at origin opening east, chamber west. */
-private fun biteUnit(): Area {
-    val d = IconDesign
-    val bite = Area()
-    bite.add(Area(Rectangle2D.Double(-d.BITE_D, -d.BITE_W / 2.0, d.BITE_D + 0.012, d.BITE_W)))
-    bite.add(Area(Ellipse2D.Double(-d.BITE_D - 0.015 - d.BITE_R, -d.BITE_R, d.BITE_R * 2.0, d.BITE_R * 2.0)))
-    return bite
-}
-
-/** The white hero: the green bite mirrored east at the same scale. */
-fun heroKnob(): Area {
-    val d = IconDesign
-    val t = AffineTransform.getTranslateInstance(d.SEAM_X, d.KNOB_Y)
-    t.concatenate(AffineTransform.getScaleInstance(-d.KS, d.KS))
-    return biteUnit().createTransformedArea(t)
-}
-
-/** The S region: paper field, green-shaped white hero out, green socket in. */
-fun seamRegion(): Area {
-    val d = IconDesign
-    val region = Area(Rectangle2D.Double(-0.05, -0.05, d.SEAM_X + 0.05, 1.10))
-    region.add(heroKnob())
-    region.subtract(socketBite())
-    return region
+private fun partColor(part: String, mono: Boolean): Int {
+    if (mono) return IconDesign.WHITE
+    return when (part) {
+        "sun" -> IconDesign.HONEY
+        "hull" -> IconDesign.CORAL
+        else -> IconDesign.PAPER
+    }
 }
 
 internal enum class Layer { TILE, FOREGROUND, MONO }
@@ -139,21 +117,24 @@ internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): Buffer
     }
     val span = if (layer == Layer.FOREGROUND) size * d.FG_SPAN_DP / d.ADAPTIVE_DP else size * d.TILE_SPAN
     val t = unitTransform(size, span)
-    val region = seamRegion().createTransformedArea(t)
-    val fillArgb = if (layer == Layer.MONO) d.WHITE else d.PAPER
-    // No shadow on white, per owner: the green carries none, so neither
-    // does the white. The seam reads on paper against teal contrast alone.
-    g.color = Color(fillArgb, true)
-    g.fill(region)
+    val mono = layer == Layer.MONO
+    for ((part, area) in boatAreas()) {
+        g.color = Color(partColor(part, mono), true)
+        g.fill(area.createTransformedArea(t))
+    }
+    // A calm waterline under the hull, in the tile's own tongue.
+    val water = Area(Rectangle2D.Double(0.24, 0.83, 0.52, 0.035))
+    g.color = Color(if (mono) d.WHITE else d.PAPER, true)
+    g.fill(water.createTransformedArea(t))
     g.dispose()
     return image
 }
 
-/** The legacy tile: flat teal, paper seam, for API 24-25. */
+/** The legacy tile: flat teal, paper boat, for API 24-25. */
 fun legacyIcon(sizePx: Int): BufferedImage =
     paintLayer(sizePx, Layer.TILE, IconDesign.LEGACY_CORNER_FRACTION)
 
-/** One adaptive layer: paper seam on transparency, no baked shadow. */
+/** One adaptive layer: the boat on transparency. */
 fun adaptiveLayer(sizePx: Int, pieceArgb: Int): BufferedImage {
     // The monochrome sibling renders the same silhouette in white; the
     // paper argument stays so every caller keeps one shape of call.
@@ -184,7 +165,7 @@ fun iconFiles(): List<IconFile> = buildList {
 }
 
 private fun pngBytes(image: BufferedImage): ByteArray {
-    val bytes = ByteArrayOutputStream()
+    val bytes = java.io.ByteArrayOutputStream()
     ImageIO.write(image, "png", bytes)
     return bytes.toByteArray()
 }

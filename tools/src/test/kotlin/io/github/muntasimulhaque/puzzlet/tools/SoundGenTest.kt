@@ -8,9 +8,9 @@ import kotlin.io.path.readBytes
 
 class SoundGenTest {
 
-    private val names = listOf("sfx_pick", "sfx_drop", "sfx_snap", "sfx_chime")
-    private val expectedMs = mapOf("sfx_pick" to 55, "sfx_drop" to 130, "sfx_snap" to 110, "sfx_chime" to 480)
-    private val expectedPeak = mapOf("sfx_pick" to 0.45, "sfx_drop" to 0.40, "sfx_snap" to 0.70, "sfx_chime" to 0.70)
+    private val names = listOf("sfx_snap", "sfx_chime")
+    private val expectedMs = mapOf("sfx_snap" to 110, "sfx_chime" to 480)
+    private val expectedPeak = mapOf("sfx_snap" to 0.70, "sfx_chime" to 0.70)
 
     private fun parse(bytes: ByteArray): Raw {
         assertEquals("RIFF", String(bytes, 0, 4, Charsets.US_ASCII))

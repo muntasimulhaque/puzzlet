@@ -14,11 +14,14 @@ import java.util.Collections
  * The effects only work as immediate physical consequences of the child's
  * own actions.
  *
- * Only [Sfx.CHIME] has a pitch. The board refuses to play it twice inside
- * 1200 ms: two pitched notes in quick succession make an interval, and
- * intervals are where melody starts.
+ * Two sounds, nothing more: the click home and the single bell for a
+ * finished picture. A lift needs no sound (the piece growing under the
+ * finger is the answer) and a miss needs none (gliding home is the
+ * answer). Only [Sfx.CHIME] has a pitch. The board refuses to play it
+ * twice inside 1200 ms: two pitched notes in quick succession make an
+ * interval, and intervals are where melody starts.
  */
-enum class Sfx { PICK, DROP, SNAP, CHIME }
+enum class Sfx { SNAP, CHIME }
 
 class SoundBoard(context: Context) {
 
@@ -33,7 +36,7 @@ class SoundBoard(context: Context) {
     @Volatile private var released = false
 
     private val pool = SoundPool.Builder()
-        .setMaxStreams(4)
+        .setMaxStreams(2)
         .setAudioAttributes(
             AudioAttributes.Builder()
                 .setUsage(AudioAttributes.USAGE_GAME)
@@ -44,8 +47,6 @@ class SoundBoard(context: Context) {
 
     init {
         loaded = mapOf(
-            Sfx.PICK to loadOrZero(R.raw.sfx_pick),
-            Sfx.DROP to loadOrZero(R.raw.sfx_drop),
             Sfx.SNAP to loadOrZero(R.raw.sfx_snap),
             Sfx.CHIME to loadOrZero(R.raw.sfx_chime),
         )
@@ -93,8 +94,6 @@ class SoundBoard(context: Context) {
     }
 
     private fun volumeOf(sfx: Sfx) = when (sfx) {
-        Sfx.PICK -> 0.75f
-        Sfx.DROP -> 0.60f
         Sfx.SNAP -> 0.90f
         Sfx.CHIME -> 0.80f
     }

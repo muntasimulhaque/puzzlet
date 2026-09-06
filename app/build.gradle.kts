@@ -13,8 +13,8 @@ android {
         applicationId = "io.github.muntasimulhaque.puzzlet"
         minSdk = 24
         targetSdk = 37
-        versionCode = 7
-        versionName = "0.7"
+        versionCode = 8
+        versionName = "0.8"
 
         // Instrumented tests (the emulator screenshot capture, arriving with
         // M1 gameplay) use AndroidX's runner.
@@ -79,7 +79,7 @@ dependencies {
     // The host is a ViewModel; collectAsStateWithLifecycle needs its runtime.
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7")
-    // One small preference file for the sound switch and a saved picture.
+    // One small preference file for wins per picture (the auto ladder).
     implementation("androidx.datastore:datastore-preferences:1.1.1")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")

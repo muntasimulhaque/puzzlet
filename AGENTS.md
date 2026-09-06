@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, and so on.
-  Current release: versionCode 7, versionName 0.7, cut for closed testing.
+  Current release: versionCode 8, versionName 0.8, cut for closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
   twin in the `KEYSTORE_BASE64` GitHub secret and the passwords in three
@@ -73,32 +73,32 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 ## The game
 
-Tray, drag, snap, celebrate. Eight pictures: sailboat, rocket, house,
-lighthouse, balloon, train, castle, fruit. All inanimate: no humans, no
-animals, no faces, no eyes. Each cuts into 4, 6, 9, 12, 16, 20 or 24
-pieces, chosen with picture buttons. The pieces wait in a tray above the
-board at tray scale; a piece in hand grows to board size under the
-finger. Drag it anywhere near its place and it clicks home with a spring,
-a soft knock and a haptic tick; a miss glides back to its tray seat. The
-board stays blank so the child must think; a peek coin reveals the full
-picture, tap again to hide it. No drag hint, no slot glow, no mid game
-restart: like a real puzzle, pieces move by hand and there is no easy
-undo. The tray jumbles fresh every new game, never serial, while the cut
-stays stable like a bought puzzle. No timer, no score, no fail state, no
-reading required, no tutorial: the tray-and-board layout is the whole
-lesson. No piece ever starts within snap tolerance of its own slot; the
-tray sits above the board, so the guarantee is structural. Finish, and
-the picture is held up with confetti. Again deals the same cut with a
-fresh jumble, a beat apart. The sound switch lives in the top bar; one
-unfinished picture survives backing out and process death (DataStore),
-re-seated by the same cut and the same jumble.
+Tray, drag, snap, celebrate. Four pictures: sailboat, house, balloon,
+fruit. All inanimate: no humans, no animals, no faces, no eyes. Tapping
+a picture starts it at once at its ladder step: the first game is 4
+pieces, a win grows it to 6, another to 9, and 9 is the ceiling. The
+pieces wait in a tray above the board at tray scale; a piece in hand
+grows to board size under the finger. The goal picture always shows
+faintly on the board so the child must match, not memorize; while a
+piece is in hand its own home glows softly. Drag it anywhere near its
+place and it clicks home with a spring, a soft knock and a haptic tick;
+a miss glides back to its tray seat. No mid game restart: like a real
+puzzle, pieces move by hand and there is no easy undo. The tray jumbles
+fresh every new game, never serial, while the cut stays stable like a
+bought puzzle. No timer, no score, no fail state, no reading required,
+no tutorial: the tray-and-board layout is the whole lesson. No piece
+ever starts within snap tolerance of its own slot; the tray sits above
+the board, so the guarantee is structural. Finish, and the picture is
+held up with confetti on a deep scrim with Again leading. Wins per
+picture persist (DataStore) and choose the next step; unfinished games
+do not: every launch starts fresh on the shelf.
 
 ## Architecture
 
 ```
-core/     pure Kotlin, zero Android imports: cut, scenes, board rules
-host/     ViewModel: which screen, which piece in hand, resumes, sounds
-ui/       Compose: gallery, difficulty chooser, play field, celebration
+core/     pure Kotlin, zero Android imports: cut, scenes, ladder, board rules
+host/     ViewModel: which screen, which piece in hand, wins, sounds
+ui/       Compose: picture shelf, play field, celebration
 theme     PuzzletColors + Baloo 2 typography; icons drawn as geometry
 tools/    offline asset generators: plain JVM Kotlin, Java2D, no libraries
 ```
@@ -114,9 +114,13 @@ outline, so there is not a single bitmap in gameplay and no shared outline
 cache to go stale.
 
 Scene content is pure data: `Scene.kt` holds the shape types and the
-registry; `ScenePaintings.kt` and `ScenePaintingsMore.kt` hold the eight
-paintings. Adding a picture means adding one builder; the gallery, the
-capture set and the listing text follow.
+registry; `ScenePaintings.kt` and `ScenePaintingsMore.kt` hold the four
+shipped paintings (sail, house, balloon, fruit); the retired rocket,
+lighthouse, train and castle builders stay in the files, unlisted, until
+they earn their way back by cutting fairly. Adding a picture means
+adding one builder and listing it; the capture set and the listing text
+follow. `Ladder.kt` holds the auto ladder (4, 6, 9): wins choose the
+step, the child never picks a count.
 
 Outside the code, two asset homes: `play-store/` holds the listing kit
 (screenshots in per-form-factor subfolders, feature graphic, store icon,
@@ -146,13 +150,14 @@ Pages and the bundled font's OFL license. Nothing else lives loose.
 - Display face: Baloo 2 (OFL, bundled, offline), ExtraBold for the name,
   Bold for headings. Body text follows the system font under a 1.3 cap,
   the house rule: past that cap words stop fitting fixed play surfaces.
-- The mark: one seam, two tones (the owner's pick, S, with a socket).
-  A paper field left, a hero knob reaching right into the deep, a socket
-  bite opening above it. Generated by `:tools:makeIcons` across all
-  densities plus adaptive and monochrome, verified by pixel probes
-  (knob paper, socket carved, both inside the launcher mask circle),
-  never hand-edited. Supersedes the four-armed piece in D-036 and the
-  A2 clover: the joint language reads at 48 dp where the clover closed up.
+- The mark: the finished delight, not the joint (the owner's pick,
+  directed in D-044). A little sailboat, paper sails, coral hull, honey
+  sun, on the lagoon tile. Generated by `:tools:makeIcons` across all
+  densities plus adaptive and monochrome, verified by pixel probes (sun
+  honey, sail paper, hull coral, boat inside the launcher mask circle),
+  never hand-edited. Supersedes the S seam with socket in D-043: an
+  engineering diagram of a joint, unreadable at 48 dp, loved by nobody
+  under five.
 - Corners are generous; nothing sharp touches a child's game. The toy-box
   is light-fixed: one warm paper world, no night variant.
 
@@ -169,7 +174,7 @@ export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"   # not on PATH
 CI is the loop: `build.yml` gates every push to `main` on tests, lint,
 asset pins, then signs and publishes the AAB and APK to the
 `latest-build` GitHub release. `screenshots.yml` recaptures the store
-screenshots whenever UI files change: eight scenes per form factor (phone,
+screenshots whenever UI files change: the capture set per form factor (phone,
 7", 10"), pinned to API 35. Download the three `store-screenshots-*`
 artifacts with `gh run download <run-id> -R muntasimulhaque/puzzlet -D
 <dir>` and strip the form-factor prefix into `play-store/screenshots/`.
@@ -324,6 +329,18 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   Tray breathing room widened 0.02 to 0.045 so chunky pieces clear phone
   edges. Supersedes D-036 and parks the v2 takes and the A2 clover as
   decided history.
+- D-044 The Jobs pass (owner-directed: redo the app the way Steve Jobs
+  would ship it). Four pictures that cut fairly (sail, house, balloon,
+  fruit); the rest stay as unlisted builders until they earn their way
+  back. No chooser screen: tapping a picture plays at once at its ladder
+  step (4, then 6, then 9 with wins, core/Ladder.kt, wins in DataStore).
+  The goal always shows faintly on the board with a soft home glow while
+  held; no peek coin, no slot glow otherwise. No sound switch and no
+  saved picture: every launch starts fresh. Two sounds (snap, chime).
+  The boat mark, the short name, the trimmed listing. Supersedes the
+  eight picture shelf in D-025 through D-028, the blank board and peek
+  in D-041, the sound switch in D-021, the resume in D-022 and D-041,
+  the chooser in D-037 and D-042, and the S mark in D-043.
 
 ## Lessons that still bite
 
@@ -454,3 +471,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 - 2026-09-06: Version 0.7 submitted for closed testing review; the AAB was
   deleted from play-store/aab/ per the folder rule, and the consumed icon
   candidate sheets were removed. README brought current.
+- 2026-09-06: The Jobs pass (D-044, owner-directed): four fair pictures
+  with the auto ladder, tap to play, faint goal with hold glow, no
+  switch and no resume, two sounds, the boat mark and art, the short
+  name and trimmed listing. Cut 0.8 (versionCode 8), notes 434 chars,
+  all gates green.
