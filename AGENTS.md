@@ -581,3 +581,9 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   last candidate file into tools/MarkGather.kt, and :tools:makeScenes now
   writes its review sheet to build/scenes. Next session picks up from: the
   1.1 review verdict and tester feedback.
+- 2026-09-07: Session closed with 1.1 in Play review. Everything is
+  pushed, the tree is clean, the aab folder is empty, and the last CI run
+  on main (9204437) is green. Standing open item unchanged: piece-level
+  TalkBack. The pictures in build/scenes were never committed, so the
+  twelve now shipping have not had the owner's eyes on them yet: run
+  :tools:makeScenes the moment that matters.
