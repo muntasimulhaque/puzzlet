@@ -29,7 +29,7 @@ object MakeArt {
         val g = image.createGraphics()
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        g.paint = Color(IconDesign.TEAL)
+        g.paint = Color(IconDesign.DEEP)
         g.fill(Rectangle2D.Double(0.0, 0.0, w.toDouble(), h.toDouble()))
         g.drawImage(storeTile(380), 72, 60, null)
         drawCleanString(g, "Puzzlet", "baloo2_extrabold.ttf", 140f, IconDesign.PAPER, 474f, 272f, rootDir)

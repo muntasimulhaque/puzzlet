@@ -3,8 +3,7 @@
     <!-- The resting ground, so the very first frame is already the app's
          world rather than a flash the Compose surface then replaces. -->
     <color name="paper">#FAF6EF</color>
-    <!-- The adaptive icon's background: the lagoon teal the paper glyph sits
-         on. Mirrored as IconDesign.TEAL in :tools, which regenerates the
-         launcher PNGs. -->
-    <color name="ic_launcher_background">#0C7A64</color>
+    <!-- The adaptive icon's background: warm paper, so the lagoon piece
+         reads on it. Mirrored as IconDesign.PAPER in :tools. -->
+    <color name="ic_launcher_background">#FAF6EF</color>
 </resources>

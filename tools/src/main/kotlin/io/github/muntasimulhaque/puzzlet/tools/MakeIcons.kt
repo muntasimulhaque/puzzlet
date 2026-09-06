@@ -17,11 +17,14 @@ import kotlin.system.exitProcess
 /**
  * The launcher icon, drawn from code so every PNG has exactly one author.
  *
- * Design: the finished delight, not the joint. A little sailboat (paper
- * sails, coral hull, honey sun) on the lagoon teal tile. A child points
- * at it; a parent feels warmth. Rendered three ways: the legacy tile for
- * API 24-25, the adaptive foreground for API 26+ over the flat teal
- * background, and a white monochrome sibling for Android 13+ themed icons.
+ * Design: a real jigsaw piece carrying the finished delight. The piece
+ * speaks the same joint language as the game's own cut (a mushroom knob:
+ * neck narrower than head, one tab up, one socket right), and inside it
+ * sails the little boat (paper sails, coral hull, honey sun). A child
+ * sees a puzzle; a parent feels warmth. Rendered three ways: the legacy
+ * tile for API 24-25, the adaptive foreground for API 26+ over the flat
+ * teal background, and a white monochrome sibling (piece silhouette) for
+ * Android 13+ themed icons.
  *
  * Colors here mirror app/src/main/res/values/colors.xml plus the scene
  * palette (coral, honey). Change both together, then run makeIcons and
@@ -29,6 +32,7 @@ import kotlin.system.exitProcess
  */
 object IconDesign {
     const val TEAL: Int = 0xFF0C7A64.toInt()
+    const val DEEP: Int = 0xFF085949.toInt()
     const val PAPER: Int = 0xFFFAF6EF.toInt()
     const val WHITE: Int = 0xFFFFFFFF.toInt()
     const val HONEY: Int = 0xFFF0B429.toInt()
@@ -42,7 +46,7 @@ object IconDesign {
     const val LEGACY_DP = 48.0
     /** Adaptive layer canvas, dp (the 108 dp full-bleed square). */
     const val ADAPTIVE_DP = 108.0
-    /** Macro bleed of the mark on the adaptive canvas; boat stays in the 66 dp circle. */
+    /** Macro bleed of the mark on the adaptive canvas; tab tip and hull stay in the 66 dp circle. */
     const val FG_SPAN_DP = 90.0
     /** Fraction of a full-art tile the mark spans. */
     const val TILE_SPAN = 0.98
@@ -50,9 +54,49 @@ object IconDesign {
     const val LEGACY_CORNER_FRACTION = 0.22
     /** Store tile corner radius as a fraction of the tile. */
     const val STORE_CORNER_FRACTION = 0.19
+
+    /** The piece body in tile unit space (0..1). */
+    const val PX0 = 0.20
+    const val PX1 = 0.80
+    const val PY0 = 0.27
+    const val PY1 = 0.81
+    const val PIECE_CORNER = 0.07
+
+    /** The tab: neck half-width, head centre and radius (neck < head, a mushroom). */
+    const val TAB_CX = 0.50
+    const val TAB_NECK_HALF = 0.040
+    const val TAB_NECK_TOP = 0.25
+    const val TAB_HEAD_CY = 0.225
+    const val TAB_HEAD_R = 0.075
+
+    /** The socket: mouth rect and chamber (carved from the right edge). */
+    const val SOCK_CY = 0.55
+    const val SOCK_MOUTH_HALF = 0.050
+    const val SOCK_CHAMBER_CX = 0.745
+    const val SOCK_CHAMBER_R = 0.068
 }
 
-/** Boat parts in tile unit space (0..1), drawn back to front. */
+/** The piece silhouette: rounded body, mushroom tab up, socket right. */
+fun pieceArea(): Area {
+    val d = IconDesign
+    val body = Area(
+        RoundRectangle2D.Double(
+            d.PX0, d.PY0, d.PX1 - d.PX0, d.PY1 - d.PY0,
+            d.PIECE_CORNER * 2.0, d.PIECE_CORNER * 2.0,
+        ),
+    )
+    // Tab neck: a stem rising off the top edge.
+    body.add(Area(Rectangle2D.Double(d.TAB_CX - d.TAB_NECK_HALF, d.TAB_NECK_TOP, d.TAB_NECK_HALF * 2.0, d.PY0 - d.TAB_NECK_TOP + 0.02)))
+    // Tab head: a round knob wider than its neck, the mushroom.
+    body.add(Area(Ellipse2D.Double(d.TAB_CX - d.TAB_HEAD_R, d.TAB_HEAD_CY - d.TAB_HEAD_R, d.TAB_HEAD_R * 2.0, d.TAB_HEAD_R * 2.0)))
+    // Socket mouth: a channel opening off the right edge.
+    body.subtract(Area(Rectangle2D.Double(d.PX1 - 0.02, d.SOCK_CY - d.SOCK_MOUTH_HALF, 0.06, d.SOCK_MOUTH_HALF * 2.0)))
+    // Socket chamber: the round room inside, wider than its mouth.
+    body.subtract(Area(Ellipse2D.Double(d.SOCK_CHAMBER_CX - d.SOCK_CHAMBER_R, d.SOCK_CY - d.SOCK_CHAMBER_R, d.SOCK_CHAMBER_R * 2.0, d.SOCK_CHAMBER_R * 2.0)))
+    return body
+}
+
+/** Boat parts in tile unit space, drawn back to front inside the piece. */
 private fun boatAreas(): List<Pair<String, Area>> {
     fun circle(cx: Double, cy: Double, r: Double): Area =
         Area(Ellipse2D.Double(cx - r, cy - r, r * 2.0, r * 2.0))
@@ -65,10 +109,11 @@ private fun boatAreas(): List<Pair<String, Area>> {
             moveTo(ax, ay); lineTo(bx, by); lineTo(cx, cy); lineTo(dx, dy); closePath()
         })
     return listOf(
-        "sun" to circle(0.76, 0.20, 0.09),
-        "jib" to triangle(0.47, 0.38, 0.47, 0.62, 0.33, 0.62),
-        "main" to triangle(0.53, 0.30, 0.53, 0.62, 0.72, 0.62),
-        "hull" to quad(0.30, 0.66, 0.70, 0.66, 0.62, 0.79, 0.38, 0.79),
+        "sun" to circle(0.63, 0.42, 0.055),
+        "jib" to triangle(0.485, 0.48, 0.485, 0.60, 0.40, 0.60),
+        "main" to triangle(0.51, 0.44, 0.51, 0.60, 0.63, 0.60),
+        "hull" to quad(0.36, 0.63, 0.64, 0.63, 0.59, 0.71, 0.41, 0.71),
+        "water" to Area(Rectangle2D.Double(0.33, 0.745, 0.34, 0.022)),
     )
 }
 
@@ -92,51 +137,39 @@ private fun beginIcon(image: BufferedImage): Graphics2D {
     return g
 }
 
-/** Map unit space onto the tile: unit centre to tile centre, span across. */
-private fun tileShapeFor(size: Int, cornerFraction: Double): RoundRectangle2D.Double {
-    val corner = size * cornerFraction * 2.0
-    return RoundRectangle2D.Double(0.0, 0.0, size.toDouble(), size.toDouble(), corner, corner)
-}
-
 private fun unitTransform(size: Int, span: Double): AffineTransform {
     val t = AffineTransform.getTranslateInstance(size / 2.0 - 0.5 * span, size / 2.0 - 0.5 * span)
     t.concatenate(AffineTransform.getScaleInstance(span, span))
     return t
 }
 
-/** One icon layer: flat tile, bare foreground, or white mono. */
+/** One icon layer: flat tile, bare foreground, or white mono silhouette. */
 internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage {
     val d = IconDesign
     val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
     val g = beginIcon(image)
-    if (layer == Layer.TILE) {
-        val tileShape = tileShapeFor(size, cornerFraction)
-        g.color = Color(d.TEAL, true)
-        g.fill(tileShape)
-        g.clip = tileShape
-    }
     val span = if (layer == Layer.FOREGROUND) size * d.FG_SPAN_DP / d.ADAPTIVE_DP else size * d.TILE_SPAN
     val t = unitTransform(size, span)
     val mono = layer == Layer.MONO
-    for ((part, area) in boatAreas()) {
-        g.color = Color(partColor(part, mono), true)
-        g.fill(area.createTransformedArea(t))
+    g.color = Color(if (mono) d.WHITE else d.TEAL, true)
+    g.fill(pieceArea().createTransformedArea(t))
+    if (!mono) {
+        for ((part, area) in boatAreas()) {
+            g.color = Color(partColor(part, false), true)
+            g.fill(area.createTransformedArea(t))
+        }
     }
-    // A calm waterline under the hull, in the tile's own tongue.
-    val water = Area(Rectangle2D.Double(0.24, 0.83, 0.52, 0.035))
-    g.color = Color(if (mono) d.WHITE else d.PAPER, true)
-    g.fill(water.createTransformedArea(t))
     g.dispose()
     return image
 }
 
-/** The legacy tile: flat teal, paper boat, for API 24-25. */
+/** The legacy tile: teal piece with its boat, for API 24-25. */
 fun legacyIcon(sizePx: Int): BufferedImage =
     paintLayer(sizePx, Layer.TILE, IconDesign.LEGACY_CORNER_FRACTION)
 
-/** One adaptive layer: the boat on transparency. */
+/** One adaptive layer: the piece with its boat on transparency. */
 fun adaptiveLayer(sizePx: Int, pieceArgb: Int): BufferedImage {
-    // The monochrome sibling renders the same silhouette in white; the
+    // The monochrome sibling renders the piece silhouette in white; the
     // paper argument stays so every caller keeps one shape of call.
     if (pieceArgb == IconDesign.WHITE) return paintLayer(sizePx, Layer.MONO, 0.0)
     return paintLayer(sizePx, Layer.FOREGROUND, 0.0)

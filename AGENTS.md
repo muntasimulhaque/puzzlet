@@ -476,3 +476,7 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   switch and no resume, two sounds, the boat mark and art, the short
   name and trimmed listing. Cut 0.8 (versionCode 8), notes 434 chars,
   all gates green.
+- 2026-09-06: The mark grew into a real piece (owner: a boat alone does
+  not read as a puzzle). Mushroom tab up, socket right, boat inside;
+  adaptive ground went paper and the feature ground deep so the lagoon
+  piece reads. Still 0.8, unsubmitted, all gates green.

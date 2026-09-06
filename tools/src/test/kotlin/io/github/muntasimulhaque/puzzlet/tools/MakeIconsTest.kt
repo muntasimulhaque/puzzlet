@@ -44,27 +44,37 @@ class MakeIconsTest {
     }
 
     @Test
-    fun `legacy tile carries the boat on teal`() {
+    fun `the tab is a mushroom, neck narrower than head`() {
+        val d = IconDesign
+        assertTrue("neck must be narrower than the head", d.TAB_NECK_HALF < d.TAB_HEAD_R)
+        assertEquals("tab tip", d.TAB_HEAD_CY - d.TAB_HEAD_R, 0.15, 1e-9)
+    }
+
+    @Test
+    fun `legacy tile carries the piece with its boat`() {
         val icon = legacyIcon(192)
         val p = tileMapper(192)
-        // Outside the rounded corners: fully transparent.
+        // Far outside the piece: fully transparent.
         assertEquals(0, icon.getRGB(8, 8) ushr 24)
-        // Far corner water, away from the boat: the teal tile itself.
-        val (bx, by) = p(0.08, 0.92)
-        assertEquals("background at ($bx, $by) is not teal", IconDesign.TEAL, icon.getRGB(bx, by))
+        // The tab head, reaching up: teal.
+        val (tx, ty) = p(0.50, 0.16)
+        assertEquals("tab at ($tx, $ty) is not teal", IconDesign.TEAL, icon.getRGB(tx, ty))
+        // The socket bite, carved from the right edge: open canvas.
+        val (sx, sy) = p(0.84, 0.55)
+        assertEquals("socket at ($sx, $sy) must be transparent", 0, icon.getRGB(sx, sy) ushr 24)
         // The honey sun.
-        val (sx, sy) = p(0.76, 0.20)
-        assertEquals("sun at ($sx, $sy) is not honey", IconDesign.HONEY, icon.getRGB(sx, sy))
+        val (ux, uy) = p(0.63, 0.42)
+        assertEquals("sun at ($ux, $uy) is not honey", IconDesign.HONEY, icon.getRGB(ux, uy))
         // The main sail: paper.
-        val (mx, my) = p(0.59, 0.51)
+        val (mx, my) = p(0.55, 0.55)
         assertEquals("mainsail at ($mx, $my) is not paper", IconDesign.PAPER, icon.getRGB(mx, my))
         // The hull: coral.
-        val (hx, hy) = p(0.50, 0.72)
+        val (hx, hy) = p(0.50, 0.67)
         assertEquals("hull at ($hx, $hy) is not coral", IconDesign.CORAL, icon.getRGB(hx, hy))
     }
 
     @Test
-    fun `boat survives inside the launcher mask circle`() {
+    fun `tab tip and hull survive inside the launcher mask circle`() {
         val size = 432
         val layer = adaptiveLayer(size, IconDesign.PAPER)
         val p = fgMapper(size)
@@ -73,28 +83,28 @@ class MakeIconsTest {
             val (x, y) = p(u, v)
             return hypot(x - cx, y - cx) <= size * 66.0 / 108.0
         }
-        assertTrue("sail tip leaves the mask circle", inside(0.53, 0.30))
-        assertTrue("hull leaves the mask circle", inside(0.50, 0.72))
-        val (mx, my) = p(0.59, 0.51)
-        assertEquals(IconDesign.PAPER, layer.getRGB(mx, my))
-        val (hx, hy) = p(0.50, 0.72)
+        assertTrue("tab tip leaves the mask circle", inside(0.50, 0.15))
+        assertTrue("hull leaves the mask circle", inside(0.50, 0.67))
+        val (tx, ty) = p(0.50, 0.16)
+        assertEquals(IconDesign.TEAL, layer.getRGB(tx, ty))
+        val (hx, hy) = p(0.50, 0.67)
         assertEquals(IconDesign.CORAL, layer.getRGB(hx, hy))
     }
 
     @Test
-    fun `adaptive layer is transparent canvas with the boat only`() {
+    fun `adaptive layer is transparent canvas with the piece only`() {
         val layer = adaptiveLayer(432, IconDesign.PAPER)
         val p = fgMapper(432)
-        // Far from the boat: untouched canvas.
+        // Far from the piece: untouched canvas.
         val (rx, ry) = p(0.05, 0.50)
         assertEquals(0, layer.getRGB(rx, ry) ushr 24)
         // The sail: paper.
-        val (bx, by) = p(0.59, 0.51)
+        val (bx, by) = p(0.55, 0.55)
         assertEquals(IconDesign.PAPER, layer.getRGB(bx, by))
-        // The monochrome sibling renders the same silhouette in white.
+        // The monochrome sibling is the piece silhouette in white.
         val mono = adaptiveLayer(432, IconDesign.WHITE)
         assertEquals(IconDesign.WHITE, mono.getRGB(bx, by))
-        val (hx, hy) = p(0.50, 0.72)
-        assertEquals(IconDesign.WHITE, mono.getRGB(hx, hy))
+        val (tx, ty) = p(0.50, 0.16)
+        assertEquals(IconDesign.WHITE, mono.getRGB(tx, ty))
     }
 }
