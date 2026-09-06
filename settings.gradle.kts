@@ -13,5 +13,6 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "puzzlet"
+include(":core")
 include(":app")
 include(":tools")

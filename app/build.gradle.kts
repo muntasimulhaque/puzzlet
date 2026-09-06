@@ -69,6 +69,8 @@ android {
 }
 
 dependencies {
+    // The rules: pure Kotlin, shared with the offline generators in :tools.
+    implementation(project(":core"))
     // The Compose BOM governs every Compose artifact. M0 is deliberately
     // minimal: the brand screen needs nothing beyond the core. Lifecycle,
     // ViewModel and the rest arrive with the M1 host.

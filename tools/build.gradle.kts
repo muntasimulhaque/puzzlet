@@ -21,6 +21,8 @@ kotlin {
 }
 
 dependencies {
+    // The rules, so generated art draws the same pictures the app plays.
+    implementation(project(":core"))
     testImplementation("junit:junit:4.13.2")
 }
 

@@ -6,6 +6,7 @@ on:
     # Only rebuild when something that affects the app actually changes,
     # so doc-only commits (README, AGENTS.md) don't burn a build.
     paths:
+      - "core/**"
       - "app/**"
       - "tools/**"
       - "*.gradle.kts"
@@ -48,7 +49,7 @@ jobs:
       - name: Run unit tests, generator tests, sound pinning and lint
         # Pure-JVM engine + generator tests (no device needed), full lint,
         # and the pin that refuses any hand-edited icon or sound asset.
-        run: ./gradlew :app:testReleaseUnitTest :app:lintRelease :tools:test :tools:checkIcons :tools:checkSounds
+        run: ./gradlew :core:test :app:testReleaseUnitTest :app:lintRelease :tools:test :tools:checkIcons :tools:checkSounds
 
       - name: Decode signing keystore
         env:
