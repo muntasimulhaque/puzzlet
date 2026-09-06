@@ -8,7 +8,6 @@ import java.awt.geom.Area
 import java.awt.geom.Ellipse2D
 import java.awt.geom.Path2D
 import java.awt.geom.Rectangle2D
-import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -55,45 +54,83 @@ object IconDesign {
     /** Store tile corner radius as a fraction of the tile. */
     const val STORE_CORNER_FRACTION = 0.19
 
-    /** The piece body in tile unit space (0..1). */
-    const val PX0 = 0.20
-    const val PX1 = 0.80
-    const val PY0 = 0.27
-    const val PY1 = 0.81
-    const val PIECE_CORNER = 0.07
+    /** The piece body in tile unit space (0..1); corners die-cut sharp. */
+    const val PX0 = 0.26
+    const val PX1 = 0.78
+    const val PY0 = 0.26
+    const val PY1 = 0.78
 
-    /** The tab: neck half-width, head centre and radius (neck < head, a mushroom). */
-    const val TAB_CX = 0.50
-    const val TAB_NECK_HALF = 0.040
-    const val TAB_NECK_TOP = 0.25
-    const val TAB_HEAD_CY = 0.225
-    const val TAB_HEAD_R = 0.075
-
-    /** The socket: mouth rect and chamber (carved from the right edge). */
-    const val SOCK_CY = 0.55
-    const val SOCK_MOUTH_HALF = 0.050
-    const val SOCK_CHAMBER_CX = 0.745
-    const val SOCK_CHAMBER_R = 0.068
+    /**
+     * The knob, in the exact proportions of core PieceCut: neck half
+     * 0.34 of the knob height, head reach 0.95, control lifts 0.35 and
+     * 0.45. Same numbers, same curves, no jitter (centred, deliberate).
+     */
+    const val KNOB_H = 0.10
+    const val KNOB_NECK = 0.34
+    const val KNOB_HEAD = 0.95
+    const val TAB_MID = 0.50
+    const val SOCK_MID = 0.55
 }
 
-/** The piece silhouette: rounded body, mushroom tab up, socket right. */
+/**
+ * The piece silhouette, cut the way the game cuts: flat base lines joined
+ * by two-cubic mushroom knobs, one tab up, one socket right. The knob
+ * below is PieceCut.mushroom without the gameplay jitter: a base line,
+ * then two cubics through a head that stands a full knob height past the
+ * edge and reaches well past its neck, which is what makes the silhouette
+ * a mushroom and not a bump.
+ */
 fun pieceArea(): Area {
     val d = IconDesign
-    val body = Area(
-        RoundRectangle2D.Double(
-            d.PX0, d.PY0, d.PX1 - d.PX0, d.PY1 - d.PY0,
-            d.PIECE_CORNER * 2.0, d.PIECE_CORNER * 2.0,
-        ),
+    val path = Path2D.Double()
+    // Top edge, left to right, the tab reaching up.
+    path.moveTo(d.PX0, d.PY0)
+    hKnob(path, d.PX0, d.PX1, d.PY0, d.TAB_MID, d.KNOB_H)
+    path.lineTo(d.PX1, d.PY0)
+    // Right edge, top to bottom, the socket opening inward.
+    path.lineTo(d.PX1, d.SOCK_MID - d.KNOB_NECK * d.KNOB_H)
+    vKnob(path, d.SOCK_MID, d.PX1, d.KNOB_H)
+    path.lineTo(d.PX1, d.PY1)
+    // Bottom and left close the body, flat like a corner piece.
+    path.lineTo(d.PX0, d.PY1)
+    path.closePath()
+    return Area(path)
+}
+
+/** Horizontal knob from the current point to (x1, y); sign +1 reaches up. */
+private fun hKnob(path: Path2D.Double, x0: Double, x1: Double, y: Double, mid: Double, kh: Double) {
+    val d = IconDesign
+    val neck = d.KNOB_NECK * kh
+    val head = d.KNOB_HEAD * kh
+    path.lineTo(mid - neck, y)
+    path.curveTo(
+        mid - neck + 0.10 * kh, y - 0.35 * kh,
+        mid - head, y - 0.45 * kh,
+        mid, y - kh,
     )
-    // Tab neck: a stem rising off the top edge.
-    body.add(Area(Rectangle2D.Double(d.TAB_CX - d.TAB_NECK_HALF, d.TAB_NECK_TOP, d.TAB_NECK_HALF * 2.0, d.PY0 - d.TAB_NECK_TOP + 0.02)))
-    // Tab head: a round knob wider than its neck, the mushroom.
-    body.add(Area(Ellipse2D.Double(d.TAB_CX - d.TAB_HEAD_R, d.TAB_HEAD_CY - d.TAB_HEAD_R, d.TAB_HEAD_R * 2.0, d.TAB_HEAD_R * 2.0)))
-    // Socket mouth: a channel opening off the right edge.
-    body.subtract(Area(Rectangle2D.Double(d.PX1 - 0.02, d.SOCK_CY - d.SOCK_MOUTH_HALF, 0.06, d.SOCK_MOUTH_HALF * 2.0)))
-    // Socket chamber: the round room inside, wider than its mouth.
-    body.subtract(Area(Ellipse2D.Double(d.SOCK_CHAMBER_CX - d.SOCK_CHAMBER_R, d.SOCK_CY - d.SOCK_CHAMBER_R, d.SOCK_CHAMBER_R * 2.0, d.SOCK_CHAMBER_R * 2.0)))
-    return body
+    path.curveTo(
+        mid + head, y - 0.45 * kh,
+        mid + neck - 0.10 * kh, y - 0.35 * kh,
+        mid + neck, y,
+    )
+    path.lineTo(x1, y)
+}
+
+/** Vertical knob from the current point down to (x, ...); sign +1 reaches left. */
+private fun vKnob(path: Path2D.Double, mid: Double, x: Double, kh: Double) {
+    val d = IconDesign
+    val neck = d.KNOB_NECK * kh
+    val head = d.KNOB_HEAD * kh
+    path.curveTo(
+        x - 0.35 * kh, mid - neck + 0.10 * kh,
+        x - 0.45 * kh, mid - head,
+        x - kh, mid,
+    )
+    path.curveTo(
+        x - 0.45 * kh, mid + head,
+        x - 0.35 * kh, mid + neck - 0.10 * kh,
+        x, mid + neck,
+    )
 }
 
 /** Boat parts in tile unit space, drawn back to front inside the piece. */

@@ -44,10 +44,12 @@ class MakeIconsTest {
     }
 
     @Test
-    fun `the tab is a mushroom, neck narrower than head`() {
+    fun `the knob keeps the engine proportions, neck narrower than head`() {
         val d = IconDesign
-        assertTrue("neck must be narrower than the head", d.TAB_NECK_HALF < d.TAB_HEAD_R)
-        assertEquals("tab tip", d.TAB_HEAD_CY - d.TAB_HEAD_R, 0.15, 1e-9)
+        assertEquals(d.KNOB_NECK, 0.34, 1e-9)
+        assertEquals(d.KNOB_HEAD, 0.95, 1e-9)
+        assertTrue("neck must be narrower than the head", d.KNOB_NECK < d.KNOB_HEAD)
+        assertEquals("tab tip", d.PY0 - d.KNOB_H, 0.16, 1e-9)
     }
 
     @Test
@@ -57,10 +59,10 @@ class MakeIconsTest {
         // Far outside the piece: fully transparent.
         assertEquals(0, icon.getRGB(8, 8) ushr 24)
         // The tab head, reaching up: teal.
-        val (tx, ty) = p(0.50, 0.16)
+        val (tx, ty) = p(0.50, 0.17)
         assertEquals("tab at ($tx, $ty) is not teal", IconDesign.TEAL, icon.getRGB(tx, ty))
         // The socket bite, carved from the right edge: open canvas.
-        val (sx, sy) = p(0.84, 0.55)
+        val (sx, sy) = p(0.74, 0.55)
         assertEquals("socket at ($sx, $sy) must be transparent", 0, icon.getRGB(sx, sy) ushr 24)
         // The honey sun.
         val (ux, uy) = p(0.63, 0.42)
@@ -83,9 +85,9 @@ class MakeIconsTest {
             val (x, y) = p(u, v)
             return hypot(x - cx, y - cx) <= size * 66.0 / 108.0
         }
-        assertTrue("tab tip leaves the mask circle", inside(0.50, 0.15))
+        assertTrue("tab tip leaves the mask circle", inside(0.50, 0.16))
         assertTrue("hull leaves the mask circle", inside(0.50, 0.67))
-        val (tx, ty) = p(0.50, 0.16)
+        val (tx, ty) = p(0.50, 0.17)
         assertEquals(IconDesign.TEAL, layer.getRGB(tx, ty))
         val (hx, hy) = p(0.50, 0.67)
         assertEquals(IconDesign.CORAL, layer.getRGB(hx, hy))

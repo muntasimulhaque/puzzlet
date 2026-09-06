@@ -483,4 +483,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   follows as 0.9. All gates green.
 - 2026-09-06: Cut 0.9 (versionCode 9): the owner had already submitted
   the 0.8 AAB, so the piece icon ships as 0.9 with icon-only notes
-  (365 chars). All gates green.
+  (365 chars).
+- 2026-09-06: The mark recut a second time (owner: mimic a real piece
+  exactly). The knob is now the engine's own bezier pair, same 0.34
+  neck and 0.95 head numbers as core PieceCut, no jitter. Folds into
+  0.9, all gates green.
