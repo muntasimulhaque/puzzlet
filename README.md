@@ -4,29 +4,52 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 0.9 (versionCode 9) is cut for the closed testing
-track. Four pictures, each growing 4 to 6 to 9 pieces with wins. The goal
-always shows faintly on the board and a held piece lights its home; no
-difficulty screen, no peek coin, no restart button, no sound switch, no
-saved picture. The menu is pictures with their names, and tapping one
-plays at once. Two synthesized sounds (a click and a bell, no music),
-and wins per picture that survive process death. Store screenshots render
-in CI from the app's own states; the listing kit, the console answers and
-the signing flow are ready. See AGENTS.md for the working rules and the
-decision log.
+Status: release 1.1 (versionCode 11) is submitted to the closed testing
+track. Twelve pictures, five piece counts to choose from (4, 6, 9, 12,
+16), a blank board with the finished picture behind one coin, an even
+tray grid, and a sound switch on the picture shelf. No timer, no score,
+no fail state, no reading required. Two synthesized sounds (a click and a
+bell, no music). Wins, the count a parent picked and the sound switch
+survive process death; an unfinished game does not. Store screenshots
+render in CI from the app's own states; the listing kit and the console
+answers are ready. See AGENTS.md for the working rules and the decision
+log.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
 - **Privacy policy:** [online](https://muntasimulhaque.github.io/puzzlet/privacy.html) · [in this repo](docs/privacy.html)
 - **Signed build for the closed testing upload:** `play-store/aab/app-release.aab`
+  (downloaded there after each push, emptied after submission)
 
 ## The game
 
-Four pictures: sailboat, house, balloon, fruit. All inanimate, no faces,
-no eyes, drawn as vectors in code. Tapping a picture starts it at once:
-4 pieces first, wins grow it to 6, then 9. No timer, no score, no
-fail state, no reading required: drag a piece anywhere near its place and
-it clicks home with a spring, a soft knock and a haptic tick.
+Twelve pictures: sailboat, house, balloon, fruit, train, castle, rocket,
+lighthouse, truck, airplane, flowers, ice cream. All inanimate, no faces,
+no eyes, drawn as vectors in code, and every one of them on a graded
+ground so no piece ever comes out blank.
+
+The shelf shows the pictures with their names and a row of counts under
+each. Tap a picture and it plays at the count that row shows; tap a count
+and that choice sticks. Left alone, a win grows a picture from 4 to 6 to
+9 pieces. Pieces wait in a tray above a blank board: drag one anywhere
+near its place and it clicks home with a spring, a soft knock and a
+haptic tick. Forgotten the picture? The coin in the top bar holds it up,
+and tapping anywhere puts it away.
+
+## Layout
+
+```
+core/     its own Gradle module, pure Kotlin, zero Android imports: cut,
+          scenes, ladder, board and tray rules
+host/     ViewModel: which screen, which piece in hand, wins, sound
+ui/       Compose: picture shelf, play field, celebration
+theme     PuzzletColors + Baloo 2 typography; icons drawn as geometry
+tools/    offline asset generators: plain JVM Kotlin, Java2D, no libraries
+```
+
+The rules are pure data and functions; Android is a player of those
+rules, not a participant. No composable takes a ViewModel, which is what
+lets the screenshot harness host every state with no-op callbacks.
 
 ## Build
 
@@ -34,7 +57,7 @@ it clicks home with a spring, a soft knock and a haptic tick.
 
 ```
 export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"
-./gradlew :app:testReleaseUnitTest :app:lintRelease
+./gradlew :core:test :app:testReleaseUnitTest :app:lintRelease
 ./gradlew :tools:test :tools:checkIcons :tools:checkSounds
 ./gradlew :app:assembleRelease
 ```
@@ -44,12 +67,18 @@ the regenerated files):
 
 ```
 ./gradlew :tools:makeIcons :tools:makeSounds :tools:makeArt
+./gradlew :tools:makeScenes     # the picture sheet, for review
 ```
+
+CI is the loop: `build.yml` gates every push to `main` on the tests,
+lint and the asset pins, then signs and publishes the AAB and APK to the
+`latest-build` release. `screenshots.yml` recaptures the store
+screenshots whenever the UI changes.
 
 ## Play Store
 
 The listing kit lives in `play-store/`: the submission guide with the
-paste-ready listing and console answers, the feature graphic, the store
-icon, and screenshots per form factor (`phone/`, `tablet7/`, `tablet10/`)
-captured by CI from the app's own states. The signed AAB lands in
-`play-store/aab/` and is emptied after submission.
+paste-ready listing, release notes and console answers, the feature
+graphic, the store icon, and screenshots per form factor (`phone/`,
+`tablet7/`, `tablet10/`) captured by CI from the app's own states.
+Candidate pictures for review live in `play-store/candidates/scenes/`.

@@ -568,3 +568,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   pictures on graded grounds with the no-flat-piece law pinned, and a
   picture sheet under play-store/candidates/scenes for the owner to point
   at. Cut 1.1 (versionCode 11) for closed testing.
+- 2026-09-07: Version 1.1 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ per the folder rule. Housekeeping: the
+  two icon-candidate generators whose sheets were already consumed are
+  gone (MakeCandidates, MakeCandidatesV3, and their tasks), and the
+  README is current again. Next session picks up from: the 1.1 review
+  verdict, tester feedback, and the owner's call on the picture sheet in
+  play-store/candidates/scenes (icon-v4 stays as decided history until
+  the owner says otherwise).
