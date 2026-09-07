@@ -1,5 +1,6 @@
 package io.github.muntasimulhaque.puzzlet
 
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
@@ -17,10 +18,12 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.muntasimulhaque.puzzlet.core.Area
 import io.github.muntasimulhaque.puzzlet.core.Puzzle
+import io.github.muntasimulhaque.puzzlet.core.Scenes
 import io.github.muntasimulhaque.puzzlet.core.Vec2
 import io.github.muntasimulhaque.puzzlet.core.restorePuzzle
 import io.github.muntasimulhaque.puzzlet.host.Screen
 import io.github.muntasimulhaque.puzzlet.host.ShelfState
+import io.github.muntasimulhaque.puzzlet.ui.CutChooser
 import io.github.muntasimulhaque.puzzlet.ui.Gallery
 import io.github.muntasimulhaque.puzzlet.ui.PlayActions
 import io.github.muntasimulhaque.puzzlet.ui.PlayScreen
@@ -181,6 +184,31 @@ class ScreenshotTest {
         // the real cut the game will deal. Hosted without touch injection.
         shot("09_choose") {
             Gallery(ShelfState(), {}, { _, _ -> }, {}, openChooserFor = "balloon")
+        }
+
+        // The won chooser: one win on the picture and no parent pick. The
+        // marked tile is the ladder's 6, and tapping it deals 6: the mark
+        // must read exactly what the plain path will play (the
+        // 4-that-opened-6 bug, pinned here). Hosted directly, so the truth
+        // is the plate, not the harness's openChooserFor plumbing.
+        shot("10_choose_won") {
+            CutChooser(
+                scene = Scenes.byId("balloon"),
+                current = 6,
+                onPick = { _ -> },
+                onDismiss = {},
+            )
+        }
+
+        // The finish in landscape: the plate reshapes to fit the short
+        // side, picture, praise and both coins all still on it (D-068).
+        scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
+        settle()
+        lateinit var landPane: Pane
+        scenario.onActivity { landPane = Pane.from(it) }
+        val landDone = buildGame(landPane, "sail", 2, 2, placed = (0 until 4).toSet())
+        shot("11_celebration_land") {
+            PlayScreen(landDone, null, -1, 0L, 0L, false, true, noActions, {}, {})
         }
 
         scenario.close()

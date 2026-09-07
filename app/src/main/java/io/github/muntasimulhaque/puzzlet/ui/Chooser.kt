@@ -55,7 +55,7 @@ import io.github.muntasimulhaque.puzzlet.core.stepForPieces
  * still walk the ladder (D-047). Tapping anywhere else puts it away.
  */
 @Composable
-internal fun CutChooser(
+fun CutChooser(
     scene: SceneSpec,
     current: Int,
     onPick: (Int) -> Unit,
