@@ -67,7 +67,7 @@ away. No hints, no arrows, nothing pointing at the answer.
 Finish, and the picture is held up proudly with confetti. No timer, no
 score, no fail state: nothing to rush, nothing to lose.
 Six calm pictures, a boat, a house, a balloon, fruit, a lighthouse and
-an ice cream, every one of them full of colour and small details, so no
+an ice cream, every one of them full of color and small details, so no
 piece is ever a blank.
 
 Made safe for small hands:

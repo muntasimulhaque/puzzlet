@@ -94,7 +94,7 @@ graphic, the store icon, and screenshots per form factor (`phone/`,
 
 The launcher icon is the gather: three wanderers, sky, coral and leaf
 green, closing in on the honey home piece with its sockets open, the
-moment before the click. Four colours that read as four colours. The
+moment before the click. Four colors that read as four colors. The
 feature graphic carries the same mark on the brand teal, with the name
 given the whole right side and nothing behind it. Both are drawn from
 code by `:tools:makeIcons` and `:tools:makeArt`, never hand-edited, and
