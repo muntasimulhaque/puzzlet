@@ -885,3 +885,14 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   before the cut: the emulator ran as a measuring tool only, design
   judgment stayed with the rendered sheets and the CI captures.
   LadderTest joined core.
+- 2026-09-07: Cut 1.7 (versionCode 17) for closed testing, notes measured
+  at 493 chars, no contact line. All gates green: core and tools tests,
+  app release unit tests, full lint, icon and sound pins, R8 release.
+  CI green end to end: the build signed and published the AAB and APK,
+  and the capture ran on all three form factors (11 captures each now,
+  the won chooser and the landscape finish new). The listing kit is
+  refreshed, the verified AAB (read versionCode 17, versionName 1.7,
+  package io.github.muntasimulhaque.puzzlet) sits in play-store/aab/
+  awaiting submission, and README, guide and this file are current.
+  Next session picks up from: the 1.7 review verdict and tester
+  feedback.
