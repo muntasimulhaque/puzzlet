@@ -160,6 +160,7 @@ class PuzzleHost(app: Application) : ViewModel() {
             draggedId = piece.id,
             peeking = false,
         )
+        chime(Sfx.TAP)
         return piece.id
     }
 
@@ -225,7 +226,7 @@ class PuzzleHost(app: Application) : ViewModel() {
         }
     }
 
-    /** The two effects, unless the shelf switch is off. Haptics never stop. */
+    /** The three effects, unless the shelf switch is off. Haptics never stop. */
     private fun chime(sfx: Sfx) {
         if (_shelf.value.soundOn) soundBoard.play(sfx)
     }

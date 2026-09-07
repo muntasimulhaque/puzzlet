@@ -157,6 +157,7 @@ internal object Gather {
         insetFrac: Double = 0.0,
         cornerFraction: Double = 0.19,
         palette: List<Int> = gatherPalette(mono),
+        tilt: Double = 1.0,
     ): BufferedImage {
         val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
         val g = beginMark(image)
@@ -174,9 +175,9 @@ internal object Gather {
         val top = pieceOutline(hx, hy - s - gap, s, s * 0.12, listOf(0, 0, 1, 0))
         val left = pieceOutline(hx - s - gap, hy, s, s * 0.12, listOf(0, 1, 0, 0))
         val corner = pieceOutline(hx - s - gap, hy - s - gap, s, s * 0.12, listOf(0, 1, 1, 0))
-        fillPiece(g, rotated(corner, hx - s / 2 - gap, hy - s / 2 - gap, -7.0), sky)
-        fillPiece(g, rotated(top, hx + s / 2, hy - s / 2 - gap, 6.0), coral)
-        fillPiece(g, rotated(left, hx - s / 2 - gap, hy + s / 2, -5.0), grass)
+        fillPiece(g, rotated(corner, hx - s / 2 - gap, hy - s / 2 - gap, -7.0 * tilt), sky)
+        fillPiece(g, rotated(top, hx + s / 2, hy - s / 2 - gap, 6.0 * tilt), coral)
+        fillPiece(g, rotated(left, hx - s / 2 - gap, hy + s / 2, -5.0 * tilt), grass)
         fillPiece(g, home, honey)
         g.dispose()
         return image

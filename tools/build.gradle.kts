@@ -44,7 +44,7 @@ tasks.register<JavaExec>("checkIcons") {
 
 tasks.register<JavaExec>("makeSounds") {
     group = "tools"
-    description = "Regenerate the two sound effects in app/src/main/res/raw."
+    description = "Regenerate the three sound effects in app/src/main/res/raw."
     classpath = sourceSets["main"].runtimeClasspath
     mainClass = "io.github.muntasimulhaque.puzzlet.tools.SoundGenKt"
     args = listOf(rootDir.absolutePath)
@@ -72,5 +72,13 @@ tasks.register<JavaExec>("makeScenes") {
     description = "Render every picture on the shelf into build/scenes, for review."
     classpath = sourceSets["main"].runtimeClasspath
     mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeScenesKt"
+    args = listOf(rootDir.absolutePath)
+}
+
+tasks.register<JavaExec>("makeGatherSheet") {
+    group = "tools"
+    description = "Render gather icon takes into build/gather-sheet, for review."
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeGatherSheetKt"
     args = listOf(rootDir.absolutePath)
 }

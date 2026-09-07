@@ -477,6 +477,12 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   one 2 dp paper edge as cut thickness, soft shadow beneath. This
   supersedes the 5 dp rim plus 1.5 dp ink score in D-056, which still read
   as a cartoon border, especially on small 16 count pieces.
+- D-060 The lift tap (owner-directed: tap, not silence). A third effect
+  joins snap and chime: a soft dull 70 ms noise tap with no pitch at all,
+  played at low volume on every successful lift and silenced by the shelf
+  switch like the rest. Only the chime has a pitch, so the music ban
+  holds exactly as before. This restores the pick in D-020 and supersedes
+  the two sounds in D-044 and on the SoundBoard.
 - D-058 Quiet sizes (owner-directed, superseding the always open count
   rows in D-047). Tapping a picture plays at once. One quiet line per
   card names the size a tap plays at; opening it reveals five 48 dp

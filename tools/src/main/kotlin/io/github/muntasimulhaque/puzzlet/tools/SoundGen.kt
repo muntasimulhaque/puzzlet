@@ -8,21 +8,21 @@ import kotlin.io.path.outputStream
 import kotlin.system.exitProcess
 
 /**
- * Puzzlet's two sound effects, synthesized to spec: tiny, license-free, and
- * deterministic down to the byte.
+ * Puzzlet's three sound effects, synthesized to spec: tiny, license-free,
+ * and deterministic down to the byte.
  *
  * The religious constraint is a design input here, not an afterthought:
- * there is no music in this app. The snap is deliberately inharmonic: a
- * noise burst with damped non-integer partials, so it reads as a physical
- * event (a piece clicking home) rather than as a note. Only [chime] has a
- * pitch, it is a single struck bell, and the app never plays it twice
- * inside 1200 ms, because two pitched notes in sequence make an interval
- * and intervals are where melody starts.
+ * there is no music in this app. The snap and the tap are deliberately
+ * inharmonic: noise bursts with no pitched partials, so they read as
+ * physical events (a piece lifting, a piece clicking home) rather than
+ * as notes. Only [chime] has a pitch, it is a single struck bell, and the
+ * app never plays it twice inside 1200 ms, because two pitched notes in
+ * sequence make an interval and intervals are where melody starts.
  */
 object SoundGen {
 
     private const val RATE = 44100
-    private val NAMES = listOf("sfx_snap", "sfx_chime")
+    private val NAMES = listOf("sfx_snap", "sfx_tap", "sfx_chime")
 
     // -- DSP ------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ object SoundGen {
     private fun applyEnv(samples: DoubleArray, env: DoubleArray): DoubleArray =
         DoubleArray(samples.size) { samples[it] * env[it] }
 
-    // -- The two sounds ---------------------------------------------------------
+    // -- The three sounds -------------------------------------------------------
 
     /** 110 ms: the click home. A woody clack with a little weight behind it. */
     private fun snap(rng: CpythonRandom): DoubleArray {
@@ -93,6 +93,13 @@ object SoundGen {
         val body = lowpass(noise(n, rng), 4000.0) * 0.5
         val knock = partials(n, doubleArrayOf(310.0, 520.0, 790.0), doubleArrayOf(0.020, 0.013, 0.008), doubleArrayOf(0.9, 0.45, 0.2))
         return applyEnv(mix(body, knock), envelope(n, 0.0008, 0.030, curve = 4.5))
+    }
+
+    /** 70 ms: the lift. A soft dull tap, noise only, no pitch at all. */
+    private fun tap(rng: CpythonRandom): DoubleArray {
+        val n = (0.070 * RATE).toInt()
+        val body = lowpass(noise(n, rng), 1400.0) * 0.6
+        return applyEnv(body, envelope(n, 0.0006, 0.018, curve = 5.0))
     }
 
     /** 480 ms: one soft struck bell. The only pitched sound in the app. */
@@ -161,6 +168,7 @@ object SoundGen {
         Files.createDirectories(outDir)
         val rng = CpythonRandom(20260905L)
         write(outDir, "sfx_snap", snap(rng), peak = 0.70)
+        write(outDir, "sfx_tap", tap(rng), peak = 0.70)
         write(outDir, "sfx_chime", chime(), peak = 0.70)
     }
 
@@ -188,7 +196,7 @@ object SoundGen {
             for (line in bad) println("MISMATCH: $line")
             1
         } else {
-            println("Both sound assets match a fresh regeneration.")
+            println("All sound assets match a fresh regeneration.")
             0
         }
     }
