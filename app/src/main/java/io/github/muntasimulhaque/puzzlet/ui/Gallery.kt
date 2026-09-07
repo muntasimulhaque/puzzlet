@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -38,7 +37,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.muntasimulhaque.puzzlet.R
-import io.github.muntasimulhaque.puzzlet.core.PIECE_COUNTS
 import io.github.muntasimulhaque.puzzlet.core.SceneSpec
 import io.github.muntasimulhaque.puzzlet.core.Scenes
 import io.github.muntasimulhaque.puzzlet.core.STEPS
@@ -63,12 +61,13 @@ internal fun sceneNameRes(sceneId: String): Int = when (sceneId) {
 
 /**
  * The picture shelf: one quiet name at top with the sound coin docked
- * beside it, then pictures with their names. Tapping a picture plays at
- * once at its size: the ladder steps wins through, a parent pick wins
- * over the ladder. Sizes live behind one quiet line per card (D-058),
- * so the shelf shows twelve calm lines, not sixty numbers. The sound
- * switch lives in the header, never over the pictures and never behind
- * a gate (D-021, D-046, D-057).
+ * beside it, then twelve pictures with their names (D-064) and one quiet
+ * count line each. Tapping a picture opens its cut chooser (D-065); a
+ * pick there plays and remembers. The sound switch lives in the header,
+ * never over the pictures and never behind a gate (D-021, D-046, D-057).
+ *
+ * [openChooserFor] starts with one picture's chooser open; it is the
+ * capture harness's way to host that state without touch injection.
  */
 @Composable
 fun Gallery(
@@ -76,30 +75,47 @@ fun Gallery(
     onChoose: (String) -> Unit,
     onChooseAt: (String, Int) -> Unit,
     onSound: (Boolean) -> Unit,
+    openChooserFor: String? = null,
 ) {
-    var openId by rememberSaveable { mutableStateOf<String?>(null) }
-    Column(
+    var openId by rememberSaveable { mutableStateOf(openChooserFor) }
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(PuzzletColors.Paper),
     ) {
-        ShelfHeader(soundOn = shelf.soundOn, onSound = onSound)
-        ShelfGrid(
-            shelf = shelf,
-            openId = openId,
-            onToggle = { id -> openId = if (openId == id) null else id },
-            onChoose = onChoose,
-            onChooseAt = onChooseAt,
-            modifier = Modifier.fillMaxWidth().weight(1f),
-        )
+        Column(modifier = Modifier.fillMaxSize()) {
+            ShelfHeader(soundOn = shelf.soundOn, onSound = onSound)
+            ShelfGrid(
+                shelf = shelf,
+                onOpen = { id -> openId = id },
+                onChoose = onChoose,
+                onChooseAt = onChooseAt,
+                modifier = Modifier.fillMaxWidth().weight(1f),
+            )
+        }
+        val openScene = openId?.let { id -> Scenes.all.firstOrNull { it.id == id } }
+        if (openScene != null) {
+            CutChooser(
+                scene = openScene,
+                current = shelf.pieces[openScene.id] ?: STEPS.first().pieces,
+                onPick = { pieces ->
+                    openId = null
+                    if (pieces == (shelf.pieces[openScene.id] ?: STEPS.first().pieces)) {
+                        onChoose(openScene.id)
+                    } else {
+                        onChooseAt(openScene.id, pieces)
+                    }
+                },
+                onDismiss = { openId = null },
+            )
+        }
     }
 }
 
 @Composable
 private fun ShelfGrid(
     shelf: ShelfState,
-    openId: String?,
-    onToggle: (String) -> Unit,
+    onOpen: (String) -> Unit,
     onChoose: (String) -> Unit,
     onChooseAt: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -121,9 +137,7 @@ private fun ShelfGrid(
                 SceneCard(
                     scene = scene,
                     pieces = shelf.pieces[scene.id] ?: STEPS.first().pieces,
-                    expanded = openId == scene.id,
-                    onToggleSizes = { onToggle(scene.id) },
-                    onChoose = { onChoose(scene.id) },
+                    onOpen = { onOpen(scene.id) },
                     onChooseAt = { onChooseAt(scene.id, it) },
                 )
             }
@@ -151,13 +165,16 @@ private fun ShelfHeader(soundOn: Boolean, onSound: (Boolean) -> Unit) {
     }
 }
 
+/**
+ * One picture card: the picture, its name, and the quiet line naming the
+ * count it opens at. The whole card face is one button (TalkBack speaks
+ * the name); the sizes it can play at live in the chooser it opens.
+ */
 @Composable
 private fun SceneCard(
     scene: SceneSpec,
     pieces: Int,
-    expanded: Boolean,
-    onToggleSizes: () -> Unit,
-    onChoose: () -> Unit,
+    onOpen: () -> Unit,
     onChooseAt: (Int) -> Unit,
 ) {
     val name = stringResource(sceneNameRes(scene.id))
@@ -177,17 +194,13 @@ private fun SceneCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
-                .clickable(onClick = onChoose)
+                .clickable(onClick = onOpen)
                 .semantics { contentDescription = name },
         ) {
             ScenePicture(spec = scene, modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp)
         }
         CardName(name = name)
-        SizeToggle(pieces = pieces, expanded = expanded, onToggle = onToggleSizes)
-        if (expanded) {
-            Spacer(Modifier.height(4.dp))
-            StepRow(current = pieces, onChooseAt = onChooseAt)
-        }
+        QuietCount(pieces = pieces)
     }
 }
 
@@ -203,66 +216,17 @@ private fun CardName(name: String) {
     )
 }
 
-/** One quiet line per card: what a tap plays at, and the way to sizes. */
+/** The quiet line under a name: the count this picture opens at. */
 @Composable
-private fun SizeToggle(pieces: Int, expanded: Boolean, onToggle: () -> Unit) {
-    val count = stringResource(R.string.pieces_count, pieces)
-    val action = stringResource(if (expanded) R.string.sizes_hide else R.string.sizes_show)
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 48.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onToggle)
-            .semantics { contentDescription = "$count. $action" }
-            .padding(horizontal = 8.dp, vertical = 12.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = count,
-            style = MaterialTheme.typography.bodyLarge,
-            color = PuzzletColors.Ink.copy(alpha = 0.72f),
-            textAlign = TextAlign.Center,
-            maxLines = 1,
-        )
-    }
-}
-
-/** The five sizes a picture comes in; the current one is filled in. */
-@Composable
-private fun StepRow(current: Int, onChooseAt: (Int) -> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        for (pieces in PIECE_COUNTS) {
-            StepChip(
-                pieces = pieces,
-                selected = pieces == current,
-                onChoose = { onChooseAt(pieces) },
-            )
-        }
-    }
-}
-
-@Composable
-private fun StepChip(pieces: Int, selected: Boolean, onChoose: () -> Unit) {
-    val label = stringResource(R.string.pieces_count, pieces)
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .clip(RoundedCornerShape(14.dp))
-            .background(if (selected) PuzzletColors.Teal else PuzzletColors.Tray)
-            .semantics { contentDescription = label }
-            .clickable(onClick = onChoose),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = pieces.toString(),
-            style = MaterialTheme.typography.titleMedium,
-            color = if (selected) PuzzletColors.Paper else PuzzletColors.Ink,
-        )
-    }
+private fun QuietCount(pieces: Int) {
+    Spacer(Modifier.height(2.dp))
+    Text(
+        text = stringResource(R.string.pieces_count, pieces),
+        style = MaterialTheme.typography.bodyMedium,
+        color = PuzzletColors.Ink.copy(alpha = 0.60f),
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+    )
 }
 
 /** The sound switch: one quiet coin in the header, never over the pictures. */
