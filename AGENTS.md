@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 16, versionName 1.6, cut for
+  and so on. Current release: versionCode 17, versionName 1.7, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -552,7 +552,34 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   follows: mark 372 px at 88,64, name 112 at 516,266, tagline 30 at
   518,324. Take h-hover-big, judged from the rendered sheet in
   build/icon-takes; the takes generator and its task are swept once the
-  round is decided.
+  round is decided. (Superseded in D-069: those spans truncated.)
+- D-068 The count truth and the reshaping celebration (owner's five
+  observations). The 4-that-opened-6 bug: the chooser's marked tile and
+  the shelf's quiet line read pick-or-4 while the plain path read
+  pick-or-ladder, so a picture with one win and no parent pick opened 6
+  under a honey-marked 4. One truth now: core openingCountFor, read by
+  the card, the mark and play(); wins live in ShelfState and recordWin
+  no longer writes ladder values into the parent-pick map. The
+  celebration picture sat left-aligned (a BoxWithConstraints with no
+  content alignment) and the plate overflowed landscape fields, hiding
+  praise and coins: the plate now reshapes, side by side in landscape,
+  height-aware in portrait, a scroll as the last net, picture centred.
+  The bare harness activity takes configChanges (debug manifest only),
+  so rotation no longer tears its imperative content, and two captures
+  pin the fixes: 10_choose_won (the marked 6) and 11_celebration_land.
+  LadderTest pins the count rule in core.
+- D-069 The mark, recut with air (owner: the four pieces truncate and
+  should be smaller, or a better icon from scratch). Three takes were
+  rendered and judged at 2x launcher size: a single big piece quartered
+  into the four colors read as a head and shoulders (and flirted with
+  the animate rule), a click pair read as a plug, and the gather recut
+  simply read better, so the gather stands. TILE_SPAN and STORE_SPAN
+  0.94 to 0.86, FG_INSET 0.275 to 0.305: the content reaches about
+  28 dp of the 66 dp mask circle with a 3 dp probe-guaranteed air
+  margin, and the tile corners clear the rounded silhouette instead of
+  poking 1.3 px past it. Launcher set and store tile regenerated; the
+  feature graphic was never mask-bound and stands. The takes generator,
+  its task and its sheet are swept.
 
 ## Lessons that still bite
 
@@ -848,3 +875,13 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   is the proof the sweep changed no pixel. README, guide and this file
   brought current. Next session picks up from: the 1.6 review verdict
   and tester feedback on the chooser build.
+- 2026-09-07: The owner played 1.6 and filed five observations: a tapped 4
+  that opened 6, a celebration picture left-aligned, a landscape
+  celebration that lost picture, praise and coins, the mark truncating,
+  and the standing best-app bar. Root causes found and fixed in D-068
+  (one count truth in core, the plate reshaping) and D-069 (the mark
+  recut with real air after rendering and judging three from-scratch
+  takes at launcher size). The three fixes were verified on device
+  before the cut: the emulator ran as a measuring tool only, design
+  judgment stayed with the rendered sheets and the CI captures.
+  LadderTest joined core.

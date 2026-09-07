@@ -100,7 +100,9 @@ graphic, the store icon, and screenshots per form factor (`phone/`,
 The launcher icon is the gather: three wanderers, sky, coral and leaf
 green, closing in on the honey home piece whose sockets sit open, every
 knob hovering a hair outside its socket: the moment before the click.
-Four colors that read as four colors. The feature graphic carries the
+Four colors that read as four colors, drawn small on purpose: the whole
+mark reaches about 28 dp of the 66 dp launcher mask circle, so no
+launcher shape ever truncates a piece. The feature graphic carries the
 same mark on the brand teal, with the name given the whole right side
 and nothing behind it. Both are drawn from code by `:tools:makeIcons`
 and `:tools:makeArt`, never hand-edited, and `checkIcons` fails the
