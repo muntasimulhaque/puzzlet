@@ -466,6 +466,17 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   mouth, a balanced cross when off. The peek panel rises with a 200 ms
   fade and a half-step grow; the landing pulse now redraws the backdrop
   canvas alone instead of recomposing the field.
+- D-057 The calm shelf and kind back (owner-directed polish pass). The
+  shelf carries one quiet Puzzlet word at top with the sound coin docked
+  beside it at 48 dp, superseding the headerless menu in D-042 and the
+  floating bottom right coin in D-046: nothing floats over the pictures,
+  nothing sits in the child thumb zone. Back is forgiving: the first back
+  press while pieces are placed asks on a deep scrim with Stay leading,
+  the second leaves; empty board and finished game leave at once, peek
+  closes first. The piece edge drops the dark score entirely: artwork,
+  one 2 dp paper edge as cut thickness, soft shadow beneath. This
+  supersedes the 5 dp rim plus 1.5 dp ink score in D-056, which still read
+  as a cartoon border, especially on small 16 count pieces.
 
 ## Lessons that still bite
 

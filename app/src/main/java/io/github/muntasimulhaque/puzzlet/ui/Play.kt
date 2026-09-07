@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -18,12 +19,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -76,13 +82,27 @@ fun PlayScreen(
     onPeek: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
-    BackHandler(onBack = { if (peeking) onPeek(false) else onBack() })
-    Column(modifier = Modifier.fillMaxSize().background(PuzzletColors.Paper)) {
-        PlayTopBar(game, peeking, onPeek, onBack)
-        PlayField(
-            game, draggedId, pulseId, pulseAt, restartAt, peeking, actions, onPeek, onBack,
-            Modifier.fillMaxWidth().weight(1f),
-        )
+    var confirming by rememberSaveable { mutableStateOf(false) }
+    fun requestBack() {
+        when {
+            peeking -> onPeek(false)
+            confirming -> onBack()
+            !game.completed && game.placedCount > 0 -> confirming = true
+            else -> onBack()
+        }
+    }
+    BackHandler(onBack = ::requestBack)
+    Box(modifier = Modifier.fillMaxSize().background(PuzzletColors.Paper)) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            PlayTopBar(game, peeking, onPeek, ::requestBack)
+            PlayField(
+                game, draggedId, pulseId, pulseAt, restartAt, peeking, actions, onPeek, onBack,
+                Modifier.fillMaxWidth().weight(1f),
+            )
+        }
+        if (confirming) {
+            LeaveConfirm(onStay = { confirming = false }, onLeave = onBack)
+        }
     }
 }
 
@@ -251,5 +271,82 @@ private fun PeekCoin(scene: SceneSpec, peeking: Boolean, onPeek: (Boolean) -> Un
             modifier = Modifier.fillMaxSize().padding(if (peeking) 8.dp else 5.dp),
             cornerRadius = 10.dp,
         )
+    }
+}
+
+/**
+ * Forgiving back (D-057): the first back press while pieces are placed
+ * asks, the second leaves. Empty board leaves at once, finished leaves
+ * at once, peek closes first. Tapping outside the card stays.
+ */
+@Composable
+private fun LeaveConfirm(onStay: () -> Unit, onLeave: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(PuzzletColors.Ink.copy(alpha = 0.62f))
+            .clickable(onClick = onStay),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 32.dp)
+                .clip(RoundedCornerShape(28.dp))
+                .background(PuzzletColors.Card)
+                .clickable(onClick = {})
+                .padding(horizontal = 22.dp, vertical = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = stringResource(R.string.leave_title),
+                style = MaterialTheme.typography.titleLarge,
+                color = PuzzletColors.Ink,
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.leave_message),
+                style = MaterialTheme.typography.bodyLarge,
+                color = PuzzletColors.Ink,
+            )
+            Spacer(Modifier.height(18.dp))
+            LeaveButtons(onStay = onStay, onLeave = onLeave)
+        }
+    }
+}
+
+@Composable
+private fun LeaveButtons(onStay: () -> Unit, onLeave: () -> Unit) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(18.dp))
+                .background(PuzzletColors.Teal)
+                .clickable(onClick = onStay)
+                .padding(horizontal = 22.dp, vertical = 12.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = stringResource(R.string.stay),
+                style = MaterialTheme.typography.titleMedium,
+                color = PuzzletColors.Paper,
+            )
+        }
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(18.dp))
+                .background(PuzzletColors.Tray)
+                .clickable(onClick = onLeave)
+                .padding(horizontal = 22.dp, vertical = 12.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = stringResource(R.string.leave),
+                style = MaterialTheme.typography.titleMedium,
+                color = PuzzletColors.Ink,
+            )
+        }
     }
 }

@@ -57,10 +57,11 @@ internal fun sceneNameRes(sceneId: String): Int = when (sceneId) {
 }
 
 /**
- * The picture shelf: pictures with their names, edge to edge, and one row
- * of piece counts under each, so a parent sets the size and the child taps
- * the picture. The sound switch floats over the shelf, out of the way of
- * the pictures but never behind a gate (D-021, D-046).
+ * The picture shelf: one quiet name at top with the sound coin docked
+ * beside it, then pictures with their names and one row of piece counts
+ * under each, so a parent sets the size and the child taps the picture.
+ * The sound switch lives in the header, never over the pictures and never
+ * behind a gate (D-021, D-046, D-057).
  */
 @Composable
 fun Gallery(
@@ -69,12 +70,13 @@ fun Gallery(
     onChooseAt: (String, Int) -> Unit,
     onSound: (Boolean) -> Unit,
 ) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .background(PuzzletColors.Paper),
     ) {
-        BoxWithConstraints(Modifier.fillMaxSize()) {
+        ShelfHeader(soundOn = shelf.soundOn, onSound = onSound)
+        BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
             val columns = when {
                 maxWidth < 480.dp -> 1
                 maxWidth < 840.dp -> 2
@@ -83,7 +85,7 @@ fun Gallery(
             LazyVerticalGrid(
                 columns = GridCells.Fixed(columns),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 28.dp, bottom = 92.dp),
+                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 28.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
@@ -97,13 +99,26 @@ fun Gallery(
                 }
             }
         }
-        SoundCoin(
-            on = shelf.soundOn,
-            onToggle = onSound,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 20.dp, bottom = 20.dp),
+    }
+}
+
+/** One calm row: the name on the left, the sound coin docked on the right. */
+@Composable
+private fun ShelfHeader(soundOn: Boolean, onSound: (Boolean) -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = stringResource(R.string.app_name),
+            style = MaterialTheme.typography.titleLarge,
+            color = PuzzletColors.Ink,
+            modifier = Modifier.weight(1f),
         )
+        SoundCoin(on = soundOn, onToggle = onSound)
     }
 }
 
@@ -180,15 +195,15 @@ private fun StepChip(pieces: Int, selected: Boolean, onChoose: () -> Unit) {
     }
 }
 
-/** The sound switch: one quiet coin, bottom right, never in the child's way. */
+/** The sound switch: one quiet coin in the header, never over the pictures. */
 @Composable
 private fun SoundCoin(on: Boolean, onToggle: (Boolean) -> Unit, modifier: Modifier = Modifier) {
     CircleButton(
         onClick = { onToggle(!on) },
         background = PuzzletColors.Card,
-        size = 56.dp,
+        size = 48.dp,
         label = stringResource(if (on) R.string.sound_on else R.string.sound_off),
-        modifier = modifier.shadow(8.dp, CircleShape),
+        modifier = modifier.shadow(4.dp, CircleShape),
     ) {
         SpeakerIcon(on = on, color = PuzzletColors.Ink)
     }

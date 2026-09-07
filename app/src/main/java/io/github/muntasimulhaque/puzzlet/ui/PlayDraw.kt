@@ -128,11 +128,10 @@ private fun DrawScope.drawPulse(game: Puzzle, pulseId: Int, pulseT: Float) {
  * scope (tray scale in the shelf, full size in hand), so this stays exact
  * at any size with no shared cache to go stale.
  *
- * Every piece is die-cut (D-054): artwork, a paper rim outside the edge,
- * and a soft two-pass shadow beneath. The heavy ink outline of the first
- * die-cut pass read as a cartoon border; the cut line is now a light score
- * just inside the paper rim, so a piece stands off the tray by its shadow
- * and rim, not by a drawn border.
+ * Every piece is die-cut: artwork, one narrow paper edge as the cut
+ * thickness, and a soft two-pass shadow beneath. There is no dark outline:
+ * the ink score read as a cartoon border, so a piece now stands off the
+ * tray and the table by its edge and shadow alone (D-057).
  */
 internal fun DrawScope.drawSlice(
     piece: Piece,
@@ -157,7 +156,6 @@ internal fun DrawScope.drawSlice(
         }
     }
     drawPath(path, PuzzletColors.Card, style = Stroke(RIM_STROKE.toPx()))
-    drawPath(path, PuzzletColors.Ink.copy(alpha = EDGE_ALPHA), style = Stroke(EDGE_STROKE.toPx()))
 }
 
 private fun DrawScope.shadowPass(path: Path, drop: Float, alpha: Float) {
@@ -166,9 +164,7 @@ private fun DrawScope.shadowPass(path: Path, drop: Float, alpha: Float) {
     }
 }
 
-private val RIM_STROKE = 5.0.dp
-private val EDGE_STROKE = 1.5.dp
-private const val EDGE_ALPHA = 0.26f
+private val RIM_STROKE = 2.0.dp
 private const val SHADOW_ALPHA = 0.13f
 
 internal fun Vec2.toOffset(): Offset = Offset(x.toFloat(), y.toFloat())

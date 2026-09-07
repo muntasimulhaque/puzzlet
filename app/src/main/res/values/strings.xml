@@ -11,6 +11,10 @@
     <string name="sound_on">Sound is on</string>
     <string name="sound_off">Sound is off</string>
     <string name="pieces_count">%1$d pieces</string>
+    <string name="leave_title">Leave this picture?</string>
+    <string name="leave_message">Pieces you placed will go back to the tray.</string>
+    <string name="stay">Stay</string>
+    <string name="leave">Leave</string>
     <string name="scene_sail">Sailboat</string>
     <string name="scene_house">House</string>
     <string name="scene_balloon">Balloon</string>
