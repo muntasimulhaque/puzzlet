@@ -896,3 +896,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   awaiting submission, and README, guide and this file are current.
   Next session picks up from: the 1.7 review verdict and tester
   feedback.
+- 2026-09-07: Version 1.7 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ and the empty landing folder went
+  with it. The leftover empty java/app/ dirs and the gitignored Temp
+  captures went too: nothing uncommitted, nothing untracked, the tree
+  is clean. README and the guide brought current. Session closed with
+  1.7 in Play review. Everything is pushed and both CI runs on main
+  are green. Standing open item unchanged: piece-level TalkBack. Next
+  session picks up from: the 1.7 review verdict and tester feedback.

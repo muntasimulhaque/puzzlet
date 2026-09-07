@@ -4,20 +4,16 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.6 (versionCode 16) is submitted to the closed testing
-track. Release 1.6 is the complete shelf: all twelve pictures are back, each
-opening a cut chooser whose five tiles show the real cut the game will
-deal at 4, 6, 9, 12 and 16 pieces; the child picks a puzzle with their
-eyes, and the pick sticks. The finish now breathes: one quiet second on
-the completed table before the celebration plate rises. The gather mark
-is drawn tighter, with every knob hovering a hair outside its open
-socket, and the feature graphic follows at a larger mark and type. No
-timer, no score, no fail state, no reading required. Three synthesized
-sounds (a tap, a click and a bell, no music). Wins, the count the child
-picked and the sound switch survive process death; an unfinished game
-does not. Store screenshots render in CI from the app's own states; the
-listing kit and the console answers are ready. See AGENTS.md for the
-working rules and the decision log.
+Status: release 1.7 (versionCode 17) is submitted to the closed testing
+track. Release 1.7 fixes five things found in testing. Tapping 4 in the
+size chooser now always deals 4 pieces; on pictures the tester had
+already won, the game could deal one size up. The finished picture sits
+centered on the well done plate. In landscape the plate reshapes to fit
+the screen, so the picture, the praise and both buttons are always on
+it, on every phone and tablet. The launcher and store icon were recut
+smaller, so no launcher mask ever clips a corner. Same rules as always:
+no timer, no score, no fail state, no reading required, fully offline,
+no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
