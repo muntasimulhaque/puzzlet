@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 15, versionName 1.5, cut for
+  and so on. Current release: versionCode 16, versionName 1.6, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -74,30 +74,33 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 ## The game
 
-Tray, drag, snap, celebrate. Six pictures: sailboat, house, balloon,
-fruit, lighthouse, ice cream. All inanimate: no humans, no animals, no
-faces, no eyes. Tapping a picture plays at once at its size: the ladder
-where nobody has picked, a parent pick where somebody has. Sizes live
-behind one quiet line per card (4, 6, 9, 12, 16); opening the line shows
-five big targets, and tapping one plays that count and remembers it for
-that picture. Where nobody has picked, wins walk the ladder: a first picture opens at 4, a win deals 6,
-another 9, and there the ladder stops. The pieces wait in a tray above
+Tray, drag, snap, celebrate. Twelve pictures: sailboat, house, balloon,
+fruit, lighthouse, ice cream, train, castle, rocket, truck, airplane,
+flowers. All inanimate: no humans, no animals, no faces, no eyes.
+Tapping a picture opens its cut chooser: five tiles, each the real cut
+the game will deal at 4, 6, 9, 12 and 16, the count it opens at marked
+in honey. The child chooses by look, and the pick is the child's: the
+marked tile plays through the plain path, so where nobody has picked,
+wins walk the ladder (a first picture opens at 4, a win deals 6,
+another 9, and there the ladder stops), and any other tile plays that
+count and remembers it for that picture. The pieces wait in a tray above
 the board at tray scale, on one even grid with the same gap everywhere;
-a piece in hand grows to board size under the finger. The board is blank,
-the way a table is: no picture, no glowing slot. A coin in the top bar
-holds the finished picture up on a deep scrim; tapping anywhere puts it
-away. A touch lifts a piece where it lies, no drag distance to earn
-first; carry it anywhere near its place and it clicks home with a spring,
-a soft knock and a haptic tick; a miss glides back to its tray seat. No
-mid game restart: like a real puzzle, pieces move by hand and
+a piece in hand grows to board size under the finger. The board is
+blank, the way a table is: no picture, no glowing slot. A coin in the
+top bar holds the finished picture up on a deep scrim; tapping anywhere
+puts it away. A touch lifts a piece where it lies, no drag distance to
+earn first; carry it anywhere near its place and it clicks home with a
+spring, a soft knock and a haptic tick; a miss glides back to its tray
+seat. No mid game restart: like a real puzzle, pieces move by hand and
 there is no easy undo. The tray jumbles fresh every new game, never
 serial, while the cut stays stable like a bought puzzle. Every picture
 sits on a graded ground, so no piece ever comes out blank. No timer, no
-score, no fail state, no reading required, no tutorial: the tray-and-board
-layout is the whole lesson. No piece ever starts within snap tolerance of
-its own slot; the tray sits above the board, so the guarantee is
-structural. Finish, and the picture is held up with confetti on a deep
-scrim with Again leading. Wins, the chosen counts and the sound switch
+score, no fail state, no reading required, no tutorial: the
+tray-and-board layout is the whole lesson. No piece ever starts within
+snap tolerance of its own slot; the tray sits above the board, so the
+guarantee is structural. Finish, and the table holds the completed
+picture for one quiet second before the plate rises with confetti on a
+deep scrim, Again leading. Wins, the chosen counts and the sound switch
 persist (DataStore); unfinished games do not: every launch starts fresh
 on the shelf.
 
@@ -130,11 +133,12 @@ game state hears about the carry once, at release (D-055).
 
 Scene content is pure data: `Scene.kt` holds the shape types and the
 registry; `ScenePaintings.kt`, `ScenePaintingsMore.kt` and
-`ScenePaintingsNew.kt` hold the builders, six of them shipped (sail,
-house, balloon, fruit, lighthouse, icecream) and six unlisted until they
-earn their way back (train, castle, rocket, truck, plane, flowers).
-`Scenes.all`, naming it in `strings.xml` and `sceneNameRes`, and passing
-the no-flat-piece test; the capture set and the listing text follow.
+`ScenePaintingsNew.kt` hold the twelve shipped paintings (sail, house,
+balloon, fruit, train, castle, rocket, lighthouse, truck, plane,
+flowers, icecream). Adding a picture means adding one builder, listing
+it in `Scenes.all`, naming it in `strings.xml` and `sceneNameRes`, and
+passing the no-flat-piece test; the capture set and the listing text
+follow.
 `Ladder.kt` holds the five counts (4, 6, 9, 12, 16) and the gentle walk
 wins take through the first three of them. `SceneGround.kt` holds the
 graded grounds, the rolling hills and the texture scatter every picture
@@ -517,6 +521,38 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   text read color, favorite, behavior, never colour, favourite,
   behaviour. Past notes stay as shipped history; live copy converts.
   The 1.5 notes were already US-neutral, so nothing in them changed.
+- D-064 Twelve pictures return (owner-directed, superseding D-059).
+  Every builder is listed again; the no-flat-piece test walks all twelve
+  at every count.
+- D-065 The cut chooser (owner-directed: the child chooses the size,
+  not a parent; supersedes the D-044 no-chooser law and the D-058 quiet
+  size line). Tapping a picture rises a bottom plate: five tiles, each
+  the real picture cut the real way through the same cutSeedFor the
+  game deals, with the numeral beneath and the current count marked in
+  honey. Tapping a tile plays and remembers; the marked tile plays the
+  plain path so the ladder keeps walking unpicked pictures. The reveal
+  it replaces was broken in layout math: five 48 dp chips need 272 dp
+  but a two-column phone card offers about 148 dp, so only 4, 6 and a
+  sliver of 9 ever showed (the trapped 9 the owner saw). One quiet
+  count line stays under each name: static text, honest metadata.
+- D-066 The celebration beat (owner-directed: the plate came up
+  instantly and stole the glance). One quiet second between the last
+  click and the plate: the chime and the ring answer the final snap,
+  then the completed table holds still before the plate covers it.
+  Nothing can interrupt the wait: placed pieces are never hit by a
+  grab, and a leave only changes the screen, which the beat's guard
+  accepts. The beat is silent on purpose: the chime already played.
+- D-067 The mark, drawn tighter (owner invited the redo). The gap went
+  0.17 to 0.26 and the pieces 0.40 to 0.42 of the field: the hover,
+  where every knob stops a hair outside its clean socket, the moment
+  before the click, readable at every launcher size. Renders at the
+  tight gaps made half-seated knobs read as white crescents, a glitch;
+  the hover keeps the sockets empty and clean. Spans 0.94, foreground
+  inset 0.275 so the 66 dp mask circle still clears. The banner
+  follows: mark 372 px at 88,64, name 112 at 516,266, tagline 30 at
+  518,324. Take h-hover-big, judged from the rendered sheet in
+  build/icon-takes; the takes generator and its task are swept once the
+  round is decided.
 
 ## Lessons that still bite
 
