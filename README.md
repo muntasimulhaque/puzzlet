@@ -4,23 +4,20 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.4 (versionCode 14) is submitted to the closed testing
-track. Release 1.4 is the seat release: a scale-pivot drawing bug had
-every tray piece
-and every held piece drawn off its true seat, so pieces now sit exactly
-where the rules put them, inside a rounded felt shelf; the held-up
-picture rises above every piece instead of hiding under some; the die-cut
-lightened to a paper rim with a whisper of a cut line; the speaker mark
-was redrawn in the app's own line hand; and the picture on the top coin
-fades up rather than popping. Twelve pictures, five piece counts to
-choose from (4, 6, 9, 12, 16), a blank board with the finished picture
+Status: release 1.5 (versionCode 15) cut for closed testing.
+Release 1.5 is the calm release: six pictures that cut fairly, each
+playing at once at its size with sizes behind one quiet line; a back
+button that asks before leaving a started picture; a thin cut edge with
+no heavy border; one round coin recipe across shelf, top bar and finish;
+a celebration plate holding picture, praise and both coins; and a soft
+tap answering every lift. A blank board with the finished picture
 behind one coin, an even tray grid, and a sound switch on the picture
-shelf. No timer, no score, no fail state, no reading required. Two
-synthesized sounds (a click and a bell, no music). Wins, the count a
-parent picked and the sound switch survive process death; an unfinished
-game does not. Store screenshots render in CI from the app's own states;
-the listing kit and the console answers are ready. See AGENTS.md for the
-working rules and the decision log.
+shelf. No timer, no score, no fail state, no reading required. Three
+synthesized sounds (a tap, a click and a bell, no music). Wins, the
+count a parent picked and the sound switch survive process death; an
+unfinished game does not. Store screenshots render in CI from the app's
+own states; the listing kit and the console answers are ready. See
+AGENTS.md for the working rules and the decision log.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
@@ -31,18 +28,18 @@ working rules and the decision log.
 
 ## The game
 
-Twelve pictures: sailboat, house, balloon, fruit, train, castle, rocket,
-lighthouse, truck, airplane, flowers, ice cream. All inanimate, no faces,
-no eyes, drawn as vectors in code, and every one of them on a graded
-ground so no piece ever comes out blank.
+Six pictures: sailboat, house, balloon, fruit, lighthouse, ice cream.
+All inanimate, no faces, no eyes, drawn as vectors in code, and every
+one of them on a graded ground so no piece ever comes out blank.
 
-The shelf shows the pictures with their names and a row of counts under
-each. Tap a picture and it plays at the count that row shows; tap a count
-and that choice sticks. Left alone, a win grows a picture from 4 to 6 to
-9 pieces. Pieces wait in a tray above a blank board: a touch lifts a
-piece, and it clicks home when carried near its place, with a spring, a
-soft knock and a haptic tick. Forgotten the picture? The coin in the top
-bar holds it up, and tapping anywhere puts it away.
+The shelf shows the pictures with their names and one quiet size line
+under each. Tap a picture and it plays at once at its size; open the
+line to pick 4, 6, 9, 12 or 16 and that choice sticks. Left alone, a win
+grows a picture from 4 to 6 to 9 pieces. Pieces wait in a tray above a
+blank board: a touch lifts a piece with a soft tap, and it clicks home
+when carried near its place, with a spring, a soft knock and a haptic
+tick. Forgotten the picture? The coin in the top bar holds it up, and
+tapping anywhere puts it away. Leaving a started picture asks first.
 
 ## Layout
 

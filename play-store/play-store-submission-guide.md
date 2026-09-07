@@ -77,7 +77,7 @@ no way to.
 Nothing collected, nothing shared, nothing tracked. Everything stays on
 your device.
 Big, forgiving touch targets; pieces land where small fingers mean them.
-Two soft sounds, a click and a bell, and a switch to turn them off on
+Three soft sounds, a tap, a click and a bell, and a switch to turn them off on
 the picture shelf. There is no music, by design.
 
 Made by a parent, for parents who want the calm kind of screen time. Paid
@@ -143,6 +143,12 @@ external links reachable by a child, no ads.
 versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
+
+## Release notes for closed testing 1.5 (measured: 416 chars)
+
+```
+Puzzlet 1.5 is the calm release. The shelf holds six pictures that cut fairly, each playing at once at its size, with sizes behind one quiet line for parents. Leaving a started puzzle now asks first. Pieces wear a thin cut edge with no heavy border, every button is one round coin, and the finish sits on a clean plate with Again leading. A soft tap answers every lift. Fully offline, as ever. Thank you for testing.
+```
 
 ## Release notes for closed testing 1.4 (measured: 457 chars)
 

@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 14, versionName 1.4, cut for
+  and so on. Current release: versionCode 15, versionName 1.5, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -770,3 +770,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   run on main is green. Standing open item unchanged: piece-level
   TalkBack. Next session picks up from: the 1.4 review verdict and
   tester feedback on the seated build.
+- 2026-09-07: Owner approved the polish stack for one release and
+  pointed at take A, so the mark stands. Cut 1.5 (versionCode 15): calm
+  shelf with docked sound and kind back, thin edge, quiet sizes, six
+  pictures, one voice polish, lift tap, one coin recipe, celebration
+  plate, fresh captures. Notes measured at 416 chars, no contact line.
