@@ -713,5 +713,14 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   tile, a scoped pulse, and a rising peek panel all followed. Cut 1.4
   (versionCode 14), notes measured at 457 chars, no contact line; the
   Temp folder is now gitignored. CI green on the cut; the 24 fresh
-  captures landed in the listing kit, the verified 1.4 AAB sits in
-  play-store/aab/ awaiting the owner's upload.
+  captures landed in the listing kit, the verified 1.4 AAB sat in
+  play-store/aab/ for the owner's upload.
+- 2026-09-07: Version 1.4 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ per the folder rule, the empty landing
+  folder went with it, and the scratch Temp helpers of the overflow hunt
+  were swept. README and the guide brought current.
+- 2026-09-07: Session closed with 1.4 in Play review. Everything is
+  pushed, the tree is clean, no build awaits upload, and the last CI
+  run on main is green. Standing open item unchanged: piece-level
+  TalkBack. Next session picks up from: the 1.4 review verdict and
+  tester feedback on the seated build.

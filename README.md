@@ -4,8 +4,9 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.4 (versionCode 14) is cut for closed testing. Release
-1.4 is the seat release: a scale-pivot drawing bug had every tray piece
+Status: release 1.4 (versionCode 14) is submitted to the closed testing
+track. Release 1.4 is the seat release: a scale-pivot drawing bug had
+every tray piece
 and every held piece drawn off its true seat, so pieces now sit exactly
 where the rules put them, inside a rounded felt shelf; the held-up
 picture rises above every piece instead of hiding under some; the die-cut
@@ -25,7 +26,8 @@ working rules and the decision log.
 - **License:** MIT
 - **Privacy policy:** [online](https://muntasimulhaque.github.io/puzzlet/privacy.html) · [in this repo](docs/privacy.html)
 - **Signed build for the closed testing upload:** `play-store/aab/app-release.aab`
-  (downloaded there after each push, emptied after submission)
+  (downloaded there after each push, deleted after submission; the folder
+  is gone while nothing awaits upload)
 
 ## The game
 
