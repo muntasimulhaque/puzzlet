@@ -68,6 +68,13 @@ private val BrandTypography = Typography(
         fontSize = 18.sp,
         lineHeight = 26.sp,
     ),
+    // Small labels under celebration buttons: system voice, never Roboto
+    // fallback. Every text style the app uses is defined here, no defaults.
+    bodyMedium = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 22.sp,
+    ),
 )
 
 private val BrandScheme = lightColorScheme(

@@ -106,7 +106,7 @@ private fun ShelfGrid(
 ) {
     BoxWithConstraints(modifier) {
         val columns = when {
-            maxWidth < 480.dp -> 1
+            maxWidth < 360.dp -> 1
             maxWidth < 840.dp -> 2
             else -> 3
         }
@@ -163,7 +163,11 @@ private fun SceneCard(
     val name = stringResource(sceneNameRes(scene.id))
     Column(
         modifier = Modifier
-            .shadow(6.dp, RoundedCornerShape(28.dp))
+            .shadow(
+                6.dp, RoundedCornerShape(28.dp),
+                ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
+                spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
+            )
             .clip(RoundedCornerShape(28.dp))
             .background(PuzzletColors.Card)
             .padding(10.dp),
@@ -269,7 +273,11 @@ private fun SoundCoin(on: Boolean, onToggle: (Boolean) -> Unit, modifier: Modifi
         background = PuzzletColors.Card,
         size = 48.dp,
         label = stringResource(if (on) R.string.sound_on else R.string.sound_off),
-        modifier = modifier.shadow(4.dp, CircleShape),
+        modifier = modifier.shadow(
+            4.dp, CircleShape,
+            ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
+            spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
+        ),
     ) {
         SpeakerIcon(on = on, color = PuzzletColors.Ink)
     }

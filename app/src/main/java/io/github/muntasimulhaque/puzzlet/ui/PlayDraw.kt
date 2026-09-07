@@ -95,13 +95,6 @@ private val TRAY_RADIUS = 26.dp
 private fun DrawScope.drawMat(board: Area) {
     val mat = 8.dp.toPx()
     drawRoundRect(
-        PuzzletColors.Card,
-        topLeft = Offset((board.x - mat).toFloat(), (board.y - mat + 1.dp.toPx()).toFloat()),
-        size = Size((board.w + 2 * mat).toFloat(), (board.h + 2 * mat).toFloat()),
-        cornerRadius = CornerRadius(10.dp.toPx()),
-        style = Stroke(width = 2.dp.toPx()),
-    )
-    drawRoundRect(
         PuzzletColors.Ink.copy(alpha = 0.10f),
         topLeft = Offset((board.x - mat).toFloat(), (board.y - mat).toFloat()),
         size = Size((board.w + 2 * mat).toFloat(), (board.h + 2 * mat).toFloat()),

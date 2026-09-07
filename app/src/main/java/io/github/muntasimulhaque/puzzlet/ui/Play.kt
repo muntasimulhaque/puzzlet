@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -159,9 +161,11 @@ private fun GestureBoard(
     onBack: () -> Unit,
 ) {
     val scene = remember(game.sceneId) { Scenes.byId(game.sceneId) }
+    val progress = stringResource(R.string.puzzle_progress, game.placedCount, game.pieces.size)
     Box(
         Modifier
             .fillMaxSize()
+            .semantics { contentDescription = progress }
             .fieldGestures(game, peeking, hitRadiusPx, heldCenter, actions),
     ) {
         BoardBackdrop(game, pulseId, pulse)
@@ -195,7 +199,7 @@ private fun PeekPanel(scene: SceneSpec, onDismiss: () -> Unit) {
             .zIndex(4f) // above every piece tile (a held piece rides at 2)
             .fillMaxSize()
             .graphicsLayer { alpha = rise.value }
-            .background(PuzzletColors.Ink.copy(alpha = 0.72f))
+            .background(PuzzletColors.Ink.copy(alpha = 0.62f))
             .semantics { contentDescription = label }
             .clickable(onClick = onDismiss),
         contentAlignment = Alignment.Center,
@@ -241,6 +245,11 @@ private fun PlayTopBar(
             onClick = onBack,
             background = PuzzletColors.Card,
             label = stringResource(R.string.go_back),
+            modifier = Modifier.shadow(
+                4.dp, CircleShape,
+                ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
+                spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
+            ),
         ) {
             BackIcon(color = PuzzletColors.Ink)
         }
@@ -260,6 +269,11 @@ private fun PeekCoin(scene: SceneSpec, peeking: Boolean, onPeek: (Boolean) -> Un
     Box(
         modifier = Modifier
             .size(52.dp)
+            .shadow(
+                4.dp, RoundedCornerShape(14.dp),
+                ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
+                spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
+            )
             .clip(RoundedCornerShape(14.dp))
             .background(if (peeking) PuzzletColors.Teal else PuzzletColors.Card)
             .semantics { contentDescription = label }
