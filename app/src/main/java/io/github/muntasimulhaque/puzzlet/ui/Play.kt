@@ -21,16 +21,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import io.github.muntasimulhaque.puzzlet.R
 import io.github.muntasimulhaque.puzzlet.core.Area
 import io.github.muntasimulhaque.puzzlet.core.Puzzle
@@ -116,7 +119,7 @@ private fun PlayField(
         // the field; the game state hears about it once, at release (D-055).
         val heldCenter = remember { mutableStateOf<Vec2?>(null) }
         GestureBoard(
-            game, draggedId, pulseId, pulse.value, restartAt, peeking, hitPx, heldCenter, actions, onPeek, onBack,
+            game, draggedId, pulseId, pulse.asState(), restartAt, peeking, hitPx, heldCenter, actions, onPeek, onBack,
         )
     }
 }
@@ -126,7 +129,7 @@ private fun GestureBoard(
     game: Puzzle,
     draggedId: Int?,
     pulseId: Int,
-    pulseT: Float,
+    pulse: State<Float>,
     restartAt: Long,
     peeking: Boolean,
     hitRadiusPx: Double,
@@ -141,7 +144,7 @@ private fun GestureBoard(
             .fillMaxSize()
             .fieldGestures(game, peeking, hitRadiusPx, heldCenter, actions),
     ) {
-        BoardBackdrop(game, pulseId, pulseT)
+        BoardBackdrop(game, pulseId, pulse)
         PieceLayer(game, scene, draggedId, restartAt, heldCenter)
         if (peeking && !game.completed) {
             PeekPanel(scene, onDismiss = { onPeek(false) })
@@ -155,13 +158,23 @@ private fun GestureBoard(
 /**
  * The finished picture, held up over the field on a deep scrim. Tapping
  * anywhere puts it away: one rule, the biggest target on the screen.
+ * The Z index (4) sits above every piece tile (a held piece rides at 2),
+ * so the picture covers the whole field: nothing may overlap it while
+ * the child looks.
  */
 @Composable
 private fun PeekPanel(scene: SceneSpec, onDismiss: () -> Unit) {
     val label = stringResource(R.string.peek_hide)
+    // The panel rises: scrim and picture fade up together and the picture
+    // grows a half step into place. It leaves when asked, at once: a tap is
+    // an answer, not a request.
+    val rise = remember { Animatable(0f) }
+    LaunchedEffect(Unit) { rise.animateTo(1f, tween(200, easing = LinearOutSlowInEasing)) }
     Box(
         modifier = Modifier
+            .zIndex(4f) // above every piece tile (a held piece rides at 2)
             .fillMaxSize()
+            .graphicsLayer { alpha = rise.value }
             .background(PuzzletColors.Ink.copy(alpha = 0.72f))
             .semantics { contentDescription = label }
             .clickable(onClick = onDismiss),
@@ -169,7 +182,15 @@ private fun PeekPanel(scene: SceneSpec, onDismiss: () -> Unit) {
     ) {
         BoxWithConstraints {
             val side = minOf(maxWidth * 0.78f, maxHeight * 0.78f)
-            Box(Modifier.background(PuzzletColors.Card, RoundedCornerShape(30.dp)).padding(9.dp)) {
+            Box(
+                Modifier
+                    .graphicsLayer {
+                        scaleX = 0.94f + 0.06f * rise.value
+                        scaleY = 0.94f + 0.06f * rise.value
+                    }
+                    .background(PuzzletColors.Card, RoundedCornerShape(30.dp))
+                    .padding(9.dp),
+            ) {
                 ScenePicture(
                     spec = scene,
                     modifier = Modifier.width(side),

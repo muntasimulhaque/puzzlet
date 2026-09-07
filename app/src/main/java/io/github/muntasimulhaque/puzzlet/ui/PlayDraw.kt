@@ -3,9 +3,11 @@ package io.github.muntasimulhaque.puzzlet.ui
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -47,10 +49,12 @@ internal fun outlinePath(segments: List<Cubic>): Path {
 internal fun BoardBackdrop(
     game: Puzzle,
     pulseId: Int,
-    pulseT: Float,
+    pulse: State<Float>,
 ) {
+    // The pulse value is read inside the draw lambda, so a landing pulse
+    // redraws this one canvas and never recomposes the pieces above it.
     Canvas(Modifier.fillMaxSize()) {
-        drawBackdrop(game, pulseId, pulseT)
+        drawBackdrop(game, pulseId, pulse.value)
     }
 }
 
@@ -61,18 +65,32 @@ internal fun DrawScope.drawBackdrop(game: Puzzle, pulseId: Int, pulseT: Float) {
 }
 
 private fun DrawScope.drawTray(tray: Area) {
-    drawRect(
-        PuzzletColors.Tray,
-        topLeft = Offset(tray.x.toFloat(), tray.y.toFloat()),
-        size = Size(tray.w.toFloat(), tray.h.toFloat()),
-    )
-    drawLine(
-        PuzzletColors.Ink.copy(alpha = 0.08f),
-        start = Offset(0f, tray.maxY.toFloat()),
-        end = Offset(tray.w.toFloat(), tray.maxY.toFloat()),
-        strokeWidth = 1.dp.toPx(),
-    )
+    // The shelf: a warm tray that hangs from under the top bar, its bottom
+    // corners turned off square like a real felt tray, with one soft edge
+    // beneath so it sits a hair above the table. No hairline: the shadow
+    // is the seam now.
+    val r = TRAY_RADIUS.toPx()
+    val x0 = tray.x.toFloat()
+    val x1 = tray.maxX.toFloat()
+    val y0 = tray.y.toFloat()
+    val y1 = tray.maxY.toFloat()
+    val path = Path().apply {
+        moveTo(x0, y0)
+        lineTo(x1, y0)
+        lineTo(x1, y1 - r)
+        arcTo(Rect(x1 - 2f * r, y1 - 2f * r, x1, y1), 0f, 90f, forceMoveTo = false)
+        lineTo(x0 + r, y1)
+        arcTo(Rect(x0, y1 - 2f * r, x0 + 2f * r, y1), 90f, 90f, forceMoveTo = false)
+        close()
+    }
+    val shelfShadow = 2.5.dp.toPx()
+    withTransform({ translate(0f, shelfShadow) }) {
+        drawPath(path, PuzzletColors.Ink.copy(alpha = 0.05f))
+    }
+    drawPath(path, PuzzletColors.Tray)
 }
+
+private val TRAY_RADIUS = 26.dp
 
 private fun DrawScope.drawMat(board: Area) {
     val mat = 8.dp.toPx()
@@ -110,10 +128,11 @@ private fun DrawScope.drawPulse(game: Puzzle, pulseId: Int, pulseT: Float) {
  * scope (tray scale in the shelf, full size in hand), so this stays exact
  * at any size with no shared cache to go stale.
  *
- * Every piece is die-cut (D-054): artwork, a dark cut edge over the rim, a
- * paper sliver outside that edge, and a soft shadow beneath. The pieces the
- * scenes paint are pale, and on warm paper they melted into the table; the
- * edge is what makes a piece read as a piece before anything else about it.
+ * Every piece is die-cut (D-054): artwork, a paper rim outside the edge,
+ * and a soft two-pass shadow beneath. The heavy ink outline of the first
+ * die-cut pass read as a cartoon border; the cut line is now a light score
+ * just inside the paper rim, so a piece stands off the tray by its shadow
+ * and rim, not by a drawn border.
  */
 internal fun DrawScope.drawSlice(
     piece: Piece,
@@ -122,11 +141,11 @@ internal fun DrawScope.drawSlice(
     board: Area,
     lifted: Boolean,
 ) {
-    // Two offsets at one alpha read as one soft shadow. In hand the piece
-    // is off the table, so its shadow drops deeper and darker.
+    // Two offsets at a gentle alpha read as one soft shadow. In hand the
+    // piece is off the table, so its shadow drops deeper.
     val drop = (if (lifted) 7.dp else 5.dp).toPx()
     shadowPass(path, drop, SHADOW_ALPHA)
-    shadowPass(path, drop * 0.5f, SHADOW_ALPHA)
+    shadowPass(path, drop * 0.5f, SHADOW_ALPHA * 0.7f)
     clipPath(path) {
         withTransform({
             translate(
@@ -147,9 +166,9 @@ private fun DrawScope.shadowPass(path: Path, drop: Float, alpha: Float) {
     }
 }
 
-private val RIM_STROKE = 4.6.dp
-private val EDGE_STROKE = 2.8.dp
-private const val EDGE_ALPHA = 0.50f
-private const val SHADOW_ALPHA = 0.20f
+private val RIM_STROKE = 5.0.dp
+private val EDGE_STROKE = 1.5.dp
+private const val EDGE_ALPHA = 0.26f
+private const val SHADOW_ALPHA = 0.13f
 
 internal fun Vec2.toOffset(): Offset = Offset(x.toFloat(), y.toFloat())
