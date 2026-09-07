@@ -74,11 +74,3 @@ tasks.register<JavaExec>("makeScenes") {
     mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeScenesKt"
     args = listOf(rootDir.absolutePath)
 }
-
-tasks.register<JavaExec>("makeGatherSheet") {
-    group = "tools"
-    description = "Render gather icon takes into build/gather-sheet, for review."
-    classpath = sourceSets["main"].runtimeClasspath
-    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeGatherSheetKt"
-    args = listOf(rootDir.absolutePath)
-}

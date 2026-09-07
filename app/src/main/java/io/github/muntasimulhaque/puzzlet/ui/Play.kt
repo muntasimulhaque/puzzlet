@@ -256,7 +256,7 @@ private fun PlayTopBar(
         Spacer(Modifier.weight(1f))
         // The finish holds the picture up by itself, so the coin steps aside.
         if (game.completed) {
-            Spacer(Modifier.size(52.dp))
+            Spacer(Modifier.size(48.dp))
         } else {
             PeekCoin(scene = scene, peeking = peeking, onPeek = onPeek)
         }
@@ -266,24 +266,21 @@ private fun PlayTopBar(
 @Composable
 private fun PeekCoin(scene: SceneSpec, peeking: Boolean, onPeek: (Boolean) -> Unit) {
     val label = stringResource(if (peeking) R.string.peek_hide else R.string.peek_show)
-    Box(
-        modifier = Modifier
-            .size(52.dp)
-            .shadow(
-                4.dp, RoundedCornerShape(14.dp),
-                ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
-                spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
-            )
-            .clip(RoundedCornerShape(14.dp))
-            .background(if (peeking) PuzzletColors.Teal else PuzzletColors.Card)
-            .semantics { contentDescription = label }
-            .clickable { onPeek(!peeking) },
-        contentAlignment = Alignment.Center,
+    CircleButton(
+        onClick = { onPeek(!peeking) },
+        background = if (peeking) PuzzletColors.Teal else PuzzletColors.Card,
+        size = 48.dp,
+        label = label,
+        modifier = Modifier.shadow(
+            4.dp, CircleShape,
+            ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
+            spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
+        ),
     ) {
         ScenePicture(
             spec = scene,
-            modifier = Modifier.fillMaxSize().padding(if (peeking) 8.dp else 5.dp),
-            cornerRadius = 10.dp,
+            modifier = Modifier.fillMaxSize().padding(8.dp),
+            cornerRadius = 8.dp,
         )
     }
 }

@@ -498,6 +498,20 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   something a child can name. Train, castle, rocket, truck, plane and
   flowers stay in code as unlisted builders with their strings kept, so
   any of them can return without a rename.
+- D-061 One coin recipe (owner-directed: everything cohesive, love the
+  sound button). Every button in the app is now a circle with the same
+  ink shadow: shelf sound, top bar back and peek, finish Again and Home.
+  The peek coin drops its squircle for a 48 dp circle like the rest, the
+  thumbnail padded to sit inside the round. Celebration is one Card plate
+  holding picture, praise and both coins below the picture, so the coins
+  never float over the busy board; Again and Home wear Tray with ink
+  icons, Again leading 72 dp to 56 dp, labels sharing one baseline in
+  the defined body voice. Supersedes the squircle peek and the Teal
+  Again, neither of which was pinned by a D.
+- D-062 Take A wins (owner picked the current mark from the sheet).
+  The launcher, store tile and banner stay exactly as they are: no pixel
+  changes anywhere. The sheet generator and its task are swept in the
+  same breath, tilt param reverted, checkIcons green throughout as proof.
 
 ## Lessons that still bite
 

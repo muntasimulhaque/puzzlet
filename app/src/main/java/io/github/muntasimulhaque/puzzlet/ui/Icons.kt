@@ -35,8 +35,8 @@ fun BackIcon(modifier: Modifier = Modifier, color: Color) {
 }
 
 @Composable
-fun ReplayIcon(modifier: Modifier = Modifier, color: Color) {
-    GeoIcon(modifier, color) { w, h ->
+fun ReplayIcon(modifier: Modifier = Modifier, color: Color, size: androidx.compose.ui.unit.Dp = 24.dp) {
+    GeoIcon(modifier, color, size) { w, h ->
         val c = Offset(w / 2f, h / 2f)
         val r = w * 0.30f
         drawArc(

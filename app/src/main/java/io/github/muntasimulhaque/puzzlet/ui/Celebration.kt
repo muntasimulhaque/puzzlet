@@ -13,9 +13,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,12 +27,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.muntasimulhaque.puzzlet.R
 import io.github.muntasimulhaque.puzzlet.core.Puzzle
@@ -40,8 +48,11 @@ import kotlin.math.sin
 import kotlin.random.Random
 
 /**
- * The finish: the picture held up proudly, confetti in the house palette,
- * two big ways onward. No sounds yet (M2), no score, no pressure.
+ * The finish: the picture held up proudly on one clean plate, confetti
+ * in the house palette behind it, and the two ways onward sitting below
+ * the picture where a small hand finds them at once. Again leads by size;
+ * both coins wear the shelf recipe, round with ink icons and one soft
+ * shadow. No score, no pressure.
  */
 @Composable
 fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
@@ -69,63 +80,101 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            BoxWithConstraints {
-                val side = minOf(maxWidth * 0.72f, 300.dp)
-                ScenePicture(
-                    spec = Scenes.byId(game.sceneId),
-                    modifier = Modifier
-                        .width(side)
-                        .graphicsLayer {
-                            scaleX = pop.value
-                            scaleY = pop.value
-                            alpha = ((pop.value - 0.5f) / 0.5f).coerceIn(0f, 1f)
-                        },
-                    cornerRadius = 28.dp,
-                )
-            }
-            Spacer(Modifier.height(24.dp))
-            Text(
-                text = stringResource(R.string.well_done),
-                style = MaterialTheme.typography.displayMedium,
-                color = PuzzletColors.Paper,
-            )
-            Spacer(Modifier.height(26.dp))
-            Row {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircleButton(
-                        onClick = onAgain,
-                        background = PuzzletColors.Teal,
-                        size = 72.dp,
-                        label = stringResource(R.string.restart),
-                    ) {
-                        ReplayIcon(color = PuzzletColors.Paper)
-                    }
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        text = stringResource(R.string.again),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = PuzzletColors.Paper,
-                    )
-                }
-                Spacer(Modifier.width(40.dp))
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    CircleButton(
-                        onClick = onHome,
-                        background = PuzzletColors.Card,
-                        size = 56.dp,
-                        label = stringResource(R.string.home),
-                    ) {
-                        MenuIcon(color = PuzzletColors.Ink)
-                    }
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        text = stringResource(R.string.home),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = PuzzletColors.Paper,
-                    )
-                }
-            }
+            CelebrationPlate(game = game, pop = pop.value, onAgain = onAgain, onHome = onHome)
         }
+    }
+}
+
+/** One clean plate: picture, praise, then the two ways onward below it. */
+@Composable
+private fun CelebrationPlate(game: Puzzle, pop: Float, onAgain: () -> Unit, onHome: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 32.dp)
+            .clip(RoundedCornerShape(30.dp))
+            .background(PuzzletColors.Card)
+            .padding(horizontal = 20.dp, vertical = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val side = minOf(maxWidth, 280.dp)
+            ScenePicture(
+                spec = Scenes.byId(game.sceneId),
+                modifier = Modifier
+                    .width(side)
+                    .graphicsLayer {
+                        scaleX = pop
+                        scaleY = pop
+                        alpha = ((pop - 0.5f) / 0.5f).coerceIn(0f, 1f)
+                    },
+                cornerRadius = 22.dp,
+            )
+        }
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.well_done),
+            style = MaterialTheme.typography.displayMedium,
+            color = PuzzletColors.Ink,
+            textAlign = TextAlign.Center,
+        )
+        Spacer(Modifier.height(18.dp))
+        FinishButtons(onAgain = onAgain, onHome = onHome)
+    }
+}
+
+/** Again leads by size; both coins share one baseline for their names. */
+@Composable
+private fun FinishButtons(onAgain: () -> Unit, onHome: () -> Unit) {
+    Row(verticalAlignment = Alignment.Bottom) {
+        FinishCoin(
+            onClick = onAgain,
+            size = 72.dp,
+            label = stringResource(R.string.restart),
+            text = stringResource(R.string.again),
+        ) {
+            ReplayIcon(color = PuzzletColors.Ink, size = 30.dp)
+        }
+        Spacer(Modifier.width(40.dp))
+        FinishCoin(
+            onClick = onHome,
+            size = 56.dp,
+            label = stringResource(R.string.home),
+            text = stringResource(R.string.home),
+        ) {
+            MenuIcon(color = PuzzletColors.Ink)
+        }
+    }
+}
+
+/** One finish coin: the sound button recipe, Tray ground for a Card plate. */
+@Composable
+private fun FinishCoin(
+    onClick: () -> Unit,
+    size: Dp,
+    label: String,
+    text: String,
+    icon: @Composable () -> Unit,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        CircleButton(
+            onClick = onClick,
+            background = PuzzletColors.Tray,
+            size = size,
+            label = label,
+            modifier = Modifier.shadow(
+                4.dp, CircleShape,
+                ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
+                spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
+            ),
+        ) {
+            icon()
+        }
+        Spacer(Modifier.height(6.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = PuzzletColors.Ink,
+        )
     }
 }
 
