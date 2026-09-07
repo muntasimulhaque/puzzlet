@@ -904,3 +904,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   1.7 in Play review. Everything is pushed and both CI runs on main
   are green. Standing open item unchanged: piece-level TalkBack. Next
   session picks up from: the 1.7 review verdict and tester feedback.
+- 2026-09-07: The owner's sweep continued: twelve scene PNGs committed
+  by accident in the 1.1 session under a mis-resolved absolute path
+  (tools/c/Users/.../play-store/candidates/scenes/) were tracked ever
+  since, against the never-commit-scenes law. Removed from the index;
+  the candidates folder never existed in the repo and still does not.
+  The local .gradle and .kotlin caches went too. Tree clean, nothing
+  uncommitted, nothing untracked.
