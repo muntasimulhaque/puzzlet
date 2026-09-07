@@ -55,14 +55,15 @@ data class SceneSpec(
 object Scenes {
 
     /**
-     * The shipped shelf: six pictures that cut fairly at every count.
-     * The first four opened with the app; lighthouse and ice cream earned
-     * their way back with large nameable regions and calm grounds
-     * (D-059). The remaining builders stay in code, unlisted, until they
-     * earn their way back. All inanimate: vehicles, buildings, sky, food.
+     * The shipped shelf: all twelve pictures, every one on a graded ground
+     * with small inanimate texture (D-049 restored by D-064). All inanimate:
+     * vehicles, buildings, sky, food. The no-flat-piece test below walks
+     * this list at every count the shelf offers, so nothing here can ship
+     * with a blank piece.
      */
     val all: List<SceneSpec> = listOf(
         sail(), house(), balloon(), fruit(), lighthouse(), icecream(),
+        train(), castle(), rocket(), truck(), plane(), flowers(),
     ).map { it.withClues() }
     fun byId(id: String): SceneSpec = all.first { it.id == id }
 }
