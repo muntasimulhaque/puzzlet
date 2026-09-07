@@ -100,8 +100,10 @@ All three sets live under `play-store/screenshots/`, one subfolder per form
 factor (`phone/`, `tablet7/`, `tablet10/`), captured by CI whenever UI files
 change and refreshed into those same subfolders in the same session. Upload
 each subfolder's PNGs to its Play Console slot, in filename order (01_home
-first, and 09_choose last); a Families-reviewed listing should match what
-ships. To look at every picture before a content change, run
+first, and 11_celebration_land last); a Families-reviewed listing should
+match what ships. The landscape finish (11) is optional for the store: it
+documents that the game plays in landscape. To look at every picture before
+a content change, run
 `:tools:makeScenes`, which writes a sheet into `build/scenes` (never
 committed). The
 celebration scene is mid-animation by design, so its pixels wobble a little
@@ -146,6 +148,12 @@ external links reachable by a child, no ads.
 versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
+
+## Release notes for closed testing 1.7 (measured: 493 chars)
+
+```
+Puzzlet 1.7 fixes five things you found. Tapping 4 in the size chooser now always deals 4 pieces; on pictures you had already won, the game could deal one size up. The finished picture sits centered on the well done plate. In landscape the plate reshapes to fit the screen, so the picture, the praise and both buttons are always on it, on every phone and tablet. The launcher and store icon were recut smaller, so no launcher mask ever clips a corner. Still fully offline, no ads, no accounts.
+```
 
 ## Release notes for closed testing 1.6 (measured: 494 chars)
 
@@ -251,8 +259,10 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    versionCode 14, versionName 1.4, signed; 1.4 was submitted and the
    folder was deleted after. For 1.6 the same check ran green: CI build
    and capture both succeeded, the AAB and its APK twin read versionCode
-   16, versionName 1.6, signed. After submitting a build for review,
-   always delete it from the folder.)
+   16, versionName 1.6, signed. For 1.7 the same check ran green: CI
+   build and capture both succeeded, and the AAB read versionCode 17,
+   versionName 1.7, package io.github.muntasimulhaque.puzzlet. After
+   submitting a build for review, always delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
    (type it exactly; it is permanent). Name it from the listing, mark it a Game,
    and set it PAID with a one-time price (a merchant payments profile is
