@@ -230,10 +230,10 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    landing folder (gitignored):
    `gh release download latest-build -R muntasimulhaque/puzzlet -p "*.aab" -D play-store/aab`
    (Verified before handoff of 1.3: versionCode 13, versionName 1.3,
-   target 37, package io.github.muntasimulhaque.puzzlet; 1.3 was submitted
-   and the folder was emptied after. 1.4 (versionCode 14) awaits CI and
-   the owner's upload. After submitting a build for review, always delete
-   it from the folder.)
+   target 37, package io.github.muntasimulhaque.puzzlet. For 1.4 the same
+   check ran green: CI build and capture both succeeded, the AAB in
+   play-store/aab/ is versionCode 14, versionName 1.4, signed, awaiting
+   the owner's upload; delete it from the folder after submitting.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
    (type it exactly; it is permanent). Name it from the listing, mark it a Game,
    and set it PAID with a one-time price (a merchant payments profile is

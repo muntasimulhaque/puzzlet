@@ -712,4 +712,6 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   Shelf, softer die-cut, the redrawn speaker, the peek panel above every
   tile, a scoped pulse, and a rising peek panel all followed. Cut 1.4
   (versionCode 14), notes measured at 457 chars, no contact line; the
-  Temp folder is now gitignored.
+  Temp folder is now gitignored. CI green on the cut; the 24 fresh
+  captures landed in the listing kit, the verified 1.4 AAB sits in
+  play-store/aab/ awaiting the owner's upload.
