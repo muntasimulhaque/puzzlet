@@ -56,18 +56,19 @@ Puzzlet is a real jigsaw, made small enough for a three-year-old. One
 child, one picture, and pieces that click home with a soft knock.
 
 How it plays:
-Tap a picture and the game begins. Every picture offers 4, 6, 9, 12 or
-16 pieces: pick a count, or tap the picture to play the one it shows.
-Left alone, a win grows a picture from 4 to 6, then 9, so the challenge
-arrives exactly when the child is ready.
+Tap a picture and the game begins at its size. Left alone, a win grows
+a picture from 4 to 6, then 9, so the challenge arrives exactly when the
+child is ready. Parents can open the size line under any picture to pick
+4, 6, 9, 12 or 16, and the picture remembers the pick.
 The board is blank, the way a table is. Drag a piece near its place and
 it clicks in with a little burst of light. Forgotten what the picture
 is? Tap the little picture up top to look, then tap anywhere to put it
 away. No hints, no arrows, nothing pointing at the answer.
 Finish, and the picture is held up proudly with confetti. No timer, no
 score, no fail state: nothing to rush, nothing to lose.
-Twelve calm pictures, vehicles, houses, plants and fruit, every one of
-them full of colour and small details, so no piece is ever a blank.
+Six calm pictures, a boat, a house, a balloon, fruit, a lighthouse and
+an ice cream, every one of them full of colour and small details, so no
+piece is ever a blank.
 
 Made safe for small hands:
 No ads, no in-app purchases, no accounts, no links out.

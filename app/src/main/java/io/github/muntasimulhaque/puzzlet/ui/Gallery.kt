@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -22,6 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -58,10 +63,12 @@ internal fun sceneNameRes(sceneId: String): Int = when (sceneId) {
 
 /**
  * The picture shelf: one quiet name at top with the sound coin docked
- * beside it, then pictures with their names and one row of piece counts
- * under each, so a parent sets the size and the child taps the picture.
- * The sound switch lives in the header, never over the pictures and never
- * behind a gate (D-021, D-046, D-057).
+ * beside it, then pictures with their names. Tapping a picture plays at
+ * once at its size: the ladder steps wins through, a parent pick wins
+ * over the ladder. Sizes live behind one quiet line per card (D-058),
+ * so the shelf shows twelve calm lines, not sixty numbers. The sound
+ * switch lives in the header, never over the pictures and never behind
+ * a gate (D-021, D-046, D-057).
  */
 @Composable
 fun Gallery(
@@ -70,33 +77,55 @@ fun Gallery(
     onChooseAt: (String, Int) -> Unit,
     onSound: (Boolean) -> Unit,
 ) {
+    var openId by rememberSaveable { mutableStateOf<String?>(null) }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(PuzzletColors.Paper),
     ) {
         ShelfHeader(soundOn = shelf.soundOn, onSound = onSound)
-        BoxWithConstraints(Modifier.fillMaxWidth().weight(1f)) {
-            val columns = when {
-                maxWidth < 480.dp -> 1
-                maxWidth < 840.dp -> 2
-                else -> 3
-            }
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(columns),
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 28.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                items(Scenes.all) { scene ->
-                    SceneCard(
-                        scene = scene,
-                        pieces = shelf.pieces[scene.id] ?: STEPS.first().pieces,
-                        onChoose = { onChoose(scene.id) },
-                        onChooseAt = { onChooseAt(scene.id, it) },
-                    )
-                }
+        ShelfGrid(
+            shelf = shelf,
+            openId = openId,
+            onToggle = { id -> openId = if (openId == id) null else id },
+            onChoose = onChoose,
+            onChooseAt = onChooseAt,
+            modifier = Modifier.fillMaxWidth().weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun ShelfGrid(
+    shelf: ShelfState,
+    openId: String?,
+    onToggle: (String) -> Unit,
+    onChoose: (String) -> Unit,
+    onChooseAt: (String, Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BoxWithConstraints(modifier) {
+        val columns = when {
+            maxWidth < 480.dp -> 1
+            maxWidth < 840.dp -> 2
+            else -> 3
+        }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(columns),
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 28.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            items(Scenes.all) { scene ->
+                SceneCard(
+                    scene = scene,
+                    pieces = shelf.pieces[scene.id] ?: STEPS.first().pieces,
+                    expanded = openId == scene.id,
+                    onToggleSizes = { onToggle(scene.id) },
+                    onChoose = { onChoose(scene.id) },
+                    onChooseAt = { onChooseAt(scene.id, it) },
+                )
             }
         }
     }
@@ -126,6 +155,8 @@ private fun ShelfHeader(soundOn: Boolean, onSound: (Boolean) -> Unit) {
 private fun SceneCard(
     scene: SceneSpec,
     pieces: Int,
+    expanded: Boolean,
+    onToggleSizes: () -> Unit,
     onChoose: () -> Unit,
     onChooseAt: (Int) -> Unit,
 ) {
@@ -135,26 +166,61 @@ private fun SceneCard(
             .shadow(6.dp, RoundedCornerShape(28.dp))
             .clip(RoundedCornerShape(28.dp))
             .background(PuzzletColors.Card)
-            .semantics { contentDescription = name }
-            .clickable(onClick = onChoose)
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        ScenePicture(
-            spec = scene,
-            modifier = Modifier.fillMaxWidth(),
-            cornerRadius = 20.dp,
-        )
-        Spacer(Modifier.height(8.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .clickable(onClick = onChoose)
+                .semantics { contentDescription = name },
+        ) {
+            ScenePicture(spec = scene, modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp)
+        }
+        CardName(name = name)
+        SizeToggle(pieces = pieces, expanded = expanded, onToggle = onToggleSizes)
+        if (expanded) {
+            Spacer(Modifier.height(4.dp))
+            StepRow(current = pieces, onChooseAt = onChooseAt)
+        }
+    }
+}
+
+@Composable
+private fun CardName(name: String) {
+    Spacer(Modifier.height(8.dp))
+    Text(
+        text = name,
+        style = MaterialTheme.typography.titleLarge,
+        color = PuzzletColors.Ink,
+        textAlign = TextAlign.Center,
+        maxLines = 1,
+    )
+}
+
+/** One quiet line per card: what a tap plays at, and the way to sizes. */
+@Composable
+private fun SizeToggle(pieces: Int, expanded: Boolean, onToggle: () -> Unit) {
+    val count = stringResource(R.string.pieces_count, pieces)
+    val action = stringResource(if (expanded) R.string.sizes_hide else R.string.sizes_show)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = 48.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onToggle)
+            .semantics { contentDescription = "$count. $action" }
+            .padding(horizontal = 8.dp, vertical = 12.dp),
+        contentAlignment = Alignment.Center,
+    ) {
         Text(
-            text = name,
-            style = MaterialTheme.typography.titleLarge,
-            color = PuzzletColors.Ink,
+            text = count,
+            style = MaterialTheme.typography.bodyLarge,
+            color = PuzzletColors.Ink.copy(alpha = 0.72f),
             textAlign = TextAlign.Center,
             maxLines = 1,
         )
-        Spacer(Modifier.height(8.dp))
-        StepRow(current = pieces, onChooseAt = onChooseAt)
     }
 }
 
@@ -180,8 +246,8 @@ private fun StepChip(pieces: Int, selected: Boolean, onChoose: () -> Unit) {
     val label = stringResource(R.string.pieces_count, pieces)
     Box(
         modifier = Modifier
-            .size(40.dp)
-            .clip(RoundedCornerShape(12.dp))
+            .size(48.dp)
+            .clip(RoundedCornerShape(14.dp))
             .background(if (selected) PuzzletColors.Teal else PuzzletColors.Tray)
             .semantics { contentDescription = label }
             .clickable(onClick = onChoose),

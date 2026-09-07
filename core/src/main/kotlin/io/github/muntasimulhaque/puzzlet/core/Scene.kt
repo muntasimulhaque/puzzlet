@@ -55,15 +55,14 @@ data class SceneSpec(
 object Scenes {
 
     /**
-     * The shipped shelf: twelve pictures that cut fairly at every count
-     * (AGENTS.md, D-049). Four opened with the app, four came back from
-     * retirement once they carried a graded ground, and four are new.
-     * All inanimate: vehicles, buildings, plants, food, sky and water.
+     * The shipped shelf: six pictures that cut fairly at every count.
+     * The first four opened with the app; lighthouse and ice cream earned
+     * their way back with large nameable regions and calm grounds
+     * (D-059). The remaining builders stay in code, unlisted, until they
+     * earn their way back. All inanimate: vehicles, buildings, sky, food.
      */
     val all: List<SceneSpec> = listOf(
-        sail(), house(), balloon(), fruit(),
-        train(), castle(), rocket(), lighthouse(),
-        truck(), plane(), flowers(), icecream(),
+        sail(), house(), balloon(), fruit(), lighthouse(), icecream(),
     ).map { it.withClues() }
     fun byId(id: String): SceneSpec = all.first { it.id == id }
 }

@@ -74,13 +74,13 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 ## The game
 
-Tray, drag, snap, celebrate. Twelve pictures: sailboat, house, balloon,
-fruit, train, castle, rocket, lighthouse, truck, airplane, flowers, ice
-cream. All inanimate: no humans, no animals, no faces, no eyes. A row of
-counts sits under every picture on the shelf (4, 6, 9, 12, 16); tapping
-a picture starts it at the count that row is showing, and tapping a count
-plays that count and remembers it for that picture. Where nobody has
-picked, wins walk the ladder: a first picture opens at 4, a win deals 6,
+Tray, drag, snap, celebrate. Six pictures: sailboat, house, balloon,
+fruit, lighthouse, ice cream. All inanimate: no humans, no animals, no
+faces, no eyes. Tapping a picture plays at once at its size: the ladder
+where nobody has picked, a parent pick where somebody has. Sizes live
+behind one quiet line per card (4, 6, 9, 12, 16); opening the line shows
+five big targets, and tapping one plays that count and remembers it for
+that picture. Where nobody has picked, wins walk the ladder: a first picture opens at 4, a win deals 6,
 another 9, and there the ladder stops. The pieces wait in a tray above
 the board at tray scale, on one even grid with the same gap everywhere;
 a piece in hand grows to board size under the finger. The board is blank,
@@ -130,9 +130,9 @@ game state hears about the carry once, at release (D-055).
 
 Scene content is pure data: `Scene.kt` holds the shape types and the
 registry; `ScenePaintings.kt`, `ScenePaintingsMore.kt` and
-`ScenePaintingsNew.kt` hold the twelve shipped paintings (sail, house,
-balloon, fruit, train, castle, rocket, lighthouse, truck, plane, flowers,
-icecream). Adding a picture means adding one builder, listing it in
+`ScenePaintingsNew.kt` hold the builders, six of them shipped (sail,
+house, balloon, fruit, lighthouse, icecream) and six unlisted until they
+earn their way back (train, castle, rocket, truck, plane, flowers).
 `Scenes.all`, naming it in `strings.xml` and `sceneNameRes`, and passing
 the no-flat-piece test; the capture set and the listing text follow.
 `Ladder.kt` holds the five counts (4, 6, 9, 12, 16) and the gentle walk
@@ -477,6 +477,21 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   one 2 dp paper edge as cut thickness, soft shadow beneath. This
   supersedes the 5 dp rim plus 1.5 dp ink score in D-056, which still read
   as a cartoon border, especially on small 16 count pieces.
+- D-058 Quiet sizes (owner-directed, superseding the always open count
+  rows in D-047). Tapping a picture plays at once. One quiet line per
+  card names the size a tap plays at; opening it reveals five 48 dp
+  targets, up from 40 dp, so every touch target on the shelf meets the
+  minimum. The picture and the size line are sibling buttons, never
+  nested, which retires the card level TalkBack trap. A parent pick still
+  outranks the ladder and stays put; wins still walk unpicked pictures
+  through 4, 6 and 9.
+- D-059 Six pictures (owner-directed, superseding the twelve in D-049).
+  The shelf keeps the four that always cut fairly plus the two that
+  earned their way back with large nameable regions: lighthouse for its
+  bold striped tower and calm coast, ice cream where every piece is
+  something a child can name. Train, castle, rocket, truck, plane and
+  flowers stay in code as unlisted builders with their strings kept, so
+  any of them can return without a rename.
 
 ## Lessons that still bite
 
