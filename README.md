@@ -4,20 +4,22 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.3 (versionCode 13) is submitted to the closed testing
-track. Release 1.3 is the feel release: every piece wears a die-cut edge
-and a soft shadow, so a piece stands off the tray and the table instead
-of melting into them, and the tray is a shade deeper. A touch lifts a
-piece at once (no drag distance to earn), the piece follows the finger
-with no lag, and a piece that misses glides home.
-Twelve pictures, five piece counts to choose from (4, 6, 9, 12, 16), a
-blank board with the finished picture behind one coin, an even tray grid,
-and a sound switch on the picture shelf. No timer, no score, no fail
-state, no reading required. Two synthesized sounds (a click and a bell,
-no music). Wins, the count a parent picked and the sound switch survive
-process death; an unfinished game does not. Store screenshots render in
-CI from the app's own states; the listing kit and the console answers are
-ready. See AGENTS.md for the working rules and the decision log.
+Status: release 1.4 (versionCode 14) is cut for closed testing. Release
+1.4 is the seat release: a scale-pivot drawing bug had every tray piece
+and every held piece drawn off its true seat, so pieces now sit exactly
+where the rules put them, inside a rounded felt shelf; the held-up
+picture rises above every piece instead of hiding under some; the die-cut
+lightened to a paper rim with a whisper of a cut line; the speaker mark
+was redrawn in the app's own line hand; and the picture on the top coin
+fades up rather than popping. Twelve pictures, five piece counts to
+choose from (4, 6, 9, 12, 16), a blank board with the finished picture
+behind one coin, an even tray grid, and a sound switch on the picture
+shelf. No timer, no score, no fail state, no reading required. Two
+synthesized sounds (a click and a bell, no music). Wins, the count a
+parent picked and the sound switch survive process death; an unfinished
+game does not. Store screenshots render in CI from the app's own states;
+the listing kit and the console answers are ready. See AGENTS.md for the
+working rules and the decision log.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT

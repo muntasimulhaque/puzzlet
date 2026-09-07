@@ -143,6 +143,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 1.4 (measured: 457 chars)
+
+```
+Puzzlet 1.4 is the polish release. Pieces now sit exactly on the tray shelf, rounded like a felt mat, after a drawing bug let them drift over its edge. The picture held up by the button on top now rises above every piece, so nothing overlaps it. The sound switch wears a redrawn speaker mark. Piece edges are lighter: a paper rim and a soft shadow, no heavy border. A held piece tracks the finger to the pixel. Fully offline, as ever. Thank you for testing.
+```
+
 ## Release notes for closed testing 1.3 (measured: 468 chars)
 
 ```
@@ -225,8 +231,9 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    `gh release download latest-build -R muntasimulhaque/puzzlet -p "*.aab" -D play-store/aab`
    (Verified before handoff of 1.3: versionCode 13, versionName 1.3,
    target 37, package io.github.muntasimulhaque.puzzlet; 1.3 was submitted
-   and the folder was emptied after. After submitting a build for review,
-   always delete it from the folder.)
+   and the folder was emptied after. 1.4 (versionCode 14) awaits CI and
+   the owner's upload. After submitting a build for review, always delete
+   it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
    (type it exactly; it is permanent). Name it from the listing, mark it a Game,
    and set it PAID with a one-time price (a merchant payments profile is

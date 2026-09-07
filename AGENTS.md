@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 13, versionName 1.3, cut for
+  and so on. Current release: versionCode 14, versionName 1.4, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -448,6 +448,24 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   really was. layout() clears a stale in-hand piece on reshape. The
   host's dragTo is gone: PlayActions is onGrabAt (piece id) plus
   onDropAt.
+- D-056 The seat pass (owner's four observations after playing 1.3). The
+  tray overflow was a drawing bug, not a layout bug: TransformScope.scale
+  pivots at the scope's CENTRE by default, so every scaled tile was drawn
+  off its seat by center*(1-scale), downward and right: tray pieces hung
+  over the band and a held piece sat away from the finger while placed
+  pieces (scale 1) looked perfect and hid it. Tiles now scale from
+  Offset.Zero, and the core's containment proofs finally match pixels.
+  The peek panel and celebration sit at zIndex 4, above every tile, so
+  the held-up picture overlaps everything and nothing overlaps it (the
+  D-048 intent, enforced). The tray became a shelf: rounded bottom
+  corners, one soft shadow edge, no hairline across the screen. The
+  die-cut softened per D-054's own successor: paper rim 5 dp, cut score
+  1.5 dp at 26 percent (was 2.8 at 50, a cartoon border) and a shadow at
+  half the old weight. The speaker mark was redrawn in the
+  house hand: an outlined cone with round joins and two waves hung on its
+  mouth, a balanced cross when off. The peek panel rises with a 200 ms
+  fade and a half-step grow; the landing pulse now redraws the backdrop
+  canvas alone instead of recomposing the field.
 
 ## Lessons that still bite
 
@@ -684,3 +702,14 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   run on main is green. Standing open item unchanged: piece-level
   TalkBack. Next session picks up from: the 1.3 review verdict and
   tester feedback.
+- 2026-09-07: The owner played 1.3 and filed five observations (speaker
+  mark, tray overflow, peek z-order, die-cut heaviness, buttery smooth).
+  The overflow hunt ended in D-056: TransformScope.scale's default
+  centre pivot, which shifted every scaled tile off its seat. Proven by
+  instrumenting a local emulator run of the capture harness and solving
+  the pixel offsets exactly (center*(1-scale)); the emulator served as a
+  measuring tool only, design judgment still comes from the CI captures.
+  Shelf, softer die-cut, the redrawn speaker, the peek panel above every
+  tile, a scoped pulse, and a rising peek panel all followed. Cut 1.4
+  (versionCode 14), notes measured at 457 chars, no contact line; the
+  Temp folder is now gitignored.

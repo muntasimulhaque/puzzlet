@@ -8,6 +8,7 @@ signing-key-info.txt
 # Android / Gradle build outputs
 .gradle/
 build/
+Temp/
 local.properties
 .kotlin/
 captures/
