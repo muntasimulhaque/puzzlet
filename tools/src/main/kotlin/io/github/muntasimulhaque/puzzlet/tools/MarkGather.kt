@@ -5,7 +5,6 @@ import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.geom.AffineTransform
 import java.awt.geom.Path2D
-import java.awt.geom.Rectangle2D
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
 
@@ -112,11 +111,6 @@ internal fun beginMark(image: BufferedImage): Graphics2D {
     return g
 }
 
-internal fun fillGround(g: Graphics2D, w: Int, h: Int, argb: Int) {
-    g.color = Color(argb, true)
-    g.fill(Rectangle2D.Double(0.0, 0.0, w.toDouble(), h.toDouble()))
-}
-
 internal fun roundedTile(g: Graphics2D, size: Int, cornerFraction: Double, argb: Int) {
     val corner = size * cornerFraction * 2.0
     g.color = Color(argb, true)
@@ -157,13 +151,12 @@ internal object Gather {
         insetFrac: Double = 0.0,
         cornerFraction: Double = 0.19,
         palette: List<Int> = gatherPalette(mono),
-        pieceScale: Double = 0.40,
+        pieceScale: Double = IconDesign.PIECE_SCALE,
         tiltsDeg: List<Double> = listOf(-7.0, 6.0, -5.0),
     ): BufferedImage {
         val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
         val g = beginMark(image)
         if (tile) roundedTile(g, size, cornerFraction, groundArgb)
-        else if (groundArgb != 0) fillGround(g, size, size, groundArgb)
         val o = size * insetFrac
         val se = size * (1.0 - 2.0 * insetFrac)
         val s = se * pieceScale

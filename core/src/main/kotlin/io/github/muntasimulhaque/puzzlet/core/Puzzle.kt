@@ -209,14 +209,6 @@ fun relayout(p: Puzzle, field: Area, capPx: Double): Puzzle {
     )
 }
 
-/** Back to the tray; same cut, same seating, everything waiting again. */
-fun restart(p: Puzzle): Puzzle {
-    val pieces = p.pieces.map { piece ->
-        piece.copy(placed = false, current = p.seats[piece.id] - piece.size * 0.5)
-    }
-    return p.copy(pieces = pieces, placedCount = 0, completed = false)
-}
-
 /** A fresh jumble after a finish: same cut, new seating, nothing placed. */
 fun redeal(p: Puzzle, seatSeed: Long): Puzzle {
     val pack = trayPack(p.tray, p.pieces.map { it.size }, seatSeed)

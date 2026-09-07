@@ -223,16 +223,20 @@ class PuzzleCoreTest {
     }
 
     @Test
-    fun `restart clears progress and re-seats the tray`() {
+    fun `redeal clears progress and re-seats the tray`() {
         var p = createPuzzle("house", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 5L)
         p = drag(p, 0, p.piece(0)!!.home)
         p = drop(p, 0)
-        p = restart(p)
+        p = redeal(p, 99L)
         assertEquals(0, p.placedCount)
         assertFalse(p.completed)
         assertTrue(p.pieces.none { it.placed })
-        val fresh = createPuzzle("house", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 5L)
-        assertEquals(fresh.pieces.map { it.current }, p.pieces.map { it.current })
+        for (piece in p.pieces) {
+            assertTrue(
+                "piece ${piece.id} off its redeal seat",
+                dist(p.seats[piece.id], piece.currentCenter) < 1e-9,
+            )
+        }
     }
 
     @Test

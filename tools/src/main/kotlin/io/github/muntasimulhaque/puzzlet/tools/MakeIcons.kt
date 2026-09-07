@@ -26,7 +26,6 @@ import kotlin.system.exitProcess
 object IconDesign {
     const val PAPER: Int = 0xFFFAF6EF.toInt()
     const val WHITE: Int = 0xFFFFFFFF.toInt()
-    const val DEEP: Int = 0xFF085949.toInt()
     /** The brand teal, the toy-box lid: the feature graphic's ground. */
     const val LAGOON: Int = 0xFF0C7A64.toInt()
     /** Ink, for type sitting on a light ground in the store art. */

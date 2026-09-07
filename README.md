@@ -4,8 +4,8 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.6 (versionCode 16) cut for the closed testing track.
-Release 1.6 is the complete shelf: all twelve pictures are back, each
+Status: release 1.6 (versionCode 16) is submitted to the closed testing
+track. Release 1.6 is the complete shelf: all twelve pictures are back, each
 opening a cut chooser whose five tiles show the real cut the game will
 deal at 4, 6, 9, 12 and 16 pieces; the child picks a puzzle with their
 eyes, and the pick sticks. The finish now breathes: one quiet second on

@@ -122,11 +122,11 @@ class PuzzleTrayTest {
                     dist(piece.currentCenter, p.seats[piece.id]) < 1e-6,
                 )
             }
-            val r = restart(p)
+            val r = redeal(p, 7L)
             for (piece in r.pieces) {
                 assertTrue(
-                    "restart seed=$seed ${rows}x$cols piece ${piece.id} off its seat",
-                    dist(piece.currentCenter, p.seats[piece.id]) < 1e-6,
+                    "redeal seed=$seed ${rows}x$cols piece ${piece.id} off its seat",
+                    dist(piece.currentCenter, r.seats[piece.id]) < 1e-6,
                 )
             }
         }

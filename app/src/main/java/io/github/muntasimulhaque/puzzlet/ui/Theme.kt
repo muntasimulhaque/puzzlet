@@ -38,12 +38,6 @@ private val Baloo = FontFamily(
 // Two voices only, until gameplay asks for more: the name speaks in Baloo
 // ExtraBold, everything else stays plain and legible.
 private val BrandTypography = Typography(
-    displayLarge = TextStyle(
-        fontFamily = Baloo,
-        fontWeight = FontWeight.ExtraBold,
-        fontSize = 64.sp,
-        lineHeight = 70.sp,
-    ),
     displayMedium = TextStyle(
         fontFamily = Baloo,
         fontWeight = FontWeight.ExtraBold,

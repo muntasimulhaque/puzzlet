@@ -830,6 +830,21 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   (D-066); the mark was drawn tighter into the hover and the banner
   re-metricked (D-067), judged from the rendered sheet in
   build/icon-takes. Cut 1.6 (versionCode 16), notes measured at 494
-  chars, all gates green. Next session picks up from: the captures and
-  the owner's verdict on take h-hover-big; the takes generator and its
-  task stay until the owner confirms the mark or points at another take.
+  chars, all gates green.
+- 2026-09-07: Fresh captures for 1.6: 01_home changed on all three form
+  factors (twelve cards), 09_choose is new, and every play state came
+  back byte-identical, including the celebration frame. The chooser's
+  first render scribbled every piece outline at the canvas origin: the
+  piece-local coordinates had not walked to their cells through span and
+  offset, the same mapping lesson as before, fixed and re-captured.
+- 2026-09-07: Version 1.6 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ and the empty landing folder went
+  with it. The icon round was decided by that submission, so the take
+  sheet and the takes generator with its task are swept (D-036 lesson:
+  takes are working scratch). The dead-code sweep took core restart (the
+  host redeals; the two tests re-pointed at redeal), the unused
+  displayLarge type style, the unused IconDesign.DEEP, and the
+  gather's ground fill with its branch; checkIcons stayed green, which
+  is the proof the sweep changed no pixel. README, guide and this file
+  brought current. Next session picks up from: the 1.6 review verdict
+  and tester feedback on the chooser build.
