@@ -86,8 +86,9 @@ class MakeIconsTest {
         val size = 432
         val layer = adaptiveLayer(size, IconDesign.PAPER)
         val cx = size / 2.0
-        // 32 dp of the 108 dp canvas: 1 dp of air inside the 66 dp mask.
-        val limit = size * 32.0 / 108.0
+        // 30 dp of the 108 dp canvas: 3 dp of real air inside the 66 dp
+        // mask, so no launcher's antialiasing can ever bite a corner.
+        val limit = size * 30.0 / 108.0
         for (y in 0 until size) {
             for (x in 0 until size) {
                 if ((layer.getRGB(x, y) ushr 24) > 16) {

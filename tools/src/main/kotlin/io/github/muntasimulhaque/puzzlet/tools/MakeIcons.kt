@@ -54,17 +54,19 @@ object IconDesign {
     const val ADAPTIVE_DP = 108.0
     /**
      * Adaptive foreground inset as a canvas fraction: the whole gather
-     * sits inside the 66 dp mask circle with room to spare, so no
-     * launcher shape ever truncates a piece.
+     * sits inside the 66 dp mask circle with real air (D-069): the
+     * content reaches about 28 dp of the 66 dp circle, so no launcher
+     * mask, however it antialiases, ever truncates a piece.
      */
-    const val FG_INSET = 0.275
+    const val FG_INSET = 0.305
     /** Fraction of a full-art tile the gather field spans: small, corners safe. */
-    const val TILE_SPAN = 0.94
+    const val TILE_SPAN = 0.86
     /**
      * Store tile field fraction: the store corner bites deeper, so the
-     * field tucks slightly larger into the surviving corner tips.
+     * field tucks well inside the surviving corner tips (D-069: the old
+     * 0.94 span let the outer piece corners poke past the silhouette).
      */
-    const val STORE_SPAN = 0.94
+    const val STORE_SPAN = 0.86
     /** Legacy tile corner radius as a fraction of the tile. */
     const val LEGACY_CORNER_FRACTION = 0.22
     /** Store tile corner radius as a fraction of the tile. */
