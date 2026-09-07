@@ -821,3 +821,15 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   landing folder went with it. The gather sheet was working scratch in
   build only, so it was swept with the other Temp captures: the repo
   keeps no candidates folder. README and the guide brought current.
+- 2026-09-07: The owner filed four observations and one law: all twelve
+  pictures back, the size choice belongs to the child, a second of
+  breath before the celebration, and the mark and feature graphic are
+  open for a redo. Twelve pictures returned (D-064); the cut chooser
+  replaced the broken size reveal (D-065, the trapped 9 diagnosed in
+  layout math); the finish holds one quiet second before the plate
+  (D-066); the mark was drawn tighter into the hover and the banner
+  re-metricked (D-067), judged from the rendered sheet in
+  build/icon-takes. Cut 1.6 (versionCode 16), notes measured at 494
+  chars, all gates green. Next session picks up from: the captures and
+  the owner's verdict on take h-hover-big; the takes generator and its
+  task stay until the owner confirms the mark or points at another take.

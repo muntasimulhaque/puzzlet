@@ -147,6 +147,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 1.6 (measured: 494 chars)
+
+```
+Puzzlet 1.6 is the complete shelf. All twelve pictures are back, and each one now opens its chooser: five tiles showing the picture cut the real way it plays at 4, 6, 9, 12 or 16 pieces. Your child picks a puzzle with their eyes, and the pick sticks. The finish breathes: after the last click, the finished puzzle rests on the table for a quiet second before the celebration rises. The app icon is drawn tighter, every knob hovering at its socket. Fully offline, as ever. Thank you for testing.
+```
+
 ## Release notes for closed testing 1.5 (measured: 416 chars)
 
 ```
