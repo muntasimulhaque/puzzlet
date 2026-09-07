@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -88,38 +90,75 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
 /** One clean plate: picture, praise, then the two ways onward below it. */
 @Composable
 private fun CelebrationPlate(game: Puzzle, pop: Float, onAgain: () -> Unit, onHome: () -> Unit) {
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = 24.dp)
             .clip(RoundedCornerShape(30.dp))
             .background(PuzzletColors.Card)
             .padding(horizontal = 20.dp, vertical = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        BoxWithConstraints(Modifier.fillMaxWidth()) {
-            val side = minOf(maxWidth, 280.dp)
-            ScenePicture(
-                spec = Scenes.byId(game.sceneId),
-                modifier = Modifier
-                    .width(side)
-                    .graphicsLayer {
-                        scaleX = pop
-                        scaleY = pop
-                        alpha = ((pop - 0.5f) / 0.5f).coerceIn(0f, 1f)
-                    },
-                cornerRadius = 22.dp,
-            )
+        // The plate yields to the shape of the field it lands in. In
+        // landscape the picture shares the row with the praise and the
+        // coins under it, so the whole plate always fits the height a
+        // phone gives it; nothing can end up off the plate (D-068). A
+        // scroll is the last safety net for a field too short for even
+        // the smallest plate: nothing is ever unreachable.
+        val landscape = maxWidth > maxHeight
+        val pictureSide = if (landscape) {
+            minOf(232.dp, maxHeight * 0.74f)
+        } else {
+            minOf(maxWidth, 280.dp, (maxHeight - 236.dp).coerceAtLeast(104.dp))
         }
-        Spacer(Modifier.height(16.dp))
-        Text(
-            text = stringResource(R.string.well_done),
-            style = MaterialTheme.typography.displayMedium,
-            color = PuzzletColors.Ink,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(18.dp))
-        FinishButtons(onAgain = onAgain, onHome = onHome)
+        Column(
+            modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            if (landscape) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    CelebratedPicture(game = game, side = pictureSide, pop = pop)
+                    Spacer(Modifier.width(22.dp))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Praise()
+                        Spacer(Modifier.height(18.dp))
+                        FinishButtons(onAgain = onAgain, onHome = onHome)
+                    }
+                }
+            } else {
+                CelebratedPicture(game = game, side = pictureSide, pop = pop)
+                Spacer(Modifier.height(16.dp))
+                Praise()
+                Spacer(Modifier.height(18.dp))
+                FinishButtons(onAgain = onAgain, onHome = onHome)
+            }
+        }
     }
+}
+
+/** The finished picture, popped to its home size and centred. */
+@Composable
+private fun CelebratedPicture(game: Puzzle, side: Dp, pop: Float) {
+    ScenePicture(
+        spec = Scenes.byId(game.sceneId),
+        modifier = Modifier
+            .width(side)
+            .graphicsLayer {
+                scaleX = pop
+                scaleY = pop
+                alpha = ((pop - 0.5f) / 0.5f).coerceIn(0f, 1f)
+            },
+        cornerRadius = 22.dp,
+    )
+}
+
+/** The one praise, in the display face. */
+@Composable
+private fun Praise() {
+    Text(
+        text = stringResource(R.string.well_done),
+        style = MaterialTheme.typography.displayMedium,
+        color = PuzzletColors.Ink,
+        textAlign = TextAlign.Center,
+    )
 }
 
 /** Again leads by size; both coins share one baseline for their names. */
