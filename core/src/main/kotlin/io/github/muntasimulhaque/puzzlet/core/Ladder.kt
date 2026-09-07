@@ -29,3 +29,12 @@ fun stepFor(wins: Int): LadderStep = AUTO[wins.coerceIn(0, AUTO.size - 1)]
 /** The step for a count the shelf offers; unknown counts fall back to 4. */
 fun stepForPieces(pieces: Int): LadderStep =
     STEPS.firstOrNull { it.pieces == pieces } ?: STEPS.first()
+
+/**
+ * The count a picture opens at: a parent's pick, else the ladder's step
+ * for its wins. One truth for the shelf card, the cut chooser's marked
+ * tile and the plain play path, so the marked tile can never claim a
+ * count the game will not deal (the 4-that-opened-6 bug).
+ */
+fun openingCountFor(chosen: Map<String, Int>, wins: Map<String, Int>, sceneId: String): Int =
+    chosen[sceneId] ?: stepFor(wins[sceneId] ?: 0).pieces

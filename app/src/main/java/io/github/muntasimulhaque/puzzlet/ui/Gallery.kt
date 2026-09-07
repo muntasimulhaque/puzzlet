@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import io.github.muntasimulhaque.puzzlet.R
 import io.github.muntasimulhaque.puzzlet.core.SceneSpec
 import io.github.muntasimulhaque.puzzlet.core.Scenes
-import io.github.muntasimulhaque.puzzlet.core.STEPS
 import io.github.muntasimulhaque.puzzlet.host.ShelfState
 
 /** Spoken and printed picture names. The child taps the picture; the parent reads the word. */
@@ -95,12 +94,17 @@ fun Gallery(
         }
         val openScene = openId?.let { id -> Scenes.all.firstOrNull { it.id == id } }
         if (openScene != null) {
+            // The marked tile is the count the game will actually deal: a
+            // parent's pick, else the ladder's step for this picture's wins.
+            // One value for the mark, the plain path and the card line, so
+            // the marked tile never promises a count the game does not open.
+            val currentCount = shelf.openingCount(openScene.id)
             CutChooser(
                 scene = openScene,
-                current = shelf.pieces[openScene.id] ?: STEPS.first().pieces,
+                current = currentCount,
                 onPick = { pieces ->
                     openId = null
-                    if (pieces == (shelf.pieces[openScene.id] ?: STEPS.first().pieces)) {
+                    if (pieces == currentCount) {
                         onChoose(openScene.id)
                     } else {
                         onChooseAt(openScene.id, pieces)
@@ -136,7 +140,7 @@ private fun ShelfGrid(
             items(Scenes.all) { scene ->
                 SceneCard(
                     scene = scene,
-                    pieces = shelf.pieces[scene.id] ?: STEPS.first().pieces,
+                    pieces = shelf.openingCount(scene.id),
                     onOpen = { onOpen(scene.id) },
                     onChooseAt = { onChooseAt(scene.id, it) },
                 )

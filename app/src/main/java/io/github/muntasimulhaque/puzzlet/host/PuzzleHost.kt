@@ -9,8 +9,8 @@ import io.github.muntasimulhaque.puzzlet.core.Puzzle
 import io.github.muntasimulhaque.puzzlet.core.Vec2
 import io.github.muntasimulhaque.puzzlet.core.createPuzzle
 import io.github.muntasimulhaque.puzzlet.core.cutSeedFor
+import io.github.muntasimulhaque.puzzlet.core.openingCountFor
 import io.github.muntasimulhaque.puzzlet.core.pieceAt
-import io.github.muntasimulhaque.puzzlet.core.stepFor
 import io.github.muntasimulhaque.puzzlet.core.stepForPieces
 import io.github.muntasimulhaque.puzzlet.core.redeal as redealPuzzle
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,12 +47,24 @@ sealed interface Screen {
     ) : Screen
 }
 
-/** What the shelf needs: the sound switch and the count each picture opens at. */
+/** What the shelf needs: the sound switch, the wins, and the count each picture opens at. */
 data class ShelfState(
     val soundOn: Boolean = true,
-    /** Pieces per picture. Missing means follow the ladder; see [stepFor]. */
+    /** The count a parent picked per picture; missing means follow the ladder. */
     val pieces: Map<String, Int> = emptyMap(),
-)
+    /** Wins per picture; they walk the ladder up where nobody has picked. */
+    val wins: Map<String, Int> = emptyMap(),
+) {
+    /**
+     * The count this picture opens at: a parent's pick, else the ladder's
+     * step for its wins. One truth, shared by the shelf card, the cut
+     * chooser's marked tile and the plain play path (core/Ladder.kt), so
+     * the marked tile can never claim a count the game will not deal (the
+     * 4-that-opened-6 bug).
+     */
+    fun openingCount(sceneId: String): Int =
+        openingCountFor(pieces, wins, sceneId)
+}
 
 /**
  * The host performs what the domain decides. It owns which screen is up,
@@ -81,7 +93,7 @@ class PuzzleHost(app: Application) : ViewModel() {
         viewModelScope.launch {
             val saved = runCatching { store.loadProgress() }.getOrNull() ?: return@launch
             wins.putAll(saved.wins)
-            _shelf.value = ShelfState(soundOn = saved.soundOn, pieces = saved.chosen)
+            _shelf.value = ShelfState(soundOn = saved.soundOn, pieces = saved.chosen, wins = saved.wins)
         }
     }
 
@@ -137,11 +149,8 @@ class PuzzleHost(app: Application) : ViewModel() {
     }
 
     /** The count a picture opens at: a parent's pick if there is one, else the ladder's. */
-    private fun stepForScene(sceneId: String): LadderStep {
-        val chosen = _shelf.value.pieces[sceneId] ?: 0
-        if (chosen > 0) return stepForPieces(chosen)
-        return stepFor(wins[sceneId] ?: 0)
-    }
+    private fun stepForScene(sceneId: String): LadderStep =
+        stepForPieces(_shelf.value.openingCount(sceneId))
 
     fun layout(field: Area, capPx: Double) {
         val s = _screen.value
@@ -247,10 +256,9 @@ class PuzzleHost(app: Application) : ViewModel() {
     private suspend fun recordWin(sceneId: String) {
         val total = runCatching { store.addWin(sceneId) }.getOrNull() ?: return
         wins[sceneId] = total
-        val chosen = _shelf.value.pieces[sceneId] ?: 0
-        if (chosen <= 0) {
-            _shelf.value = _shelf.value.copy(pieces = _shelf.value.pieces + (sceneId to stepFor(total).pieces))
-        }
+        // The shelf hears it too: the chooser's marked tile steps up with
+        // the ladder immediately, and the card's quiet line tells the truth.
+        _shelf.value = _shelf.value.copy(wins = _shelf.value.wins + (sceneId to total))
     }
 
     /** The three effects, unless the shelf switch is off. Haptics never stop. */
