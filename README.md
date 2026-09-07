@@ -4,8 +4,8 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.5 (versionCode 15) cut for closed testing.
-Release 1.5 is the calm release: six pictures that cut fairly, each
+Status: release 1.5 (versionCode 15) is submitted to the closed testing
+track. Release 1.5 is the calm release: six pictures that cut fairly, each
 playing at once at its size with sizes behind one quiet line; a back
 button that asks before leaving a started picture; a thin cut edge with
 no heavy border; one round coin recipe across shelf, top bar and finish;

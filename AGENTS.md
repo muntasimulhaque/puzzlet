@@ -780,3 +780,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   shelf with docked sound and kind back, thin edge, quiet sizes, six
   pictures, one voice polish, lift tap, one coin recipe, celebration
   plate, fresh captures. Notes measured at 416 chars, no contact line.
+- 2026-09-07: Version 1.5 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ per the folder rule, and the empty
+  landing folder went with it. The gather sheet was working scratch in
+  build only, so it was swept with the other Temp captures: the repo
+  keeps no candidates folder. README and the guide brought current.
