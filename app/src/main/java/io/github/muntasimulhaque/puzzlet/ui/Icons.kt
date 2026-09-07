@@ -84,60 +84,53 @@ fun MenuIcon(modifier: Modifier = Modifier, color: Color) {
 }
 
 /**
- * The sound switch's own mark: a speaker cone, with its two waves when
- * sound is on and a cross when it is off. Drawn here like every other
- * icon, no pack and no font.
+ * The sound switch's own mark: a speaker drawn in the app's house hand,
+ * the same round-capped stroke as the chevron and the grid cells. Its two
+ * waves hang on the mouth of the cone when sound is on; a balanced cross
+ * takes their place when it is off. Drawn here like every other icon, no
+ * pack and no font.
  */
 @Composable
 fun SpeakerIcon(modifier: Modifier = Modifier, on: Boolean, color: Color) {
     GeoIcon(modifier, color, size = 26.dp) { w, h ->
+        val line = Stroke(w * 0.095f, cap = StrokeCap.Round, join = StrokeJoin.Round)
         val cone = Path().apply {
-            moveTo(w * 0.22f, h * 0.40f)
-            lineTo(w * 0.38f, h * 0.40f)
-            lineTo(w * 0.56f, h * 0.22f)
-            lineTo(w * 0.56f, h * 0.78f)
-            lineTo(w * 0.38f, h * 0.60f)
-            lineTo(w * 0.22f, h * 0.60f)
+            moveTo(w * 0.15f, h * 0.40f)
+            lineTo(w * 0.30f, h * 0.40f)
+            lineTo(w * 0.49f, h * 0.19f)
+            lineTo(w * 0.49f, h * 0.81f)
+            lineTo(w * 0.30f, h * 0.60f)
+            lineTo(w * 0.15f, h * 0.60f)
             close()
         }
-        drawPath(cone, color)
+        drawPath(cone, color, style = line)
         if (on) {
-            drawArc(
-                color,
-                startAngle = -50f,
-                sweepAngle = 100f,
-                useCenter = false,
-                topLeft = Offset(w * 0.62f, h * 0.29f),
-                size = Size(w * 0.20f, h * 0.42f),
-                style = stroke(w),
-            )
-            drawArc(
-                color,
-                startAngle = -55f,
-                sweepAngle = 110f,
-                useCenter = false,
-                topLeft = Offset(w * 0.72f, h * 0.20f),
-                size = Size(w * 0.26f, h * 0.60f),
-                style = stroke(w),
-            )
+            // Two waves, concentric on the mouth, each a little wider than
+            // the last: nearer the cone they hug it, farther out they open.
+            wave(color, line.width, w, h, radius = 0.175f, halfAngleDeg = 52f)
+            wave(color, line.width, w, h, radius = 0.315f, halfAngleDeg = 58f)
         } else {
-            val slash = Stroke(width = w * 0.11f, cap = StrokeCap.Round)
-            drawLine(
-                color,
-                start = Offset(w * 0.66f, h * 0.28f),
-                end = Offset(w * 0.94f, h * 0.72f),
-                strokeWidth = slash.width,
-                cap = StrokeCap.Round,
-            )
-            drawLine(
-                color,
-                start = Offset(w * 0.94f, h * 0.28f),
-                end = Offset(w * 0.66f, h * 0.72f),
-                strokeWidth = slash.width,
-                cap = StrokeCap.Round,
-            )
+            val arm = w * 0.105f
+            val cx = w * 0.755f
+            val cy = h * 0.5f
+            drawLine(color, Offset(cx - arm, cy - arm), Offset(cx + arm, cy + arm), line.width, line.cap)
+            drawLine(color, Offset(cx + arm, cy - arm), Offset(cx - arm, cy + arm), line.width, line.cap)
         }
     }
+}
+
+/** One sound wave: an arc open to the right, centred on the cone's mouth. */
+private fun DrawScope.wave(color: Color, strokeW: Float, w: Float, h: Float, radius: Float, halfAngleDeg: Float) {
+    val r = w * radius
+    drawArc(
+        color,
+        startAngle = -halfAngleDeg,
+        sweepAngle = 2f * halfAngleDeg,
+        useCenter = false,
+        topLeft = Offset(w * 0.49f - r, h * 0.5f - r),
+        size = Size(r * 2f, r * 2f),
+        style = Stroke(width = strokeW, cap = StrokeCap.Round),
+    )
 }
 
 private fun stroke(w: Float) = Stroke(
