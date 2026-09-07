@@ -74,3 +74,11 @@ tasks.register<JavaExec>("makeScenes") {
     mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeScenesKt"
     args = listOf(rootDir.absolutePath)
 }
+
+tasks.register<JavaExec>("makeIconTakes") {
+    group = "tools"
+    description = "Render the icon round's takes into build/icon-takes (working scratch)."
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeIconTakesKt"
+    args = listOf(rootDir.absolutePath)
+}

@@ -42,7 +42,7 @@ class MakeIconsTest {
     private fun gatherFrame(size: Int, insetFrac: Double): Frame {
         val o = size * insetFrac
         val se = size * (1.0 - 2.0 * insetFrac)
-        val s = se * 0.40
+        val s = se * IconDesign.PIECE_SCALE
         val gap = s * IconDesign.GAP_FRAC
         return Frame(se, s, gap, o + se / 2.0 + gap / 2.0, o + se / 2.0 + gap / 2.0)
     }

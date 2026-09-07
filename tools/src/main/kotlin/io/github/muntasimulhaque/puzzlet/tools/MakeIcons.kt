@@ -58,21 +58,29 @@ object IconDesign {
      * sits inside the 66 dp mask circle with room to spare, so no
      * launcher shape ever truncates a piece.
      */
-    const val FG_INSET = 0.27
+    const val FG_INSET = 0.275
     /** Fraction of a full-art tile the gather field spans: small, corners safe. */
-    const val TILE_SPAN = 0.88
+    const val TILE_SPAN = 0.94
     /**
      * Store tile field fraction: the store corner bites deeper, so the
      * field tucks slightly larger into the surviving corner tips.
      */
-    const val STORE_SPAN = 0.90
+    const val STORE_SPAN = 0.94
     /** Legacy tile corner radius as a fraction of the tile. */
     const val LEGACY_CORNER_FRACTION = 0.22
     /** Store tile corner radius as a fraction of the tile. */
     const val STORE_CORNER_FRACTION = 0.19
 
-    /** Wanderer gap as a share of the piece side. */
-    const val GAP_FRAC = 0.17
+    /**
+     * Wanderer gap as a share of the piece side. The hover: the knobs
+     * stop a hair outside the open sockets (D-067), so every bite reads
+     * as a clean socket and the mark is the moment before the click,
+     * not four squares floating apart.
+     */
+    const val GAP_FRAC = 0.26
+
+    /** Piece side as a share of the field, grown to fill the tile. */
+    const val PIECE_SCALE = 0.42
 
     /**
      * Knob profile on a unit edge: stem half-width, head centre height,
@@ -103,6 +111,7 @@ internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): Buffer
                 groundArgb = d.PAPER,
                 cornerFraction = cornerFraction,
                 insetFrac = (1.0 - span) / 2.0,
+                pieceScale = d.PIECE_SCALE,
             )
         }
         Layer.FOREGROUND -> Gather.paint(
@@ -110,6 +119,7 @@ internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): Buffer
             tile = false,
             groundArgb = 0,
             insetFrac = d.FG_INSET,
+            pieceScale = d.PIECE_SCALE,
         )
         Layer.MONO -> Gather.paint(
             size,
@@ -117,6 +127,7 @@ internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): Buffer
             groundArgb = 0,
             mono = true,
             insetFrac = d.FG_INSET,
+            pieceScale = d.PIECE_SCALE,
         )
     }
 }

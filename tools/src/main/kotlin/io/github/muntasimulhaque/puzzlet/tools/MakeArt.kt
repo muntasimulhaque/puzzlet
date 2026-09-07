@@ -38,7 +38,21 @@ object MakeArt {
      * line colours are the caller's, so a candidate sheet can try another
      * ground without a second copy of the layout.
      */
-    internal fun featureOn(rootDir: File, groundArgb: Int, inkArgb: Int, softArgb: Int): BufferedImage {
+    internal fun featureOn(
+        rootDir: File,
+        groundArgb: Int,
+        inkArgb: Int,
+        softArgb: Int,
+        markSize: Int = 372,
+        markX: Int = 88,
+        markY: Int = 64,
+        nameSize: Float = 112f,
+        nameX: Float = 516f,
+        nameY: Float = 266f,
+        tagSize: Float = 30f,
+        tagX: Float = 518f,
+        tagY: Float = 324f,
+    ): BufferedImage {
         val w = 1024
         val h = 500
         val image = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
@@ -48,11 +62,15 @@ object MakeArt {
         g.paint = Color(groundArgb)
         g.fill(Rectangle2D.Double(0.0, 0.0, w.toDouble(), h.toDouble()))
         g.dispose()
-        pasteArt(image, Gather.paint(340, tile = false, groundArgb = 0), 96, 80, 1.0f)
+        pasteArt(
+            image,
+            Gather.paint(markSize, tile = false, groundArgb = 0, pieceScale = IconDesign.PIECE_SCALE),
+            markX, markY, 1.0f,
+        )
         val g2 = image.createGraphics()
         g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        drawCleanString(g2, "Puzzlet", "baloo2_extrabold.ttf", 108f, inkArgb, 540f, 268f, rootDir)
-        drawCleanString(g2, "A calm jigsaw for small hands.", "baloo2_bold.ttf", 28f, softArgb, 542f, 322f, rootDir)
+        drawCleanString(g2, "Puzzlet", "baloo2_extrabold.ttf", nameSize, inkArgb, nameX, nameY, rootDir)
+        drawCleanString(g2, "A calm jigsaw for small hands.", "baloo2_bold.ttf", tagSize, softArgb, tagX, tagY, rootDir)
         g2.dispose()
         return image
     }

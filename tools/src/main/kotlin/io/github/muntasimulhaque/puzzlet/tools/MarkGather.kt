@@ -157,6 +157,8 @@ internal object Gather {
         insetFrac: Double = 0.0,
         cornerFraction: Double = 0.19,
         palette: List<Int> = gatherPalette(mono),
+        pieceScale: Double = 0.40,
+        tiltsDeg: List<Double> = listOf(-7.0, 6.0, -5.0),
     ): BufferedImage {
         val image = BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB)
         val g = beginMark(image)
@@ -164,7 +166,7 @@ internal object Gather {
         else if (groundArgb != 0) fillGround(g, size, size, groundArgb)
         val o = size * insetFrac
         val se = size * (1.0 - 2.0 * insetFrac)
-        val s = se * 0.40
+        val s = se * pieceScale
         val gap = s * gapFrac
         // The 2x2 field centred (gap runs through the middle): home bottom-right.
         val hx = o + se / 2.0 + gap / 2.0
@@ -174,9 +176,9 @@ internal object Gather {
         val top = pieceOutline(hx, hy - s - gap, s, s * 0.12, listOf(0, 0, 1, 0))
         val left = pieceOutline(hx - s - gap, hy, s, s * 0.12, listOf(0, 1, 0, 0))
         val corner = pieceOutline(hx - s - gap, hy - s - gap, s, s * 0.12, listOf(0, 1, 1, 0))
-        fillPiece(g, rotated(corner, hx - s / 2 - gap, hy - s / 2 - gap, -7.0), sky)
-        fillPiece(g, rotated(top, hx + s / 2, hy - s / 2 - gap, 6.0), coral)
-        fillPiece(g, rotated(left, hx - s / 2 - gap, hy + s / 2, -5.0), grass)
+        fillPiece(g, rotated(corner, hx - s / 2 - gap, hy - s / 2 - gap, tiltsDeg[0]), sky)
+        fillPiece(g, rotated(top, hx + s / 2, hy - s / 2 - gap, tiltsDeg[1]), coral)
+        fillPiece(g, rotated(left, hx - s / 2 - gap, hy + s / 2, tiltsDeg[2]), grass)
         fillPiece(g, home, honey)
         g.dispose()
         return image
