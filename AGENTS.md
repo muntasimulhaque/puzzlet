@@ -675,3 +675,12 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 - 2026-09-07: The owner restated the release-notes rule: always in chat,
   never only a file pointer. The Releasing section now says so, and the
   1.3 notes were pasted in chat at their measured 468 chars.
+- 2026-09-07: Version 1.3 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ per the folder rule, stale Temp
+  captures from past sessions swept, README and the guide brought
+  current.
+- 2026-09-07: Session closed with 1.3 in Play review. Everything is
+  pushed, the tree is clean, the aab folder is empty, and the last CI
+  run on main is green. Standing open item unchanged: piece-level
+  TalkBack. Next session picks up from: the 1.3 review verdict and
+  tester feedback.
