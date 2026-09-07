@@ -196,7 +196,11 @@ private fun PieceNode(
             .offset { tileTopLeft(piece, isHeld, heldCenter, display, scale) }
             .size(wDp, hDp),
     ) {
-        withTransform({ scale(scale, scale) }) {
+        // TransformScope.scale pivots at the scope's centre by default, which
+        // slid every scaled tile down-right off its seat (the tray overflow the
+        // owner saw). The tile is sized and placed for an origin pivot, so the
+        // piece grows from its own top-left and stays centred on its centre.
+        withTransform({ scale(scale, scale, pivot = Offset.Zero) }) {
             drawSlice(piece, path, scene, board, isHeld)
         }
     }
