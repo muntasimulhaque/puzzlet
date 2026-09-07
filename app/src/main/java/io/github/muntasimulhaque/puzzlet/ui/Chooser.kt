@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
@@ -175,8 +176,14 @@ private fun DrawScope.drawCutPreview(
         step.rows, step.cols, sidePx.toDouble(), sidePx.toDouble(),
         cutSeedFor(scene.id, step.rows, step.cols),
     )
-    for (pieceShape in cut.shapes) {
+    cut.shapes.forEachIndexed { index, pieceShape ->
+        // Piece outlines are piece-local (origin at the bbox corner): they
+        // walk to their cell through span and offset, the same mapping the
+        // game uses to seat a piece.
+        val ox = (index % step.cols) * cut.cellW + pieceShape.offsetInCell.x
+        val oy = (index / step.cols) * cut.cellH + pieceShape.offsetInCell.y
         val path = outlinePath(pieceShape.segments)
-        drawPath(path, PuzzletColors.Ink.copy(alpha = 0.36f), style = Stroke(1.6.dp.toPx()))
+        path.translate(Offset(ox.toFloat(), oy.toFloat()))
+        drawPath(path, PuzzletColors.Ink.copy(alpha = 0.34f), style = Stroke(1.6.dp.toPx()))
     }
 }
