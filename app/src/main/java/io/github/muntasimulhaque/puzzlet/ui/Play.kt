@@ -80,6 +80,7 @@ fun PlayScreen(
     pulseAt: Long,
     restartAt: Long,
     peeking: Boolean,
+    celebrating: Boolean,
     actions: PlayActions,
     onPeek: (Boolean) -> Unit,
     onBack: () -> Unit,
@@ -98,7 +99,7 @@ fun PlayScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             PlayTopBar(game, peeking, onPeek, ::requestBack)
             PlayField(
-                game, draggedId, pulseId, pulseAt, restartAt, peeking, actions, onPeek, onBack,
+                game, draggedId, pulseId, pulseAt, restartAt, peeking, celebrating, actions, onPeek, onBack,
                 Modifier.fillMaxWidth().weight(1f),
             )
         }
@@ -116,6 +117,7 @@ private fun PlayField(
     pulseAt: Long,
     restartAt: Long,
     peeking: Boolean,
+    celebrating: Boolean,
     actions: PlayActions,
     onPeek: (Boolean) -> Unit,
     onBack: () -> Unit,
@@ -141,7 +143,7 @@ private fun PlayField(
         // the field; the game state hears about it once, at release (D-055).
         val heldCenter = remember { mutableStateOf<Vec2?>(null) }
         GestureBoard(
-            game, draggedId, pulseId, pulse.asState(), restartAt, peeking, hitPx, heldCenter, actions, onPeek, onBack,
+            game, draggedId, pulseId, pulse.asState(), restartAt, peeking, celebrating, hitPx, heldCenter, actions, onPeek, onBack,
         )
     }
 }
@@ -154,6 +156,7 @@ private fun GestureBoard(
     pulse: State<Float>,
     restartAt: Long,
     peeking: Boolean,
+    celebrating: Boolean,
     hitRadiusPx: Double,
     heldCenter: MutableState<Vec2?>,
     actions: PlayActions,
@@ -173,7 +176,7 @@ private fun GestureBoard(
         if (peeking && !game.completed) {
             PeekPanel(scene, onDismiss = { onPeek(false) })
         }
-        if (game.completed) {
+        if (celebrating) {
             Celebration(game, onAgain = actions.onRestart, onHome = onBack)
         }
     }

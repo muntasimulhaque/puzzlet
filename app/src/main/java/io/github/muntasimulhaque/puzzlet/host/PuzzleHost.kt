@@ -16,6 +16,7 @@ import io.github.muntasimulhaque.puzzlet.core.redeal as redealPuzzle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 import io.github.muntasimulhaque.puzzlet.core.dropAt as dropAtPiece
@@ -37,6 +38,12 @@ sealed interface Screen {
         val restartAt: Long = 0L,
         /** The finished picture held up over the board, so the child can look. */
         val peeking: Boolean = false,
+        /**
+         * The celebration plate, risen. It waits one quiet beat after the
+         * last piece clicks home, so the child first sees the finished
+         * table (D-066).
+         */
+        val celebrating: Boolean = false,
     ) : Screen
 }
 
@@ -192,9 +199,28 @@ class PuzzleHost(app: Application) : ViewModel() {
             if (settled.completed) {
                 chime(Sfx.CHIME)
                 viewModelScope.launch { recordWin(settled.sceneId) }
+                celebrateSoon()
             }
         }
         return snapped
+    }
+
+    /**
+     * The celebration waits one quiet beat: the last piece is just seated,
+     * the ring has played, and the child gets the second the finished
+     * table earns before the plate covers it (D-066). Nothing can interrupt
+     * the wait: placed pieces are never hit by a grab, and a leave only
+     * changes the screen, which the guard below accepts. The chime already
+     * played at the click; the beat itself is silent, on purpose.
+     */
+    private fun celebrateSoon() {
+        viewModelScope.launch {
+            delay(CELEBRATION_BEAT_MS)
+            val s = _screen.value
+            if (s is Screen.Playing && s.game.completed) {
+                _screen.value = s.copy(celebrating = true)
+            }
+        }
     }
 
     /** A fresh jumble after a finish: same cut, new seating, nothing placed. */
@@ -208,6 +234,7 @@ class PuzzleHost(app: Application) : ViewModel() {
                 pulseAt = 0L,
                 restartAt = System.nanoTime(),
                 peeking = false,
+                celebrating = false,
             )
         }
     }
@@ -238,6 +265,11 @@ class PuzzleHost(app: Application) : ViewModel() {
     }
 
     private var draggedId: Int? = null
+
+    /** The beat between the finished table and the plate (D-066). */
+    private companion object {
+        const val CELEBRATION_BEAT_MS = 1000L
+    }
 
     override fun onCleared() {
         soundBoard.release()

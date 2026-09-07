@@ -133,13 +133,13 @@ class ScreenshotTest {
         // A chunky game, barely begun: four huge sailboat pieces.
         val four = buildGame(pane, "sail", 2, 2)
         shot("02_play_4") {
-            PlayScreen(four, null, -1, 0L, 0L, false, noActions, {}, {})
+            PlayScreen(four, null, -1, 0L, 0L, false, false, noActions, {}, {})
         }
 
         // Mid-game on the nine-piece house: five of nine placed.
         val nine = buildGame(pane, "house", 3, 3, placed = (0..4).toSet())
         shot("03_play_9") {
-            PlayScreen(nine, null, -1, 0L, 0L, false, noActions, {}, {})
+            PlayScreen(nine, null, -1, 0L, 0L, false, false, noActions, {}, {})
         }
 
         // A piece in hand, carried from the tray toward the board. It must
@@ -147,32 +147,40 @@ class ScreenshotTest {
         // and drawing a placed piece twice reads as a glitch.
         val dragging = dragState(nine, pieceId = 7, at = Vec2(pane.w * 0.22, pane.h * 0.52))
         shot("04_play_drag") {
-            PlayScreen(dragging.game, 7, -1, 0L, 0L, false, noActions, {}, {})
+            PlayScreen(dragging.game, 7, -1, 0L, 0L, false, false, noActions, {}, {})
         }
 
         // The finish: the picture complete, held up with confetti falling.
+        // One quiet beat on the table comes first in the real game (D-066);
+        // the plate is what this still-life hosts.
         val done = buildGame(pane, "sail", 2, 2, placed = (0 until 4).toSet())
         shot("05_celebration") {
-            PlayScreen(done, null, -1, 0L, 0L, false, noActions, {}, {})
+            PlayScreen(done, null, -1, 0L, 0L, false, true, noActions, {}, {})
         }
 
         // The fruit plate at nine pieces: six placed, texture galore.
         val fruit = buildGame(pane, "fruit", 3, 3, placed = (0..5).toSet())
         shot("06_play_fruit") {
-            PlayScreen(fruit, null, -1, 0L, 0L, false, noActions, {}, {})
+            PlayScreen(fruit, null, -1, 0L, 0L, false, false, noActions, {}, {})
         }
 
         // Looking at the picture: the board stays blank, the peek panel
         // holds the whole thing up over it until the child taps away.
         val peek = buildGame(pane, "sail", 3, 3, placed = (0..1).toSet())
         shot("07_play_peek") {
-            PlayScreen(peek, null, -1, 0L, 0L, true, noActions, {}, {})
+            PlayScreen(peek, null, -1, 0L, 0L, true, false, noActions, {}, {})
         }
 
         // Sixteen pieces: the biggest count the shelf offers.
         val sixteen = buildGame(pane, "balloon", 4, 4, placed = (0..5).toSet())
         shot("08_play_16") {
-            PlayScreen(sixteen, null, -1, 0L, 0L, false, noActions, {}, {})
+            PlayScreen(sixteen, null, -1, 0L, 0L, false, false, noActions, {}, {})
+        }
+
+        // The cut chooser (D-065): the sizes one picture comes in, each tile
+        // the real cut the game will deal. Hosted without touch injection.
+        shot("09_choose") {
+            Gallery(ShelfState(), {}, { _, _ -> }, {}, openChooserFor = "balloon")
         }
 
         scenario.close()

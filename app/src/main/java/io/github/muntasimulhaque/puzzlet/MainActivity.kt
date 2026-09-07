@@ -83,6 +83,7 @@ class MainActivity : ComponentActivity() {
                             pulseAt = s.pulseAt,
                             restartAt = s.restartAt,
                             peeking = s.peeking,
+                            celebrating = s.celebrating,
                             actions = playActions(),
                             onPeek = host::setPeek,
                             onBack = host::home,
