@@ -224,9 +224,11 @@ play-store/aab`), so the build to upload sits in one known place. After
 the owner submits it for review, DELETE it from the folder: the folder
 holds only the AAB awaiting submission, so a stale build can never be
 uploaded twice. The owner uploads to Play Console and pastes the notes.
-Release notes arrive in chat as bare plain text that fits the
-500-character Play field, counted before handing them over, never assumed,
-and stored in the submission guide. The listing kit and the console
+Release notes ALWAYS arrive in chat, bare plain text, never a file
+reference alone: they sit in front of the owner ready to paste, fit the
+500-character Play field, counted before handing them over, never
+assumed, and stored in the submission guide. The listing kit and the
+console
 answers live in `play-store/play-store-submission-guide.md`; the privacy
 policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 
@@ -670,3 +672,6 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   gained dropAt with a test; the play field split into Play.kt and
   PlayPieces.kt under the line laws. Cut 1.3 (versionCode 13) for closed
   testing, notes measured at 468 chars, no contact line per D-038.
+- 2026-09-07: The owner restated the release-notes rule: always in chat,
+  never only a file pointer. The Releasing section now says so, and the
+  1.3 notes were pasted in chat at their measured 468 chars.
