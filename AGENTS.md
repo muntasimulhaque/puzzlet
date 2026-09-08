@@ -1065,3 +1065,13 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
 - 2026-09-08: The owner sharpened the handoff law: in chat, only what
   changed. Unchanged texts (the short description, for one) are not
   re-pasted. Written into the session-start paragraph.
+- 2026-09-08: Version 1.9 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ and the empty landing folder went
+  with it. Session-end housekeeping: the Temp folder, the local
+  .gradle and .kotlin caches, and the build outputs of core, app and
+  tools are gone, local.properties stays (gitignored, the local SDK
+  path). README status, the guide's submission note and this file
+  brought current. Session closed with 1.9 in Play review. Everything
+  is pushed and the tree is clean. Standing open item unchanged:
+  piece-level TalkBack. Next session picks up from: the 1.9 review
+  verdict and tester feedback on the sixteen-picture shelf.

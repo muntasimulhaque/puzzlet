@@ -4,12 +4,13 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.9 (versionCode 19) is cut for the closed
+Status: release 1.9 (versionCode 19) is in Play review for the closed
 testing track. Release 1.9 grows the shelf from twelve to sixteen
 pictures: a kite, a windmill, a beach and a mushroom join the twelve,
 every one inanimate, on a graded ground, and pinned by the no-flat-piece
-test at every size. Same rules as always: no timer, no score, no fail
-state, no reading required, fully offline, no ads, no accounts.
+test at every size. The full description ends on the owner's payment
+line. Same rules as always: no timer, no score, no fail state, no
+reading required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
