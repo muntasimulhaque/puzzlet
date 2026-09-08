@@ -20,7 +20,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,7 +29,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -200,11 +198,6 @@ private fun FinishCoin(
             background = PuzzletColors.Tray,
             size = size,
             label = label,
-            modifier = Modifier.shadow(
-                4.dp, CircleShape,
-                ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
-                spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
-            ),
         ) {
             icon()
         }

@@ -31,10 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import io.github.muntasimulhaque.puzzlet.R
 import io.github.muntasimulhaque.puzzlet.core.SceneSpec
@@ -61,9 +63,10 @@ internal fun sceneNameRes(sceneId: String): Int = when (sceneId) {
 /**
  * The picture shelf: one quiet name at top with the sound coin docked
  * beside it, then twelve pictures with their names (D-064) and one quiet
- * count line each. Tapping a picture opens its cut chooser (D-065); a
- * pick there plays and remembers. The sound switch lives in the header,
- * never over the pictures and never behind a gate (D-021, D-046, D-057).
+ * count line each. Tapping a card anywhere opens its cut chooser (D-065,
+ * D-070); a pick there plays and remembers. The sound switch lives in
+ * the header, never over the pictures and never behind a gate (D-021,
+ * D-046, D-057).
  *
  * [openChooserFor] starts with one picture's chooser open; it is the
  * capture harness's way to host that state without touch injection.
@@ -87,8 +90,6 @@ fun Gallery(
             ShelfGrid(
                 shelf = shelf,
                 onOpen = { id -> openId = id },
-                onChoose = onChoose,
-                onChooseAt = onChooseAt,
                 modifier = Modifier.fillMaxWidth().weight(1f),
             )
         }
@@ -120,8 +121,6 @@ fun Gallery(
 private fun ShelfGrid(
     shelf: ShelfState,
     onOpen: (String) -> Unit,
-    onChoose: (String) -> Unit,
-    onChooseAt: (String, Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier) {
@@ -142,7 +141,6 @@ private fun ShelfGrid(
                     scene = scene,
                     pieces = shelf.openingCount(scene.id),
                     onOpen = { onOpen(scene.id) },
-                    onChooseAt = { onChooseAt(scene.id, it) },
                 )
             }
         }
@@ -171,35 +169,33 @@ private fun ShelfHeader(soundOn: Boolean, onSound: (Boolean) -> Unit) {
 
 /**
  * One picture card: the picture, its name, and the quiet line naming the
- * count it opens at. The whole card face is one button (TalkBack speaks
- * the name); the sizes it can play at live in the chooser it opens.
+ * count it opens at. The whole card is one button (D-070): picture, name
+ * and count all open the chooser, so a three-year-old never has to find
+ * the picture inside the plate. TalkBack speaks the name once for the
+ * whole card; the sizes it can play at live in the chooser it opens.
  */
 @Composable
 private fun SceneCard(
     scene: SceneSpec,
     pieces: Int,
     onOpen: () -> Unit,
-    onChooseAt: (Int) -> Unit,
 ) {
     val name = stringResource(sceneNameRes(scene.id))
+    val shape = RoundedCornerShape(28.dp)
     Column(
         modifier = Modifier
-            .shadow(
-                6.dp, RoundedCornerShape(28.dp),
-                ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
-                spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
-            )
-            .clip(RoundedCornerShape(28.dp))
+            .buttonShadow(shape)
+            .clip(shape)
             .background(PuzzletColors.Card)
+            .clickable(onClick = onOpen)
+            .semantics { contentDescription = name }
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp))
-                .clickable(onClick = onOpen)
-                .semantics { contentDescription = name },
+                .clip(RoundedCornerShape(20.dp)),
         ) {
             ScenePicture(spec = scene, modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp)
         }
@@ -241,28 +237,42 @@ private fun SoundCoin(on: Boolean, onToggle: (Boolean) -> Unit, modifier: Modifi
         background = PuzzletColors.Card,
         size = 48.dp,
         label = stringResource(if (on) R.string.sound_on else R.string.sound_off),
-        modifier = modifier.shadow(
-            4.dp, CircleShape,
-            ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
-            spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
-        ),
+        modifier = modifier,
     ) {
         SpeakerIcon(on = on, color = PuzzletColors.Ink)
     }
 }
 
-/** A round pressable used across the app. [label] names it for TalkBack. */
+/**
+ * One floating shadow for every button in the app (D-061, D-070): the
+ * round coins and the shelf cards lift off the paper by the same ink
+ * shadow, so a button never melts into the ground it sits on and every
+ * button in the app reads as the same kind of thing.
+ */
+internal fun Modifier.buttonShadow(shape: Shape, elevation: Dp = 6.dp): Modifier = this.shadow(
+    elevation = elevation,
+    shape = shape,
+    ambientColor = PuzzletColors.Ink.copy(alpha = 0.10f),
+    spotColor = PuzzletColors.Ink.copy(alpha = 0.18f),
+)
+
+/**
+ * A round pressable used across the app: the floating shadow is baked in
+ * here (D-070), so every coin wears it and no caller can forget it.
+ * [label] names it for TalkBack.
+ */
 @Composable
 fun CircleButton(
     onClick: () -> Unit,
     background: Color,
     modifier: Modifier = Modifier,
-    size: androidx.compose.ui.unit.Dp = 48.dp,
+    size: Dp = 48.dp,
     label: String? = null,
     content: @Composable () -> Unit,
 ) {
     Box(
         modifier = modifier
+            .buttonShadow(CircleShape)
             .size(size)
             .clip(CircleShape)
             .background(background)

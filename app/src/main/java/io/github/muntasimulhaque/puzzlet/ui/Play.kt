@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,7 +33,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -248,11 +246,6 @@ private fun PlayTopBar(
             onClick = onBack,
             background = PuzzletColors.Card,
             label = stringResource(R.string.go_back),
-            modifier = Modifier.shadow(
-                4.dp, CircleShape,
-                ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
-                spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
-            ),
         ) {
             BackIcon(color = PuzzletColors.Ink)
         }
@@ -271,14 +264,9 @@ private fun PeekCoin(scene: SceneSpec, peeking: Boolean, onPeek: (Boolean) -> Un
     val label = stringResource(if (peeking) R.string.peek_hide else R.string.peek_show)
     CircleButton(
         onClick = { onPeek(!peeking) },
-        background = if (peeking) PuzzletColors.Teal else PuzzletColors.Card,
+        background = if (peeking) PuzzletColors.TealWash else PuzzletColors.Card,
         size = 48.dp,
         label = label,
-        modifier = Modifier.shadow(
-            4.dp, CircleShape,
-            ambientColor = PuzzletColors.Ink.copy(alpha = 0.08f),
-            spotColor = PuzzletColors.Ink.copy(alpha = 0.12f),
-        ),
     ) {
         ScenePicture(
             spec = scene,
@@ -330,13 +318,15 @@ private fun LeaveConfirm(onStay: () -> Unit, onLeave: () -> Unit) {
 
 @Composable
 private fun LeaveButtons(onStay: () -> Unit, onLeave: () -> Unit) {
+    val shape = RoundedCornerShape(18.dp)
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(18.dp))
+                .buttonShadow(shape)
+                .clip(shape)
                 .background(PuzzletColors.Teal)
                 .clickable(onClick = onStay)
                 .padding(horizontal = 22.dp, vertical = 12.dp),
@@ -350,7 +340,8 @@ private fun LeaveButtons(onStay: () -> Unit, onLeave: () -> Unit) {
         }
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(18.dp))
+                .buttonShadow(shape)
+                .clip(shape)
                 .background(PuzzletColors.Tray)
                 .clickable(onClick = onLeave)
                 .padding(horizontal = 22.dp, vertical = 12.dp),

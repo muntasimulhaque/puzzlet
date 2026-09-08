@@ -149,6 +149,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 1.8 (measured: 349 chars)
+
+```
+Puzzlet 1.8 makes the whole picture card one button, so tapping the name or the count opens the sizes just like the picture does. Every button wears the same soft floating shadow, so it stands off the paper instead of hiding in it. The peek button stays in the paper family when it is on, and taps answer with a soft ripple instead of a green flash.
+```
+
 ## Release notes for closed testing 1.7 (measured: 493 chars)
 
 ```

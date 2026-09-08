@@ -1,9 +1,12 @@
 package io.github.muntasimulhaque.puzzlet.ui
 
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -27,6 +30,11 @@ object PuzzletColors {
      *  shelf is where pieces wait, and pale pieces must stand off it. Still
      *  warm and paper-family, but never a twin of the table below. */
     val Tray = Color(0xFFEBE0CC)
+    /** The brand teal at 20 percent over card: the on state of a coin that
+     *  is holding something up (D-070). Solid teal on a 48 dp coin was a
+     *  dark green ring around a small picture in a light paper world; this
+     *  stays in the teal family and stays in the paper family too. */
+    val TealWash = Color(0xFFCEE3DB)
 }
 
 // The display face: Baloo 2, bundled offline (OFL text lives in docs/).
@@ -80,11 +88,22 @@ private val BrandScheme = lightColorScheme(
     onSurface = PuzzletColors.Ink,
 )
 
+/**
+ * The one theme: the toy-box palette, the two voices, and a soft ink
+ * ripple. Material's default ripple paints itself in the primary color,
+ * which here is the brand teal, so every tap flashed green in a light
+ * paper world (D-070). Ink at a tenth is the same answer a button
+ * already gives with its shadow.
+ */
 @Composable
 fun PuzzletTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         colorScheme = BrandScheme,
         typography = BrandTypography,
-        content = content,
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalIndication provides ripple(color = PuzzletColors.Ink.copy(alpha = 0.10f)),
+            content = content,
+        )
+    }
 }

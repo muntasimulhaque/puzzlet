@@ -4,16 +4,14 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.7 (versionCode 17) is submitted to the closed testing
-track. Release 1.7 fixes five things found in testing. Tapping 4 in the
-size chooser now always deals 4 pieces; on pictures the tester had
-already won, the game could deal one size up. The finished picture sits
-centered on the well done plate. In landscape the plate reshapes to fit
-the screen, so the picture, the praise and both buttons are always on
-it, on every phone and tablet. The launcher and store icon were recut
-smaller, so no launcher mask ever clips a corner. Same rules as always:
-no timer, no score, no fail state, no reading required, fully offline,
-no ads, no accounts.
+Status: release 1.8 (versionCode 18) is cut for the closed testing
+track. Release 1.8 makes the whole picture card one button, so tapping
+the name or the count opens the sizes just like the picture does. Every
+button wears the same soft floating shadow, so it stands off the paper
+instead of hiding in it. The peek button stays in the paper family when
+it is on, and taps answer with a soft ripple instead of a green flash.
+Same rules as always: no timer, no score, no fail state, no reading
+required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT

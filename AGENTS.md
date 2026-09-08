@@ -62,7 +62,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 17, versionName 1.7, cut for
+  and so on. Current release: versionCode 18, versionName 1.8, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -77,9 +77,10 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 Tray, drag, snap, celebrate. Twelve pictures: sailboat, house, balloon,
 fruit, lighthouse, ice cream, train, castle, rocket, truck, airplane,
 flowers. All inanimate: no humans, no animals, no faces, no eyes.
-Tapping a picture opens its cut chooser: five tiles, each the real cut
-the game will deal at 4, 6, 9, 12 and 16, the count it opens at marked
-in honey. The child chooses by look, and the pick is the child's: the
+Tapping a card anywhere, picture, name or count, opens its cut chooser:
+five tiles, each the real cut the game will deal at 4, 6, 9, 12 and 16,
+the count it opens at marked in honey. The child chooses by look, and
+the pick is the child's: the
 marked tile plays through the plain path, so where nobody has picked,
 wins walk the ladder (a first picture opens at 4, a win deals 6,
 another 9, and there the ladder stops), and any other tile plays that
@@ -580,6 +581,32 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   poking 1.3 px past it. Launcher set and store tile regenerated; the
   feature graphic was never mask-bound and stands. The takes generator,
   its task and its sheet are swept.
+- D-070 The whole card taps and the buttons float (owner's three
+  observations). One: tapping the picture opened its chooser while the
+  name and the count under it were dead, so the whole plate is one
+  button now, picture, name and count, which is what tap the picture
+  meant to a three-year-old all along. Exactly one clickable lives in
+  the card, so the nesting trap D-058 retired cannot come back; this
+  supersedes the sibling-button half of D-058, the count having been
+  static text since D-065. The dead callbacks D-065 left behind
+  (ShelfGrid's onChoose and onChooseAt, SceneCard's onChooseAt) went
+  with it. Two: every button wears one floating shadow, baked into
+  CircleButton and shared with the shelf cards through one buttonShadow
+  recipe, 6 dp with ink at 0.10 ambient and 0.18 spot, up from 4 dp at
+  0.08 and 0.12, because a Card coin on a Paper ground is nearly the
+  same color and a child should see the button before hunting for it.
+  Coherence is one shadow, not one shape: the cards stay rounded
+  plates, so D-061's circle law stands for the coins, and the two
+  confirm buttons (Stay, Leave) wear the same recipe, so it covers
+  every button in the app. The ripple that answers a tap is ink at a
+  tenth through one LocalIndication in the theme: Material paints its
+  ripple in the primary color, which here is the brand teal, so every
+  button in a light paper world flashed green under the finger.
+  Three: the peek coin's on state leaves solid teal for TealWash
+  #CEE3DB, the brand teal at 20 percent over card, because a dark green
+  ring around a small picture broke the light paper world. No decision
+  had pinned that fill; the brand teal keeps the toy-box lid and the
+  banner.
 
 ## Lessons that still bite
 
@@ -911,3 +938,17 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   the candidates folder never existed in the repo and still does not.
   The local .gradle and .kotlin caches went too. Tree clean, nothing
   uncommitted, nothing untracked.
+- 2026-09-08: Three owner observations on 1.7, one decision (D-070).
+  The shelf card is one button end to end (picture, name and count all
+  open the chooser), every button in the app wears one baked floating
+  shadow shared with the cards, and the peek coin's on state is the
+  pale TealWash instead of solid teal. Two rule touches were named to
+  the owner before shipping: D-058's sibling-button line (superseded,
+  no nesting, count is static text) and the design seed's brand teal
+  (kept as the wash's parent, not as a coin fill). Gates green: core
+  tests, app release unit tests, full lint.
+- 2026-09-08: Cut 1.8 (versionCode 18) for closed testing: the three
+  owner observations on 1.7, one button per picture card, one floating
+  shadow on every button, the pale peek coin and the soft ink ripple.
+  Notes measured at 349 chars, no contact line, delivered in chat and
+  stored in the guide. README status and the guide brought current.
