@@ -34,61 +34,51 @@ so shelf, store and screen are one brand). Regenerate with
 
 ## Store listing
 
-**App name** (30 chars max, measured: 7):
+**App name** (30 chars max, measured: 28). The brand first, then the
+three words a parent actually searches for. The age stays out of the
+title: it would narrow the app to one search term and read like a spec
+sheet, so it lives in the short description instead.
 
 ```
-Puzzlet
+Puzzlet: Kids Jigsaw Puzzles
 ```
 
-**Short description** (80 chars max, measured: 76). Purely descriptive on
+**Short description** (80 chars max, measured: 78). Purely descriptive on
 purpose: the guideline rejects keywords that indicate price or promotion
 (free, no ads, best, sale), so the no-ads and offline facts live in the
-full description only.
+full description only. The age is here instead of in the title.
 
 ```
-A calm first jigsaw for small hands: drag each piece and hear it click home.
+Simple, beautiful jigsaw puzzles for ages 3 to 5. Drag a piece, hear it click.
 ```
 
-**Full description** (4000 chars max; measure before pasting, never assume):
+**Full description** (4000 chars max, measured: 1276). Four facts lead,
+because they are the reason a parent installs: what it is, that it is
+safe, that it is open source, and that it asks for nothing. How it plays
+comes after, short enough to scan on a phone. Paragraphs are unwrapped
+on purpose: Play keeps the line breaks, so one line per paragraph pastes
+as a clean block.
 
 ```
-Puzzlet is a real jigsaw, made small enough for a three-year-old. One
-child, one picture, and pieces that click home with a soft knock.
+Puzzlet is a simple, beautiful jigsaw puzzle game for children aged 3 to 5. One picture, a few chunky pieces, and a soft click when a piece finds its place.
 
-How it plays:
-Tap a picture and its chooser rises: five tiles, each one the picture cut
-the real way it plays at 4, 6, 9, 12 or 16 pieces, the count it opens at
-marked. Your child picks a puzzle with their eyes, and the pick sticks.
-Left alone, a win grows a picture from 4 to 6, then 9, so the challenge
-arrives exactly when the child is ready.
-The board is blank, the way a table is. Drag a piece near its place and
-it clicks in with a little burst of light. Forgotten what the picture
-is? Tap the little picture up top to look, then tap anywhere to put it
-away. No hints, no arrows, nothing pointing at the answer.
-Finish, and the completed puzzle rests on the table for one quiet second
-before the picture is held up proudly with confetti. No timer, no score,
-no fail state: nothing to rush, nothing to lose.
-Twelve calm pictures, a boat, a house, a balloon, fruit, a lighthouse, an
-ice cream, a train, a castle, a rocket, a truck, an airplane and flowers,
-every one of them full of color and small details, so no piece is ever a
-blank.
+Simple by design
+Tap a picture and pick a size: 4, 6, 9, 12 or 16 pieces, each shown as the real cut. Pieces wait in a tray above a blank board, the way a real table looks. Drag a piece near its place and it clicks home. Forgot the picture? Tap the little picture in the top bar, then tap anywhere to put it away. No timer, no score, no fail state, no reading, no tutorial: the layout is the whole lesson.
 
-Made safe for small hands:
-No ads, no in-app purchases, no accounts, no links out.
-No internet permission at all: the app cannot phone home because it has
-no way to.
-Nothing collected, nothing shared, nothing tracked. Everything stays on
-your device.
-Big, forgiving touch targets; pieces land where small fingers mean them.
-Three soft sounds, a tap, a click and a bell, and a switch to turn them off on
-the picture shelf. There is no music, by design.
+Made for small hands
+Twelve calm pictures to choose from: a boat, a house, a balloon, fruit, a lighthouse, an ice cream, a train, a castle, a rocket, a truck, an airplane and flowers. Big targets, forgiving drops, three soft sounds, and a switch on the shelf to turn them off. No music, ever.
 
-Made by a parent, for parents who want the calm kind of screen time. Paid
-once, and never asked for again.
+Safe and private
+No ads. No trackers. No accounts. No in-app purchases. It asks for no permissions at all, not even internet, so it cannot phone home. Nothing collected, nothing shared: everything stays on your device.
+
+Open source
+Puzzlet is open source under the MIT license, made by a parent for parents who want the calm kind of screen time. The full source is public on GitHub. Paid once, and never asked again.
 ```
 
 **App category**: Game, subcategory Puzzle
 **Contact email**: muntasim.haque@gmail.com
+**Website** (optional, new with D-071): `https://github.com/muntasimulhaque/puzzlet`,
+the open source home the full description points a parent to.
 **Privacy policy URL**: `https://muntasimulhaque.github.io/puzzlet/privacy.html`
 (hosted from this repo's `docs/privacy.html` via GitHub Pages; enable Pages
 with the "docs folder / main branch" setting before submitting. The

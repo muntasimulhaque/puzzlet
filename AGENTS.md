@@ -607,6 +607,19 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   ring around a small picture broke the light paper world. No decision
   had pinned that fill; the brand teal keeps the toy-box lid and the
   banner.
+- D-071 The listing says what the app is (owner: the full description
+  was too verbose, and these are the features that matter). Store copy
+  leads with the four facts that make a parent install: simple and
+  beautiful jigsaws for 3 to 5, no ads and no trackers, open source
+  under MIT, no internet and no permission asked. How it plays follows
+  in three short paragraphs. 1748 chars down to 1276, one line per
+  paragraph because Play keeps the line breaks. The short description
+  stays free of promo words (Play rejects free, no ads, best and sale
+  there) and carries the age instead, 78 of 80. The app name stands at
+  Puzzlet: Kids Jigsaw Puzzles, 28 of 30: brand first, then the three
+  searched words, the age deliberately out of the title so it neither
+  narrows the search nor reads like a spec sheet. The repo URL belongs
+  in the console's website field, not in the copy.
 
 ## Lessons that still bite
 
@@ -958,4 +971,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   coin). The listing kit is refreshed, and the verified AAB (APK twin
   read versionCode 18, versionName 1.8, target 37, package
   io.github.muntasimulhaque.puzzlet, no permission beyond the androidx
-  core private receiver) sits in play-store/aab/ awaiting submission.
+  core private receiver) sat in play-store/aab/ awaiting submission.
+- 2026-09-08: Version 1.8 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ and the empty landing folder went
+  with it. Then the store copy was rewritten (D-071): the full
+  description cut from 1748 to 1276 chars around the four main facts,
+  open source and the no-permission claim added, the short description
+  now naming the age, and the guide recording the console title and
+  the website field. README status and guide brought current.

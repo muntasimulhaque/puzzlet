@@ -4,8 +4,8 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.8 (versionCode 18) is cut for the closed testing
-track. Release 1.8 makes the whole picture card one button, so tapping
+Status: release 1.8 (versionCode 18) is submitted to the closed
+testing track. Release 1.8 makes the whole picture card one button, so tapping
 the name or the count opens the sizes just like the picture does. Every
 button wears the same soft floating shadow, so it stands off the paper
 instead of hiding in it. The peek button stays in the paper family when
