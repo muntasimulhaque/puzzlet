@@ -54,7 +54,7 @@ and offline facts live in the full description only.
 Simple, beautiful jigsaw puzzles for ages 3 to 5.
 ```
 
-**Full description** (4000 chars max, measured: 1293). Four facts lead,
+**Full description** (4000 chars max, measured: 1368). Four facts lead,
 because they are the reason a parent installs: what it is, that it is
 safe, that it is open source, and that it asks for nothing. How it plays
 comes after, short enough to scan on a phone. Paragraphs are unwrapped
@@ -75,6 +75,7 @@ No ads. No trackers. No accounts. No in-app purchases. It asks for no permission
 
 Open source
 Puzzlet is open source under the MIT license, made by a parent for parents who want the calm kind of screen time. The source code is available on GitHub. Pay once and play forever.
+If you cannot afford the payment, write to me at muntasim.haque@gmail.com.
 ```
 
 **App category**: Game, subcategory Puzzle
@@ -141,10 +142,10 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
-## Release notes for closed testing 1.9 (measured: 484 chars)
+## Release notes for closed testing 1.9 (measured: 409 chars)
 
 ```
-Puzzlet 1.9 grows the shelf from twelve to sixteen pictures. Four new ones to choose from: a kite on a breezy day, a windmill with tulips at its feet, a beach afternoon with an umbrella, a bucket and a ball, and a toadstool in the forest. Everything else is the same calm game: pick a picture, pick a size, drag each piece to its place. No ads, no trackers, no internet, no permissions. Thank you for testing. If you cannot afford the payment, write to me at muntasim.haque@gmail.com.
+Puzzlet 1.9 grows the shelf from twelve to sixteen pictures. Four new ones to choose from: a kite on a breezy day, a windmill with tulips at its feet, a beach afternoon with an umbrella, a bucket and a ball, and a toadstool in the forest. Everything else is the same calm game: pick a picture, pick a size, drag each piece to its place. No ads, no trackers, no internet, no permissions. Thank you for testing.
 ```
 
 ## Release notes for closed testing 1.8 (measured: 349 chars)

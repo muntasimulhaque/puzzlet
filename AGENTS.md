@@ -14,12 +14,12 @@ letter.
 
 Every session starts with two acts, in this order: read this file, then
 `git fetch` and pull whatever is new on `main`. The owner works from more
-than one machine; never build on a stale head. Everything that changes
-is handed over in chat, as it lands (owner's law): where the AAB is,
-where the fresh screenshots are, and the paste-ready release notes,
-short description and full description whenever any of them changes.
-Nothing lives only in a commit message or a file; the owner reads the
-chat, not the diff.
+than one machine; never build on a stale head. Everything that changes is handed over in chat, as it lands (owner's
+law), and only what changed: where the AAB is, where the fresh
+screenshots are, and the paste-ready release notes, short description
+and full description, each pasted only when its text changed. Nothing
+lives only in a commit message or a file; the owner reads the chat, not
+the diff.
 
 ## Hard constraints (non-negotiable)
 
@@ -226,10 +226,9 @@ manually (`gh workflow run build.yml --ref main`).
 Small commits, plain messages, no AI trailers. Every release-candidate
 build bumps `versionCode` +1 and `versionName` by 0.1; push to `main` and
 CI does the rest, ending at the `latest-build` GitHub release. Release
-notes end on the owner's contact line when the owner asks for it
-(D-073 reverses D-038): the email is named in full, because me carries
-nothing in a store listing. Notes are written in US English: color,
-favorite, behavior, never colour, favourite, behaviour (D-063).
+notes never name the owner's email and carry no contact line: testers
+write anyway (D-038). Notes are written in US English: color, favorite,
+behavior, never colour, favourite, behaviour (D-063).
 
 The AAB always lands in `play-store/aab/` (gitignored): after every push
 that refreshes the release, download the newest AAB there (`gh release
@@ -315,8 +314,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   no tutorial, no hand-holding; the layout itself is the lesson.
 - D-038 Release notes never name the owner's email and carry no contact
   line: testers write anyway (owner's call after the 0.3 notes shipped
-  with one; the rule starts at 0.4). Reversed by the owner in D-073:
-  the contact line returns when the owner asks for it.
+  with one; the rule starts at 0.4). Store copy is not release notes:
+  the full description may end on the owner's contact line (D-073).
 - D-039 The tray must never look empty and no piece may be blank. After
   the 0.3 bounce the play screen showed an empty tray on device while
   captures looked fine: the shared outline cache kept the tiny 1x1
@@ -644,11 +643,12 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   bare hill corner in the kite before any human saw it, fixed with a
   bush the way house and balloon fix their corners. The coverage test
   and the store listing text followed.
-- D-073 The contact line returns (owner-directed, reversing D-038).
-  The 1.9 notes end on: If you cannot afford the payment, write to me
-  at muntasim.haque@gmail.com. The email is spelled out in the notes
-  because me points nowhere in a store listing. The Releasing section
-  and this D-038 line were updated, so the rule is not a dead letter.
+- D-073 The payment line (owner-directed). The full description ends
+  on: If you cannot afford the payment, write to me at
+  muntasim.haque@gmail.com. First misread as a release-notes line and
+  logged as a D-038 reversal; the owner corrected it the same day: the
+  line lives in the full description only, release notes stay
+  contact-free, and D-038 stands unchanged.
 
 ## Lessons that still bite
 
@@ -1049,14 +1049,15 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   awaiting submission. README, guide and this file brought current.
   Next session picks up from: the 1.9 review verdict and tester
   feedback on the sixteen-picture shelf.
-- 2026-09-08: The owner added a last line to the 1.9 notes: If you
-  cannot afford the payment, drop an email to me. That reverses the
-  D-038 no-contact-line law, so the reversal was named and recorded
-  (D-073); the line ships with the address spelled out, ending the
-  notes at 484 of 500 chars, contact line last as directed. Notes-only
-  change: no rebuild, no bump, the verified 1.9 AAB in play-store/aab/
-  stands. Guide brought current; the Releasing section, the D-038 line
-  and this entry had slipped the first commit and are landed now.
-- 2026-09-08: The owner set the reporting law: everything that changes
-  is given in chat or mentioned in chat as it lands. Written into the
-  session-start paragraph so it holds for every session.
+- 2026-09-08: The owner asked for a payment line: If you cannot afford
+  the payment, drop an email to me. First misread as a release-notes
+  line (notes grew to 484 chars and D-038 was marked reversed); the
+  owner corrected it the same day: the line is the full description's
+  last line, not a notes line. Notes reverted to 409 chars, D-038
+  stands, the guide's full description grew to 1368 chars with the
+  line as its last line, and D-073 was rewritten to record the truth.
+  Notes and full description only: no rebuild, no bump, the verified
+  1.9 AAB in play-store/aab/ stands.
+- 2026-09-08: The owner sharpened the handoff law: in chat, only what
+  changed. Unchanged texts (the short description, for one) are not
+  re-pasted. Written into the session-start paragraph.
