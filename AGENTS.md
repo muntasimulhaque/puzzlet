@@ -615,10 +615,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   in three short paragraphs. 1748 chars down to 1252 after the owner's
   own trim, one line per paragraph because Play keeps the line breaks.
   The short description ended on the owner's own line, Simple, beautiful
-  jigsaw puzzles for kids, 42 of 80: three words a parent searches and
-  two that sell it, nothing else. Three drafts went before it; the owner
-  took none of them and wrote this. The age is not in it and opens the
-  full description instead. Promo words stay out (Play rejects free, no
+  jigsaw puzzles for ages 3 to 5, 49 of 80: two words that sell it, the
+  two a parent searches, and the age that makes the right parent stop.
+  Kids is not in it and the title carries it. Four drafts went before it;
+  the owner wrote this one. Promo words stay out (Play rejects free, no
   ads, best and sale there). The app name stands at
   Puzzlet: Kids Jigsaw Puzzles, 28 of 30: brand first, then the three
   searched words, the age deliberately out of the title so it neither
@@ -987,4 +987,5 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   collected so nothing shared, the source on GitHub, pay once and play
   forever): 1252 chars, stored verbatim in the guide. The short
   description was rewritten twice at their word and ended on the line
-  they wrote themselves: Simple, beautiful jigsaw puzzles for kids.
+  they wrote themselves: Simple, beautiful jigsaw puzzles for ages 3 to
+  5 (49 chars), the age back in after one round without it.

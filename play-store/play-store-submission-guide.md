@@ -43,16 +43,15 @@ sheet, so it lives in the short description instead.
 Puzzlet: Kids Jigsaw Puzzles
 ```
 
-**Short description** (80 chars max, measured: 42). The owner's line, kept
-short on purpose: three words a parent searches (kids, jigsaw, puzzles)
-and two that sell it (simple, beautiful), and nothing else. Purely
-descriptive: the guideline rejects keywords that indicate price or
-promotion (free, no ads, best, sale), so the no-ads and offline facts
-live in the full description only, and so does the age, which opens its
-first line.
+**Short description** (80 chars max, measured: 49). The owner's line: two
+words that sell it (simple, beautiful), the two a parent searches (jigsaw,
+puzzles), and the age that makes the right parent stop. Kids is not in it;
+the title carries it. Purely descriptive: the guideline rejects keywords
+that indicate price or promotion (free, no ads, best, sale), so the no-ads
+and offline facts live in the full description only.
 
 ```
-Simple, beautiful jigsaw puzzles for kids.
+Simple, beautiful jigsaw puzzles for ages 3 to 5.
 ```
 
 **Full description** (4000 chars max, measured: 1252). Four facts lead,
