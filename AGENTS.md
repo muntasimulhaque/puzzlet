@@ -1018,3 +1018,22 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   file brought current. No version cut yet: the release waits for the
   owner's word. Next session picks up from: the owner's eyes on the
   four new pictures, then the cut.
+- 2026-09-08: Cut 1.9 (versionCode 19) for closed testing at the
+  owner's word: sixteen pictures, notes measured at 409 chars, no
+  contact line, delivered in chat. All gates green locally and CI green
+  end to end: the build signed and published the AAB and APK, and the
+  capture ran on all three form factors. Phone and 7 inch captures came
+  back byte-identical (the fold shows the first six rows, which did not
+  move); the 10 inch set refreshed with an anti-aliasing-level raster
+  drift that appeared once between the 1.8 capture and today's, mean
+  pixel difference 1.34e-05, visually identical, and the two later runs
+  render the same pixels, so it is runner drift, not app drift. The
+  home capture shows the top of the shelf in every form factor, so the
+  four new pictures sit below the fold in the listing screenshots: the
+  owner judges whether the listing wants a scrolled shelf capture.
+  The verified AAB (APK twin read versionCode 19, versionName 1.9,
+  target 37, package io.github.muntasimulhaque.puzzlet, no permission
+  beyond the androidx core private receiver) sits in play-store/aab/
+  awaiting submission. README, guide and this file brought current.
+  Next session picks up from: the 1.9 review verdict and tester
+  feedback on the sixteen-picture shelf.
