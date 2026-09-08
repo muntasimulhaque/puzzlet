@@ -29,4 +29,8 @@
     <string name="scene_plane">Airplane</string>
     <string name="scene_flowers">Flowers</string>
     <string name="scene_icecream">Ice cream</string>
+    <string name="scene_kite">Kite</string>
+    <string name="scene_windmill">Windmill</string>
+    <string name="scene_beach">Beach</string>
+    <string name="scene_mushroom">Mushroom</string>
 </resources>

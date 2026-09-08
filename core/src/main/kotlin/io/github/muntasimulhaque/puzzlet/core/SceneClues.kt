@@ -22,6 +22,10 @@ private fun extraFor(id: String): List<SceneShape> = when (id) {
     "train" -> trainExtra()
     "castle" -> castleExtra()
     "fruit" -> fruitExtra()
+    "kite" -> kiteExtra()
+    "windmill" -> windmillExtra()
+    "beach" -> beachExtra()
+    "mushroom" -> mushroomExtra()
     else -> emptyList()
 }
 
@@ -165,6 +169,60 @@ private fun fruitExtra(): List<SceneShape> {
         add(RoundRectSpec(0.0, 0.95, 1.0, 0.020, 0.0, grain))
         for (p in listOf(Vec2(0.38, 0.70), Vec2(0.60, 0.70), Vec2(0.48, 0.78))) {
             add(CircleSpec(p, 0.006, seed))
+        }
+    }
+}
+
+private fun kiteExtra(): List<SceneShape> {
+    val cloud = 0xFFFEFCF8L
+    val coral = 0xFFE4572EL
+    val honey = 0xFFF0B429L
+    val wind = 0x59FEFCF8L
+    return buildList {
+        addAll(cloud(Vec2(0.06, 0.22), 0.4, cloud))
+        add(RoundRectSpec(0.20, 0.60, 0.09, 0.012, 0.006, wind))
+        for ((p, c) in listOf(Vec2(0.30, 0.80) to coral, Vec2(0.52, 0.88) to honey, Vec2(0.72, 0.78) to coral)) {
+            add(CircleSpec(p, 0.013, c))
+        }
+    }
+}
+
+private fun windmillExtra(): List<SceneShape> {
+    val halo = 0x40F0B429L
+    val cloud = 0xFFFEFCF8L
+    val coral = 0xFFE4572EL
+    val honey = 0xFFF0B429L
+    return buildList {
+        add(CircleSpec(Vec2(0.13, 0.14), 0.100, halo))
+        addAll(cloud(Vec2(0.14, 0.34), 0.4, cloud))
+        for ((p, c) in listOf(Vec2(0.20, 0.88) to coral, Vec2(0.135, 0.955) to honey)) {
+            add(CircleSpec(p, 0.014, c))
+        }
+    }
+}
+
+private fun beachExtra(): List<SceneShape> {
+    val cloud = 0xFFFEFCF8L
+    val glint = 0x59FEFCF8L
+    val shell = 0xFFFEFCF8L
+    return buildList {
+        addAll(cloud(Vec2(0.90, 0.22), 0.45, cloud))
+        for (p in listOf(Vec2(0.35, 0.645), Vec2(0.78, 0.615), Vec2(0.16, 0.66))) {
+            add(CircleSpec(p, 0.010, glint))
+        }
+        add(RingSpec(Vec2(0.60, 0.965), 0.010, 0.008, 0.004, shell))
+    }
+}
+
+private fun mushroomExtra(): List<SceneShape> {
+    val canopy = 0xFF2F5F40L
+    val fern = 0xFF3F7A44L
+    val flower = 0xFFF0B429L
+    return buildList {
+        add(EllipseSpec(Vec2(0.40, -0.03), 0.20, 0.09, canopy))
+        add(EllipseSpec(Vec2(0.60, 0.965), 0.030, 0.010, fern, angleDeg = -15.0))
+        for ((p, r) in listOf(Vec2(0.50, 0.945) to 0.012, Vec2(0.345, 0.915) to 0.010)) {
+            add(CircleSpec(p, r, flower))
         }
     }
 }

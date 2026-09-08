@@ -57,15 +57,19 @@ internal fun sceneNameRes(sceneId: String): Int = when (sceneId) {
     "plane" -> R.string.scene_plane
     "flowers" -> R.string.scene_flowers
     "icecream" -> R.string.scene_icecream
+    "kite" -> R.string.scene_kite
+    "windmill" -> R.string.scene_windmill
+    "beach" -> R.string.scene_beach
+    "mushroom" -> R.string.scene_mushroom
     else -> R.string.app_name
 }
 
 /**
  * The picture shelf: one quiet name at top with the sound coin docked
- * beside it, then twelve pictures with their names (D-064) and one quiet
- * count line each. Tapping a card anywhere opens its cut chooser (D-065,
- * D-070); a pick there plays and remembers. The sound switch lives in
- * the header, never over the pictures and never behind a gate (D-021,
+ * beside it, then sixteen pictures with their names (D-064, D-072) and one
+ * quiet count line each. Tapping a card anywhere opens its cut chooser
+ * (D-065, D-070); a pick there plays and remembers. The sound switch lives
+ * in the header, never over the pictures and never behind a gate (D-021,
  * D-046, D-057).
  *
  * [openChooserFor] starts with one picture's chooser open; it is the

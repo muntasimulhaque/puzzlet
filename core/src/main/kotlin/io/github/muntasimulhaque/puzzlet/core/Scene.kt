@@ -55,15 +55,16 @@ data class SceneSpec(
 object Scenes {
 
     /**
-     * The shipped shelf: all twelve pictures, every one on a graded ground
-     * with small inanimate texture (D-049 restored by D-064). All inanimate:
-     * vehicles, buildings, sky, food. The no-flat-piece test below walks
-     * this list at every count the shelf offers, so nothing here can ship
-     * with a blank piece.
+     * The shipped shelf: all sixteen pictures, every one on a graded ground
+     * with small inanimate texture (D-049, restored by D-064, grown by
+     * D-072). All inanimate: vehicles, buildings, sky, food, toys, forest.
+     * The no-flat-piece test below walks this list at every count the shelf
+     * offers, so nothing here can ship with a blank piece.
      */
     val all: List<SceneSpec> = listOf(
         sail(), house(), balloon(), fruit(), lighthouse(), icecream(),
         train(), castle(), rocket(), truck(), plane(), flowers(),
+        kite(), windmill(), beach(), mushroom(),
     ).map { it.withClues() }
     fun byId(id: String): SceneSpec = all.first { it.id == id }
 }
