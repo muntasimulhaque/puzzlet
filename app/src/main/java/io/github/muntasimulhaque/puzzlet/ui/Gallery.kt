@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -32,12 +33,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import io.github.muntasimulhaque.puzzlet.R
 import io.github.muntasimulhaque.puzzlet.core.SceneSpec
 import io.github.muntasimulhaque.puzzlet.core.Scenes
@@ -133,6 +138,12 @@ private fun ShelfGrid(
             maxWidth < 840.dp -> 2
             else -> 3
         }
+        // One size for every name: the shelf speaks in one voice, and the
+        // longest name sets the size for all of them (owner's law). The
+        // card's own 10 dp padding each side is what the names really have.
+        val names = Scenes.all.map { stringResource(sceneNameRes(it.id)) }
+        val cell = (maxWidth - 40.dp - 16.dp * (columns - 1)) / columns
+        val nameSize = rememberNameFontSize(names, cell - 20.dp)
         LazyVerticalGrid(
             columns = GridCells.Fixed(columns),
             modifier = Modifier.fillMaxSize(),
@@ -144,10 +155,44 @@ private fun ShelfGrid(
                 SceneCard(
                     scene = scene,
                     pieces = shelf.openingCount(scene.id),
+                    nameSize = nameSize,
                     onOpen = { onOpen(scene.id) },
                 )
             }
         }
+    }
+}
+
+/** The smallest a shelf name may step down to, so it stays readable. */
+private val MIN_NAME_SIZE = 16.sp
+
+/**
+ * One font size for every picture name, measured from the longest name in
+ * the card's real width. The shelf used to clip the last letter of a long
+ * name (Mushroom read as Mushroo, Lighthouse as Lighthous). Shrinking one
+ * name alone would break the shelf's one voice, so the whole row of names
+ * steps down together, never past [MIN_NAME_SIZE].
+ */
+@Composable
+private fun rememberNameFontSize(names: List<String>, textWidth: Dp): TextUnit {
+    val measurer = rememberTextMeasurer()
+    val style = MaterialTheme.typography.titleLarge
+    val density = LocalDensity.current
+    return remember(names, textWidth, style, density) {
+        // A hair of margin so a rounded pixel can never clip a name.
+        val available = with(density) { textWidth.toPx() } * 0.98f
+        val widest = names.maxOfOrNull { name ->
+            measurer.measure(
+                text = name,
+                style = style,
+                maxLines = 1,
+                softWrap = false,
+            ).size.width.toFloat()
+        } ?: 0f
+        if (widest <= available || widest == 0f) style.fontSize
+        else (style.fontSize.value * (available / widest))
+            .coerceAtLeast(MIN_NAME_SIZE.value)
+            .sp
     }
 }
 
@@ -182,6 +227,7 @@ private fun ShelfHeader(soundOn: Boolean, onSound: (Boolean) -> Unit) {
 private fun SceneCard(
     scene: SceneSpec,
     pieces: Int,
+    nameSize: TextUnit,
     onOpen: () -> Unit,
 ) {
     val name = stringResource(sceneNameRes(scene.id))
@@ -203,17 +249,17 @@ private fun SceneCard(
         ) {
             ScenePicture(spec = scene, modifier = Modifier.fillMaxWidth(), cornerRadius = 20.dp)
         }
-        CardName(name = name)
+        CardName(name = name, size = nameSize)
         QuietCount(pieces = pieces)
     }
 }
 
 @Composable
-private fun CardName(name: String) {
+private fun CardName(name: String, size: TextUnit) {
     Spacer(Modifier.height(8.dp))
     Text(
         text = name,
-        style = MaterialTheme.typography.titleLarge,
+        style = MaterialTheme.typography.titleLarge.copy(fontSize = size),
         color = PuzzletColors.Ink,
         textAlign = TextAlign.Center,
         maxLines = 1,

@@ -1,7 +1,7 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
-import java.awt.AlphaComposite
 import java.awt.Color
+import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
@@ -9,13 +9,12 @@ import java.io.File
 import javax.imageio.ImageIO
 
 /**
- * The Play Store art, drawn from the same gather as the launcher: lagoon
- * ground, the four pieces sitting straight on it with no card behind
- * them, and Baloo 2 lettering through the clean-text path so large words
- * never slice.
+ * The Play Store art, drawn from the same mark as the launcher: lagoon
+ * ground, the die-cut piece sitting straight on it with no card behind it,
+ * and Baloo 2 lettering through the clean-text path so large words never
+ * slice.
  *
- * The ground is the brand teal, the toy-box lid, at its true brightness
- * rather than the deeper shade it used to carry, and there is no ghosted
+ * The ground is the brand teal, the toy-box lid, and there is no ghosted
  * puzzle behind the wordmark fighting it for attention. One mark, one
  * name, one line, and air: parents decide in two seconds.
  *
@@ -28,29 +27,27 @@ import javax.imageio.ImageIO
  */
 object MakeArt {
 
-    /** The 1024 x 500 feature graphic: the gather, the name, one line. */
+    /** The 1024 x 500 feature graphic: the mark, the name, one line. */
     fun featureGraphic(rootDir: File): BufferedImage =
-        featureOn(rootDir, IconDesign.LAGOON, IconDesign.PAPER, 0xD9FAF6EF.toInt())
+        featureOn(rootDir, IconDesign.PAPER, 0xE6FAF6EF.toInt())
 
     /**
-     * One banner: the mark 340 px on the left, the type given the whole
-     * right side, and nothing else competing with it. Ground, name and
-     * line colours are the caller's, so a candidate sheet can try another
-     * ground without a second copy of the layout.
+     * One banner: the mark 500 px on the left, the type given the whole
+     * right side, and nothing else competing with it. The mark ground is
+     * the brand teal; the name and line colours are the caller's.
      */
     internal fun featureOn(
         rootDir: File,
-        groundArgb: Int,
         inkArgb: Int,
         softArgb: Int,
-        markSize: Int = 372,
-        markX: Int = 88,
-        markY: Int = 64,
-        nameSize: Float = 112f,
-        nameX: Float = 516f,
-        nameY: Float = 266f,
+        markSize: Int = 500,
+        markX: Int = 30,
+        markY: Int = 0,
+        nameSize: Float = 122f,
+        nameX: Float = 556f,
+        nameY: Float = 262f,
         tagSize: Float = 30f,
-        tagX: Float = 518f,
+        tagX: Float = 558f,
         tagY: Float = 324f,
     ): BufferedImage {
         val w = 1024
@@ -59,31 +56,23 @@ object MakeArt {
         val g = image.createGraphics()
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        g.paint = Color(groundArgb)
+        g.paint = Color(0xFF0C7A64.toInt(), true)
         g.fill(Rectangle2D.Double(0.0, 0.0, w.toDouble(), h.toDouble()))
+        val mark = BufferedImage(markSize, markSize, BufferedImage.TYPE_INT_ARGB)
+        val mg = mark.createGraphics()
+        mg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        mg.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
+        paintMark(mg, markSize)
+        mg.dispose()
+        g.drawImage(mark, markX, markY, null)
+        drawCleanString(g, "Puzzlet", "baloo2_extrabold.ttf", nameSize, inkArgb, nameX, nameY, rootDir)
+        drawCleanString(g, "A calm jigsaw for small hands.", "baloo2_bold.ttf", tagSize, softArgb, tagX, tagY, rootDir)
         g.dispose()
-        pasteArt(
-            image,
-            Gather.paint(markSize, tile = false, groundArgb = 0, pieceScale = IconDesign.PIECE_SCALE),
-            markX, markY, 1.0f,
-        )
-        val g2 = image.createGraphics()
-        g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        drawCleanString(g2, "Puzzlet", "baloo2_extrabold.ttf", nameSize, inkArgb, nameX, nameY, rootDir)
-        drawCleanString(g2, "A calm jigsaw for small hands.", "baloo2_bold.ttf", tagSize, softArgb, tagX, tagY, rootDir)
-        g2.dispose()
         return image
     }
 
     /** The 512 x 512 store icon: the launcher tile, full bleed. */
     fun storeIcon(): BufferedImage = storeTile(512)
-}
-
-private fun pasteArt(dst: BufferedImage, src: BufferedImage, x: Int, y: Int, alpha: Float) {
-    val g = dst.createGraphics()
-    g.composite = AlphaComposite.SrcOver.derive(alpha)
-    g.drawImage(src, x, y, null)
-    g.dispose()
 }
 
 fun main(args: Array<String>) {

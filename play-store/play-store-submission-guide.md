@@ -143,6 +143,14 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 2.0 (measured: 333 chars)
+
+```
+New look: the icon and the store banner now show a single jigsaw piece holding the sailboat, drawn to match a real die-cut piece: rounded corners, a proper tab and blank, a soft paper edge.
+
+Fixed: long picture names on the shelf could lose their last letter on a phone, so Mushroom read as Mushroo. Every name now fits its card.
+```
+
 ## Release notes for closed testing 1.9 (measured: 409 chars)
 
 ```

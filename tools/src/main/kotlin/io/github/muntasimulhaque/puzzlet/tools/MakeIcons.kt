@@ -8,41 +8,23 @@ import kotlin.system.exitProcess
 /**
  * The launcher icon, drawn from code so every PNG has exactly one author.
  *
- * Design: the gather. Three chunky pieces (sky, coral, grass) closing in
- * on the honey home piece with its sockets open, the moment before the
- * click. One hero colour per piece, generous air around the field, flat
- * fills only: drawn small on purpose so no launcher mask ever truncates
- * a piece. Rendered three ways: the legacy tile for API 24-25 (paper
- * tile, gather on top), the adaptive foreground for API 26+ (gather on
- * transparency over the paper background, wholly inside the 66 dp mask
- * circle), and a white monochrome sibling (gather silhouette) for
- * Android 13+ themed icons.
+ * Design: the mark in MarkPiece.kt, one real die-cut piece carrying the
+ * app's first picture, on the warm paper ground the owner picked (rounder
+ * paper). Rendered three ways: the legacy tile for API 24-25 (paper tile
+ * with the mark on top), the adaptive foreground for API 26+ (the mark on
+ * transparency over the paper background), and a white monochrome sibling
+ * (the piece silhouette) for Android 13+ themed icons.
  *
- * Colors here mirror app/src/main/res/values/colors.xml plus the toy
- * palette below. Change both together, then run makeIcons and commit the
- * regenerated PNGs. The store art reads the same constants, so shelf,
- * home screen and store page can never drift apart.
+ * Colors mirror app/src/main/res/values/colors.xml plus the mark palette
+ * in MarkPiece.kt. Change both together, then run makeIcons and commit the
+ * regenerated PNGs. The store art reads the same painter, so launcher and
+ * store page can never drift apart.
  */
 object IconDesign {
-    const val PAPER: Int = 0xFFFAF6EF.toInt()
-    const val WHITE: Int = 0xFFFFFFFF.toInt()
-    /** The brand teal, the toy-box lid: the feature graphic's ground. */
-    const val LAGOON: Int = 0xFF0C7A64.toInt()
-    /** Ink, for type sitting on a light ground in the store art. */
-    const val INK: Int = 0xFF1F2B28.toInt()
-
-    /**
-     * The four gather pieces: sky and coral above, grass and honey home
-     * below. The fourth used to be a second yellow, but gold and honey sat
-     * 12 deltaE apart where every other pair sits 52 to 101, so the mark
-     * read as three colours and a repeat. Grass is the leaf and mid-hill
-     * green the pictures already wear, the most used green in the scenes,
-     * so the mark is cut from the same cloth as the game.
-     */
-    const val SKY: Int = 0xFF6BB7D6.toInt()
-    const val CORAL: Int = 0xFFE4572E.toInt()
-    const val GRASS: Int = 0xFF6FB863.toInt()
-    const val HONEY: Int = 0xFFF0B429.toInt()
+    /** The paper ground, the adaptive background and every tile's field. */
+    const val PAPER: Int = PieceDesign.PAPER
+    /** The monochrome layer's white, the flag adaptiveLayer reads. */
+    const val WHITE: Int = PieceDesign.WHITE
 
     /** The densities the house ships, in scale order. */
     val DENSITY_DIRS = arrayOf("mdpi", "hdpi", "xhdpi", "xxhdpi", "xxxhdpi")
@@ -52,94 +34,31 @@ object IconDesign {
     const val LEGACY_DP = 48.0
     /** Adaptive layer canvas, dp (the 108 dp full-bleed square). */
     const val ADAPTIVE_DP = 108.0
-    /**
-     * Adaptive foreground inset as a canvas fraction: the whole gather
-     * sits inside the 66 dp mask circle with real air (D-069): the
-     * content reaches about 28 dp of the 66 dp circle, so no launcher
-     * mask, however it antialiases, ever truncates a piece.
-     */
-    const val FG_INSET = 0.305
-    /** Fraction of a full-art tile the gather field spans: small, corners safe. */
-    const val TILE_SPAN = 0.86
-    /**
-     * Store tile field fraction: the store corner bites deeper, so the
-     * field tucks well inside the surviving corner tips (D-069: the old
-     * 0.94 span let the outer piece corners poke past the silhouette).
-     */
-    const val STORE_SPAN = 0.86
     /** Legacy tile corner radius as a fraction of the tile. */
     const val LEGACY_CORNER_FRACTION = 0.22
     /** Store tile corner radius as a fraction of the tile. */
     const val STORE_CORNER_FRACTION = 0.19
-
-    /**
-     * Wanderer gap as a share of the piece side. The hover: the knobs
-     * stop a hair outside the open sockets (D-067), so every bite reads
-     * as a clean socket and the mark is the moment before the click,
-     * not four squares floating apart.
-     */
-    const val GAP_FRAC = 0.26
-
-    /** Piece side as a share of the field, grown to fill the tile. */
-    const val PIECE_SCALE = 0.42
-
-    /**
-     * Knob profile on a unit edge: stem half-width, head centre height,
-     * head radius. Shared with the candidate renderer, one source.
-     */
-    const val KNOB_STEM = 0.15
-    const val KNOB_HEAD_C = 0.085
-    const val KNOB_HEAD_R = 0.155
 }
 
 internal enum class Layer { TILE, FOREGROUND, MONO }
 
 /**
- * One icon layer: paper tile with the gather, bare gather, or white
- * gather. The gather painter owns every pixel; fills of plain paths
- * only, no strokes, no booleans, so every JDK pins the same bytes.
+ * One icon layer. The mark painter owns every pixel: flat fills of plain
+ * paths only, no strokes, no booleans, so every JDK pins the same bytes.
  */
-internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage {
-    val d = IconDesign
-    return when (layer) {
-        Layer.TILE -> {
-            // Legacy and store tiles share this branch; the corner
-            // fraction tells them apart, each with its fitted span.
-            val span = if (cornerFraction == d.LEGACY_CORNER_FRACTION) d.TILE_SPAN else d.STORE_SPAN
-            Gather.paint(
-                size,
-                tile = true,
-                groundArgb = d.PAPER,
-                cornerFraction = cornerFraction,
-                insetFrac = (1.0 - span) / 2.0,
-                pieceScale = d.PIECE_SCALE,
-            )
-        }
-        Layer.FOREGROUND -> Gather.paint(
-            size,
-            tile = false,
-            groundArgb = 0,
-            insetFrac = d.FG_INSET,
-            pieceScale = d.PIECE_SCALE,
-        )
-        Layer.MONO -> Gather.paint(
-            size,
-            tile = false,
-            groundArgb = 0,
-            mono = true,
-            insetFrac = d.FG_INSET,
-            pieceScale = d.PIECE_SCALE,
-        )
-    }
+internal fun paintLayer(size: Int, layer: Layer, cornerFraction: Double): BufferedImage = when (layer) {
+    Layer.TILE -> markTile(size, IconDesign.PAPER, cornerFraction)
+    Layer.FOREGROUND -> markForeground(size)
+    Layer.MONO -> markMonochrome(size)
 }
 
-/** The legacy tile: paper tile with the gather, for API 24-25. */
+/** The legacy tile: paper tile with the mark, for API 24-25. */
 fun legacyIcon(sizePx: Int): BufferedImage =
     paintLayer(sizePx, Layer.TILE, IconDesign.LEGACY_CORNER_FRACTION)
 
-/** One adaptive layer: the gather on transparency. */
+/** One adaptive layer: the mark, or the white piece silhouette. */
 fun adaptiveLayer(sizePx: Int, pieceArgb: Int): BufferedImage {
-    // The monochrome sibling renders the gather silhouette in white; the
+    // The monochrome sibling renders the piece silhouette in white; the
     // paper argument stays so every caller keeps one shape of call.
     if (pieceArgb == IconDesign.WHITE) return paintLayer(sizePx, Layer.MONO, 0.0)
     return paintLayer(sizePx, Layer.FOREGROUND, 0.0)

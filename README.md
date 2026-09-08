@@ -4,12 +4,15 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.9 (versionCode 19) is in Play review for the closed
-testing track. Release 1.9 grows the shelf from twelve to sixteen
-pictures: a kite, a windmill, a beach and a mushroom join the twelve,
-every one inanimate, on a graded ground, and pinned by the no-flat-piece
-test at every size. The full description ends on the owner's payment
-line. Same rules as always: no timer, no score, no fail state, no
+Status: release 2.0 (versionCode 20) is cut for closed testing. Release
+2.0 is the new mark: the launcher icon is one real die-cut piece
+carrying the sailboat, drawn from real puzzle-piece references (a short
+shoulder, a short neck, a round chunky head, a wide blank mouth, rounded
+corners, bowed edges), and the feature graphic carries the same piece on
+the brand teal. It also fixes the shelf: long picture names could lose
+their last letter on a phone (Mushroom read as Mushroo), and now every
+name is measured against the longest one and the whole shelf shares one
+size. Same rules as always: no timer, no score, no fail state, no
 reading required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
@@ -90,13 +93,16 @@ graphic, the store icon, and screenshots per form factor (`phone/`,
 
 ## The mark
 
-The launcher icon is the gather: three wanderers, sky, coral and leaf
-green, closing in on the honey home piece whose sockets sit open, every
-knob hovering a hair outside its socket: the moment before the click.
-Four colors that read as four colors, drawn small on purpose: the whole
-mark reaches about 28 dp of the 66 dp launcher mask circle, so no
-launcher shape ever truncates a piece. The feature graphic carries the
-same mark on the brand teal, with the name given the whole right side
-and nothing behind it. Both are drawn from code by `:tools:makeIcons`
-and `:tools:makeArt`, never hand-edited, and `checkIcons` fails the
-build if a committed PNG ever drifts.
+The launcher icon is one real die-cut piece carrying the sailboat, the
+app's first picture. The outline is measured from real puzzle pieces:
+rounded corners, gently bowed edges, a short concave shoulder, a short
+neck, a round chunky head about twice the neck wide, and the same shape
+reversed for the blank. Two tabs (top and right) and two blanks (bottom
+and left) keep the boat whole: the blanks bite sky and water, never the
+boat. The paper rim and the soft shadow are the app's own die-cut. The
+mark reaches the 66 dp safe circle on purpose, so it is as large as a
+launcher will show it. The feature graphic carries the same piece on the
+brand teal, with the name given the whole right side and nothing behind
+it. Both are drawn from code by `:tools:makeIcons` and `:tools:makeArt`,
+never hand-edited, and `checkIcons` fails the build if a committed PNG
+ever drifts.

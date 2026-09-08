@@ -5,7 +5,9 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
 import java.nio.file.Files
+import kotlin.math.cos
 import kotlin.math.hypot
+import kotlin.math.sin
 
 class MakeIconsTest {
 
@@ -29,56 +31,40 @@ class MakeIconsTest {
         b.deleteRecursively()
     }
 
-    /** The gather frame: content origin, content span, piece side, gap, home origin, in px. */
-    private data class Frame(
-        val se: Double,
-        val s: Double,
-        val gap: Double,
-        val hx: Double,
-        val hy: Double,
-    )
-
-    /** Map canvas pixels the way Gather.paint lays out its field for an inset fraction. */
-    private fun gatherFrame(size: Int, insetFrac: Double): Frame {
-        val o = size * insetFrac
-        val se = size * (1.0 - 2.0 * insetFrac)
-        val s = se * IconDesign.PIECE_SCALE
-        val gap = s * IconDesign.GAP_FRAC
-        return Frame(se, s, gap, o + se / 2.0 + gap / 2.0, o + se / 2.0 + gap / 2.0)
+    /** A point in the mark's own frame, in body units from the centre. */
+    private fun markPoint(size: Int, u: Double, v: Double): Pair<Int, Int> {
+        val s = size.toDouble()
+        val body = s * PieceDesign.BODY_FRAC
+        val cx = s / 2.0
+        val cy = s / 2.0
+        val a = Math.toRadians(PieceDesign.TILT_DEG)
+        val rx = u * body
+        val ry = v * body
+        return (cx + rx * cos(a) - ry * sin(a)).toInt() to (cy + rx * sin(a) + ry * cos(a)).toInt()
     }
 
-    private fun fgFrame(size: Int): Frame = gatherFrame(size, IconDesign.FG_INSET)
+    private fun alphaAt(image: java.awt.image.BufferedImage, u: Double, v: Double): Int {
+        val (x, y) = markPoint(image.width, u, v)
+        return image.getRGB(x, y) ushr 24
+    }
 
-    private fun tileFrame(size: Int): Frame =
-        gatherFrame(size, (1.0 - IconDesign.TILE_SPAN) / 2.0)
-
-    /** Piece body centres: home, top wanderer, left wanderer, corner wanderer. */
-    private fun Frame.centres(): List<Triple<Double, Double, Int>> = listOf(
-        Triple(hx + s / 2.0, hy + s / 2.0, IconDesign.HONEY),
-        Triple(hx + s / 2.0, hy - s - gap + s / 2.0, IconDesign.CORAL),
-        Triple(hx - s - gap + s / 2.0, hy + s / 2.0, IconDesign.GRASS),
-        Triple(hx - s - gap + s / 2.0, hy - s - gap + s / 2.0, IconDesign.SKY),
-    )
-
-    @Test
-    fun `the knob profile stays sane`() {
-        val d = IconDesign
-        assertTrue("stem must be narrower than the head", d.KNOB_STEM < d.KNOB_HEAD_R)
-        assertTrue("the head must fit its edge half", d.KNOB_HEAD_C + d.KNOB_HEAD_R < 0.5)
-        assertTrue("wanderers need a positive gap", d.GAP_FRAC > 0.0)
+    private fun rgbAt(image: java.awt.image.BufferedImage, u: Double, v: Double): Int {
+        val (x, y) = markPoint(image.width, u, v)
+        return image.getRGB(x, y)
     }
 
     @Test
-    fun `the gather holds four pieces in their colours`() {
-        val size = 384
-        val icon = legacyIcon(size)
-        val f = tileFrame(size)
-        val names = listOf("honey home", "coral top", "grass left", "sky corner")
-        for ((i, c) in f.centres().withIndex()) {
-            val x = c.first.toInt()
-            val y = c.second.toInt()
-            assertEquals("${names[i]} at ($x, $y)", c.third, icon.getRGB(x, y))
-        }
+    fun `the mark carries two tabs and two blanks around the sail`() {
+        val size = 432
+        val layer = adaptiveLayer(size, IconDesign.PAPER)
+        // The tab tips are paper rim.
+        assertEquals("top tab tip", PieceDesign.PAPER, rgbAt(layer, 0.0, -0.68))
+        assertEquals("right tab tip", PieceDesign.PAPER, rgbAt(layer, 0.68, 0.0))
+        // The blanks are open: the ground shows through.
+        assertEquals("left blank", 0, alphaAt(layer, -0.37, 0.0))
+        assertEquals("bottom blank", 0, alphaAt(layer, 0.0, 0.37))
+        // The sailboat's hull sits inside the piece.
+        assertEquals("hull", PieceDesign.CORAL, rgbAt(layer, 0.0, 0.06))
     }
 
     @Test
@@ -86,12 +72,13 @@ class MakeIconsTest {
         val size = 432
         val layer = adaptiveLayer(size, IconDesign.PAPER)
         val cx = size / 2.0
-        // 30 dp of the 108 dp canvas: 3 dp of real air inside the 66 dp
-        // mask, so no launcher's antialiasing can ever bite a corner.
-        val limit = size * 30.0 / 108.0
+        // The 66 dp safe circle plus 2 px of antialiasing tolerance: the
+        // mark reaches the safe circle on purpose, so the probe checks
+        // solid art only; the soft shadow may graze the mask edge.
+        val limit = size * 33.0 / 108.0 + 2.0
         for (y in 0 until size) {
             for (x in 0 until size) {
-                if ((layer.getRGB(x, y) ushr 24) > 16) {
+                if ((layer.getRGB(x, y) ushr 24) > 200) {
                     assertTrue(
                         "art escapes the mask circle at ($x, $y)",
                         hypot(x - cx, y - cx) <= limit,
@@ -137,21 +124,19 @@ class MakeIconsTest {
     }
 
     @Test
-    fun `adaptive layer is transparent canvas with the gather only`() {
+    fun `adaptive layer is transparent canvas with the mark only`() {
         val size = 432
         val layer = adaptiveLayer(size, IconDesign.PAPER)
-        // Far from the gather: untouched canvas.
+        // Far from the mark: untouched canvas.
         assertEquals(0, layer.getRGB(4, 4) ushr 24)
         assertEquals(0, layer.getRGB(size - 5, 4) ushr 24)
-        // A honey home body pixel.
-        val f = fgFrame(size)
-        val home = f.centres()[0]
-        assertEquals(IconDesign.HONEY, layer.getRGB(home.first.toInt(), home.second.toInt()))
-        // The monochrome sibling is the gather silhouette in white.
+        // The hull is the mark's content.
+        assertEquals(PieceDesign.CORAL, rgbAt(layer, 0.0, 0.06))
+        // The monochrome sibling is the piece silhouette in white.
         val mono = adaptiveLayer(size, IconDesign.WHITE)
-        for (c in f.centres()) {
-            assertEquals(IconDesign.WHITE, mono.getRGB(c.first.toInt(), c.second.toInt()))
-        }
+        assertEquals(IconDesign.WHITE, rgbAt(mono, 0.0, 0.0))
         assertEquals(0, mono.getRGB(4, 4) ushr 24)
+        // The blanks stay open in the silhouette too.
+        assertEquals(0, alphaAt(mono, -0.37, 0.0))
     }
 }
