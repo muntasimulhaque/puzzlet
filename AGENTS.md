@@ -221,9 +221,10 @@ manually (`gh workflow run build.yml --ref main`).
 Small commits, plain messages, no AI trailers. Every release-candidate
 build bumps `versionCode` +1 and `versionName` by 0.1; push to `main` and
 CI does the rest, ending at the `latest-build` GitHub release. Release
-notes never name the owner's email and carry no contact line: testers
-write anyway (D-038). Notes are written in US English: color, favorite,
-behavior, never colour, favourite, behaviour (D-063).
+notes end on the owner's contact line when the owner asks for it
+(D-073 reverses D-038): the email is named in full, because me carries
+nothing in a store listing. Notes are written in US English: color,
+favorite, behavior, never colour, favourite, behaviour (D-063).
 
 The AAB always lands in `play-store/aab/` (gitignored): after every push
 that refreshes the release, download the newest AAB there (`gh release
