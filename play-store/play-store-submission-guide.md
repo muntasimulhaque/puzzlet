@@ -46,13 +46,14 @@ Puzzlet: Kids Jigsaw Puzzles
 **Short description** (80 chars max, measured: 78). Purely descriptive on
 purpose: the guideline rejects keywords that indicate price or promotion
 (free, no ads, best, sale), so the no-ads and offline facts live in the
-full description only. The age is here instead of in the title.
+full description only. The age is here instead of in the title, and the
+line ends on the click, the one detail no other puzzle app can claim.
 
 ```
-Simple, beautiful jigsaw puzzles for ages 3 to 5. Drag a piece, hear it click.
+Beautiful, easy jigsaw puzzles for ages 3 to 5: chunky pieces that click home.
 ```
 
-**Full description** (4000 chars max, measured: 1276). Four facts lead,
+**Full description** (4000 chars max, measured: 1252). Four facts lead,
 because they are the reason a parent installs: what it is, that it is
 safe, that it is open source, and that it asks for nothing. How it plays
 comes after, short enough to scan on a phone. Paragraphs are unwrapped
@@ -63,16 +64,16 @@ as a clean block.
 Puzzlet is a simple, beautiful jigsaw puzzle game for children aged 3 to 5. One picture, a few chunky pieces, and a soft click when a piece finds its place.
 
 Simple by design
-Tap a picture and pick a size: 4, 6, 9, 12 or 16 pieces, each shown as the real cut. Pieces wait in a tray above a blank board, the way a real table looks. Drag a piece near its place and it clicks home. Forgot the picture? Tap the little picture in the top bar, then tap anywhere to put it away. No timer, no score, no fail state, no reading, no tutorial: the layout is the whole lesson.
+Tap a picture and pick a size: 4, 6, 9, 12, or 16 pieces, each shown as the real cut. Pieces wait in a tray above a blank board, the way a real table looks. Drag a piece near its place and it clicks home. Forgot the picture? Tap the little picture in the top bar, then tap anywhere to put it away. No timer, no score, no fail state, no reading, no tutorial: the layout is the whole lesson.
 
 Made for small hands
-Twelve calm pictures to choose from: a boat, a house, a balloon, fruit, a lighthouse, an ice cream, a train, a castle, a rocket, a truck, an airplane and flowers. Big targets, forgiving drops, three soft sounds, and a switch on the shelf to turn them off. No music, ever.
+Twelve calm pictures to choose from: a boat, a house, a balloon, fruit, a lighthouse, an ice cream, a train, a castle, a rocket, a truck, an airplane, and flowers. Big targets, forgiving drops, three soft sounds, and a switch on the shelf to turn them off. No music, ever.
 
 Safe and private
-No ads. No trackers. No accounts. No in-app purchases. It asks for no permissions at all, not even internet, so it cannot phone home. Nothing collected, nothing shared: everything stays on your device.
+No ads. No trackers. No accounts. No in-app purchases. It asks for no permissions at all, not even internet. No data collected, so nothing shared: everything stays on your device.
 
 Open source
-Puzzlet is open source under the MIT license, made by a parent for parents who want the calm kind of screen time. The full source is public on GitHub. Paid once, and never asked again.
+Puzzlet is open source under the MIT license, made by a parent for parents who want the calm kind of screen time. The source code is available on GitHub. Pay once and play forever.
 ```
 
 **App category**: Game, subcategory Puzzle

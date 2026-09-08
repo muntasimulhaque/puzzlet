@@ -612,10 +612,14 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   leads with the four facts that make a parent install: simple and
   beautiful jigsaws for 3 to 5, no ads and no trackers, open source
   under MIT, no internet and no permission asked. How it plays follows
-  in three short paragraphs. 1748 chars down to 1276, one line per
-  paragraph because Play keeps the line breaks. The short description
-  stays free of promo words (Play rejects free, no ads, best and sale
-  there) and carries the age instead, 78 of 80. The app name stands at
+  in three short paragraphs. 1748 chars down to 1252 after the owner's
+  own trim, one line per paragraph because Play keeps the line breaks.
+  The short description took three passes and settled on Beautiful, easy
+  jigsaw puzzles for ages 3 to 5: chunky pieces that click home, 78 of
+  80: beautiful and easy both said out loud, the age carried here
+  rather than in the title, and the line ending on the click, the one
+  detail no rival can claim. Promo words stay out of it (Play rejects
+  free, no ads, best and sale there). The app name stands at
   Puzzlet: Kids Jigsaw Puzzles, 28 of 30: brand first, then the three
   searched words, the age deliberately out of the title so it neither
   narrows the search nor reads like a spec sheet. The repo URL belongs
@@ -978,4 +982,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   description cut from 1748 to 1276 chars around the four main facts,
   open source and the no-permission claim added, the short description
   now naming the age, and the guide recording the console title and
-  the website field. README status and guide brought current.
+  the website field. README status and guide brought current. The owner
+  then edited the full description themselves (Oxford commas, no data
+  collected so nothing shared, the source on GitHub, pay once and play
+  forever): 1252 chars, stored verbatim in the guide. The short
+  description was redone at their word and is the third pass above.
