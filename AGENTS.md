@@ -614,12 +614,12 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   under MIT, no internet and no permission asked. How it plays follows
   in three short paragraphs. 1748 chars down to 1252 after the owner's
   own trim, one line per paragraph because Play keeps the line breaks.
-  The short description took three passes and settled on Beautiful, easy
-  jigsaw puzzles for ages 3 to 5: chunky pieces that click home, 78 of
-  80: beautiful and easy both said out loud, the age carried here
-  rather than in the title, and the line ending on the click, the one
-  detail no rival can claim. Promo words stay out of it (Play rejects
-  free, no ads, best and sale there). The app name stands at
+  The short description ended on the owner's own line, Simple, beautiful
+  jigsaw puzzles for kids, 42 of 80: three words a parent searches and
+  two that sell it, nothing else. Three drafts went before it; the owner
+  took none of them and wrote this. The age is not in it and opens the
+  full description instead. Promo words stay out (Play rejects free, no
+  ads, best and sale there). The app name stands at
   Puzzlet: Kids Jigsaw Puzzles, 28 of 30: brand first, then the three
   searched words, the age deliberately out of the title so it neither
   narrows the search nor reads like a spec sheet. The repo URL belongs
@@ -986,4 +986,5 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   then edited the full description themselves (Oxford commas, no data
   collected so nothing shared, the source on GitHub, pay once and play
   forever): 1252 chars, stored verbatim in the guide. The short
-  description was redone at their word and is the third pass above.
+  description was rewritten twice at their word and ended on the line
+  they wrote themselves: Simple, beautiful jigsaw puzzles for kids.

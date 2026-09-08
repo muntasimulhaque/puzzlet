@@ -43,14 +43,16 @@ sheet, so it lives in the short description instead.
 Puzzlet: Kids Jigsaw Puzzles
 ```
 
-**Short description** (80 chars max, measured: 78). Purely descriptive on
-purpose: the guideline rejects keywords that indicate price or promotion
-(free, no ads, best, sale), so the no-ads and offline facts live in the
-full description only. The age is here instead of in the title, and the
-line ends on the click, the one detail no other puzzle app can claim.
+**Short description** (80 chars max, measured: 42). The owner's line, kept
+short on purpose: three words a parent searches (kids, jigsaw, puzzles)
+and two that sell it (simple, beautiful), and nothing else. Purely
+descriptive: the guideline rejects keywords that indicate price or
+promotion (free, no ads, best, sale), so the no-ads and offline facts
+live in the full description only, and so does the age, which opens its
+first line.
 
 ```
-Beautiful, easy jigsaw puzzles for ages 3 to 5: chunky pieces that click home.
+Simple, beautiful jigsaw puzzles for kids.
 ```
 
 **Full description** (4000 chars max, measured: 1252). Four facts lead,
