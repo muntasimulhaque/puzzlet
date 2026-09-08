@@ -54,7 +54,7 @@ and offline facts live in the full description only.
 Simple, beautiful jigsaw puzzles for ages 3 to 5.
 ```
 
-**Full description** (4000 chars max, measured: 1368). Four facts lead,
+**Full description** (4000 chars max, measured: 1347). Four facts lead,
 because they are the reason a parent installs: what it is, that it is
 safe, that it is open source, and that it asks for nothing. How it plays
 comes after, short enough to scan on a phone. Paragraphs are unwrapped
@@ -75,7 +75,8 @@ No ads. No trackers. No accounts. No in-app purchases. It asks for no permission
 
 Open source
 Puzzlet is open source under the MIT license, made by a parent for parents who want the calm kind of screen time. The source code is available on GitHub. Pay once and play forever.
-If you cannot afford the payment, write to me at muntasim.haque@gmail.com.
+
+If you cannot afford the payment, write me an email.
 ```
 
 **App category**: Game, subcategory Puzzle

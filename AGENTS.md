@@ -644,11 +644,13 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   bush the way house and balloon fix their corners. The coverage test
   and the store listing text followed.
 - D-073 The payment line (owner-directed). The full description ends
-  on: If you cannot afford the payment, write to me at
-  muntasim.haque@gmail.com. First misread as a release-notes line and
-  logged as a D-038 reversal; the owner corrected it the same day: the
-  line lives in the full description only, release notes stay
-  contact-free, and D-038 stands unchanged.
+  on its own paragraph: If you cannot afford the payment, write me an
+  email. No address in the text: the console contact email shows on
+  the store page, so the line resolves there. First misread as a
+  release-notes line and logged as a D-038 reversal; the owner
+  corrected it the same day: release notes stay contact-free and
+  D-038 stands unchanged. The owner's settled wording was stored
+  verbatim, with two copy-wrap breaks unwrapped.
 
 ## Lessons that still bite
 
@@ -1054,8 +1056,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   line (notes grew to 484 chars and D-038 was marked reversed); the
   owner corrected it the same day: the line is the full description's
   last line, not a notes line. Notes reverted to 409 chars, D-038
-  stands, the guide's full description grew to 1368 chars with the
-  line as its last line, and D-073 was rewritten to record the truth.
+  stands. The owner then settled the full description's own wording:
+  the line as its own paragraph, write me an email, no address in the
+  text (the console contact email shows on the store page). Stored
+  verbatim at 1347 chars, two copy-wrap breaks unwrapped and named.
   Notes and full description only: no rebuild, no bump, the verified
   1.9 AAB in play-store/aab/ stands.
 - 2026-09-08: The owner sharpened the handoff law: in chat, only what
