@@ -4,14 +4,12 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 1.8 (versionCode 18) is submitted to the closed
-testing track. Release 1.8 makes the whole picture card one button, so tapping
-the name or the count opens the sizes just like the picture does. Every
-button wears the same soft floating shadow, so it stands off the paper
-instead of hiding in it. The peek button stays in the paper family when
-it is on, and taps answer with a soft ripple instead of a green flash.
-Same rules as always: no timer, no score, no fail state, no reading
-required, fully offline, no ads, no accounts.
+Status: release 1.9 (versionCode 19) is cut for the closed
+testing track. Release 1.9 grows the shelf from twelve to sixteen
+pictures: a kite, a windmill, a beach and a mushroom join the twelve,
+every one inanimate, on a graded ground, and pinned by the no-flat-piece
+test at every size. Same rules as always: no timer, no score, no fail
+state, no reading required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT

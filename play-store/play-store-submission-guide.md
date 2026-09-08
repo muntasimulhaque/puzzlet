@@ -141,6 +141,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 1.9 (measured: 409 chars)
+
+```
+Puzzlet 1.9 grows the shelf from twelve to sixteen pictures. Four new ones to choose from: a kite on a breezy day, a windmill with tulips at its feet, a beach afternoon with an umbrella, a bucket and a ball, and a toadstool in the forest. Everything else is the same calm game: pick a picture, pick a size, drag each piece to its place. No ads, no trackers, no internet, no permissions. Thank you for testing.
+```
+
 ## Release notes for closed testing 1.8 (measured: 349 chars)
 
 ```
