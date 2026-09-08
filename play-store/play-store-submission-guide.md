@@ -267,8 +267,12 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    and capture both succeeded, the AAB and its APK twin read versionCode
    16, versionName 1.6, signed. For 1.7 the same check ran green: CI
    build and capture both succeeded, and the AAB read versionCode 17,
-   versionName 1.7, package io.github.muntasimulhaque.puzzlet. After
-   submitting a build for review, always delete it from the folder.)
+   versionName 1.7, package io.github.muntasimulhaque.puzzlet. For 1.8
+   the same check ran green: CI build and capture both succeeded, and
+   the APK twin read versionCode 18, versionName 1.8, target 37,
+   package io.github.muntasimulhaque.puzzlet, with no permission beyond
+   the androidx core private receiver. After submitting a build for
+   review, always delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
    (type it exactly; it is permanent). Name it from the listing, mark it a Game,
    and set it PAID with a one-time price (a merchant payments profile is

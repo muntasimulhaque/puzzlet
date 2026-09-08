@@ -952,3 +952,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   shadow on every button, the pale peek coin and the soft ink ripple.
   Notes measured at 349 chars, no contact line, delivered in chat and
   stored in the guide. README status and the guide brought current.
+  CI green end to end: the build signed and published the AAB and APK,
+  and the capture ran on all three form factors (11 each; the won
+  chooser came back byte-identical, since the chooser plate carries no
+  coin). The listing kit is refreshed, and the verified AAB (APK twin
+  read versionCode 18, versionName 1.8, target 37, package
+  io.github.muntasimulhaque.puzzlet, no permission beyond the androidx
+  core private receiver) sits in play-store/aab/ awaiting submission.
