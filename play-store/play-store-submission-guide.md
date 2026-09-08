@@ -54,7 +54,7 @@ and offline facts live in the full description only.
 Simple, beautiful jigsaw puzzles for ages 3 to 5.
 ```
 
-**Full description** (4000 chars max, measured: 1252). Four facts lead,
+**Full description** (4000 chars max, measured: 1293). Four facts lead,
 because they are the reason a parent installs: what it is, that it is
 safe, that it is open source, and that it asks for nothing. How it plays
 comes after, short enough to scan on a phone. Paragraphs are unwrapped
@@ -68,7 +68,7 @@ Simple by design
 Tap a picture and pick a size: 4, 6, 9, 12, or 16 pieces, each shown as the real cut. Pieces wait in a tray above a blank board, the way a real table looks. Drag a piece near its place and it clicks home. Forgot the picture? Tap the little picture in the top bar, then tap anywhere to put it away. No timer, no score, no fail state, no reading, no tutorial: the layout is the whole lesson.
 
 Made for small hands
-Twelve calm pictures to choose from: a boat, a house, a balloon, fruit, a lighthouse, an ice cream, a train, a castle, a rocket, a truck, an airplane, and flowers. Big targets, forgiving drops, three soft sounds, and a switch on the shelf to turn them off. No music, ever.
+Sixteen calm pictures to choose from: a boat, a house, a balloon, fruit, a lighthouse, an ice cream, a train, a castle, a rocket, a truck, an airplane, flowers, a kite, a windmill, a beach, and a mushroom. Big targets, forgiving drops, three soft sounds, and a switch on the shelf to turn them off. No music, ever.
 
 Safe and private
 No ads. No trackers. No accounts. No in-app purchases. It asks for no permissions at all, not even internet. No data collected, so nothing shared: everything stays on your device.

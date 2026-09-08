@@ -22,10 +22,10 @@ required, fully offline, no ads, no accounts.
 
 ## The game
 
-Twelve pictures: sailboat, house, balloon, fruit, lighthouse, ice cream,
-train, castle, rocket, truck, airplane, flowers. All inanimate, no
-faces, no eyes, drawn as vectors in code, and every one of them on a
-graded ground so no piece ever comes out blank.
+Sixteen pictures: sailboat, house, balloon, fruit, lighthouse, ice cream,
+train, castle, rocket, truck, airplane, flowers, kite, windmill, beach,
+mushroom. All inanimate, no faces, no eyes, drawn as vectors in code,
+and every one of them on a graded ground so no piece ever comes out blank.
 
 Tap a picture and its cut chooser rises: five tiles, each the picture
 cut the real way the game will deal it at 4, 6, 9, 12 or 16 pieces, the

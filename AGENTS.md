@@ -74,9 +74,10 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 
 ## The game
 
-Tray, drag, snap, celebrate. Twelve pictures: sailboat, house, balloon,
+Tray, drag, snap, celebrate. Sixteen pictures: sailboat, house, balloon,
 fruit, lighthouse, ice cream, train, castle, rocket, truck, airplane,
-flowers. All inanimate: no humans, no animals, no faces, no eyes.
+flowers, kite, windmill, beach, mushroom. All inanimate: no humans, no
+animals, no faces, no eyes.
 Tapping a card anywhere, picture, name or count, opens its cut chooser:
 five tiles, each the real cut the game will deal at 4, 6, 9, 12 and 16,
 the count it opens at marked in honey. The child chooses by look, and
@@ -133,10 +134,11 @@ finger state with no recomposition, the clamp comes from core, and the
 game state hears about the carry once, at release (D-055).
 
 Scene content is pure data: `Scene.kt` holds the shape types and the
-registry; `ScenePaintings.kt`, `ScenePaintingsMore.kt` and
-`ScenePaintingsNew.kt` hold the twelve shipped paintings (sail, house,
-balloon, fruit, train, castle, rocket, lighthouse, truck, plane,
-flowers, icecream). Adding a picture means adding one builder, listing
+registry; `ScenePaintings.kt`, `ScenePaintingsMore.kt`,
+`ScenePaintingsNew.kt` and `ScenePaintingsPlus.kt` hold the sixteen
+shipped paintings (sail, house, balloon, fruit, train, castle, rocket,
+lighthouse, truck, plane, flowers, icecream, kite, windmill, beach,
+mushroom). Adding a picture means adding one builder, listing
 it in `Scenes.all`, naming it in `strings.xml` and `sceneNameRes`, and
 passing the no-flat-piece test; the capture set and the listing text
 follow.
@@ -624,6 +626,17 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   searched words, the age deliberately out of the title so it neither
   narrows the search nor reads like a spec sheet. The repo URL belongs
   in the console's website field, not in the copy.
+- D-072 Sixteen pictures (owner-directed: four more, subjects my call).
+  Kite, windmill, beach and mushroom joined the shelf, chosen for
+  coherence: single common nouns like every shipped name, inanimate,
+  nameable by a three to five year old, drawn from the house palette
+  families, each bringing a mood the shelf lacked (a breezy day, the
+  countryside mill, golden sand, the deep forest). They live in
+  `ScenePaintingsPlus.kt` with their clues in `SceneClues.kt`; the
+  no-flat-piece law walks all sixteen at every count, and it caught one
+  bare hill corner in the kite before any human saw it, fixed with a
+  bush the way house and balloon fix their corners. The coverage test
+  and the store listing text followed.
 
 ## Lessons that still bite
 
@@ -989,3 +1002,19 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   description was rewritten twice at their word and ended on the line
   they wrote themselves: Simple, beautiful jigsaw puzzles for ages 3 to
   5 (49 chars), the age back in after one round without it.
+- 2026-09-08: The owner asked for four more pictures, subjects my call,
+  with coherence as the law (D-072). Kite, windmill, beach and mushroom
+  joined the shelf, sixteen in all, drawn in ScenePaintingsPlus.kt with
+  their clues beside the others. The no-flat-piece test caught one bare
+  hill corner in the kite at 16 pieces; the fix was the house fix, a
+  named element in the corner (a bush), plus denser ground texture.
+  The windmill's sails were re-angled to a clean 45 degree X and its
+  hub raised to the roof peak so the teal roof shows again. All gates
+  green: core tests (the coverage law across sixteen at every count),
+  tools pins, app release unit tests, full lint, R8 release. The
+  picture sheet sits in build/scenes for the owner's eyes. README, the
+  guide's stored listing text (now 1293 chars, Twelve became Sixteen
+  and the four new subjects joined the owner's enumeration) and this
+  file brought current. No version cut yet: the release waits for the
+  owner's word. Next session picks up from: the owner's eyes on the
+  four new pictures, then the cut.
