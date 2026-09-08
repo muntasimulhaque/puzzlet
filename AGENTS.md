@@ -14,7 +14,11 @@ letter.
 
 Every session starts with two acts, in this order: read this file, then
 `git fetch` and pull whatever is new on `main`. The owner works from more
-than one machine; never build on a stale head.
+than one machine; never build on a stale head. Every change made in a
+session is reported in chat as it lands (owner's law): files touched,
+decisions taken, artifacts generated, verifications run. Nothing lives
+only in a commit message or a file; the owner reads the chat, not the
+diff.
 
 ## Hard constraints (non-negotiable)
 
@@ -310,7 +314,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   no tutorial, no hand-holding; the layout itself is the lesson.
 - D-038 Release notes never name the owner's email and carry no contact
   line: testers write anyway (owner's call after the 0.3 notes shipped
-  with one; the rule starts at 0.4).
+  with one; the rule starts at 0.4). Reversed by the owner in D-073:
+  the contact line returns when the owner asks for it.
 - D-039 The tray must never look empty and no piece may be blank. After
   the 0.3 bounce the play screen showed an empty tray on device while
   captures looked fine: the shared outline cache kept the tiny 1x1
@@ -638,6 +643,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   bare hill corner in the kite before any human saw it, fixed with a
   bush the way house and balloon fix their corners. The coverage test
   and the store listing text followed.
+- D-073 The contact line returns (owner-directed, reversing D-038).
+  The 1.9 notes end on: If you cannot afford the payment, write to me
+  at muntasim.haque@gmail.com. The email is spelled out in the notes
+  because me points nowhere in a store listing. The Releasing section
+  and this D-038 line were updated, so the rule is not a dead letter.
 
 ## Lessons that still bite
 
@@ -1038,3 +1048,14 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   awaiting submission. README, guide and this file brought current.
   Next session picks up from: the 1.9 review verdict and tester
   feedback on the sixteen-picture shelf.
+- 2026-09-08: The owner added a last line to the 1.9 notes: If you
+  cannot afford the payment, drop an email to me. That reverses the
+  D-038 no-contact-line law, so the reversal was named and recorded
+  (D-073); the line ships with the address spelled out, ending the
+  notes at 484 of 500 chars, contact line last as directed. Notes-only
+  change: no rebuild, no bump, the verified 1.9 AAB in play-store/aab/
+  stands. Guide brought current; the Releasing section, the D-038 line
+  and this entry had slipped the first commit and are landed now.
+- 2026-09-08: The owner set the reporting law: everything that changes
+  is given in chat or mentioned in chat as it lands. Written into the
+  session-start paragraph so it holds for every session.
