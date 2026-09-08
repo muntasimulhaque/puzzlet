@@ -14,11 +14,12 @@ letter.
 
 Every session starts with two acts, in this order: read this file, then
 `git fetch` and pull whatever is new on `main`. The owner works from more
-than one machine; never build on a stale head. Every change made in a
-session is reported in chat as it lands (owner's law): files touched,
-decisions taken, artifacts generated, verifications run. Nothing lives
-only in a commit message or a file; the owner reads the chat, not the
-diff.
+than one machine; never build on a stale head. Everything that changes
+is handed over in chat, as it lands (owner's law): where the AAB is,
+where the fresh screenshots are, and the paste-ready release notes,
+short description and full description whenever any of them changes.
+Nothing lives only in a commit message or a file; the owner reads the
+chat, not the diff.
 
 ## Hard constraints (non-negotiable)
 
