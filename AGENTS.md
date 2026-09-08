@@ -1127,3 +1127,20 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   is one measured size for every name, the longest name setting it
   (D-075), pinned by SceneNameFitTest. Cut 2.0 (versionCode 20), notes
   measured and delivered in chat.
+- 2026-09-08: Version 2.0 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ and the empty landing folder went
+  with it. The CI build signed and published the AAB and APK (APK twin
+  read versionCode 20, versionName 2.0, target 37, package
+  io.github.muntasimulhaque.puzzlet, no permission beyond the androidx
+  core private receiver), and the capture ran green on all three form
+  factors: the phone set came back byte-identical, the tablets drift
+  only at the anti-aliasing level, so the listing kit stands. Session-end
+  housekeeping: the reference images, the take sheets, the APK check,
+  the Temp folder, the local .gradle and .kotlin caches, and the build
+  outputs of core, app and tools are gone; local.properties stays
+  (gitignored, the local SDK path). README status, the guide's
+  verification note and this file brought current. Session closed with
+  2.0 in Play review. Everything is pushed and the tree is clean.
+  Standing open item unchanged: piece-level TalkBack. Next session
+  picks up from: the 2.0 review verdict and tester feedback on the new
+  mark and the shelf name fix.

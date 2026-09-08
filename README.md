@@ -4,16 +4,16 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.0 (versionCode 20) is cut for closed testing. Release
-2.0 is the new mark: the launcher icon is one real die-cut piece
-carrying the sailboat, drawn from real puzzle-piece references (a short
-shoulder, a short neck, a round chunky head, a wide blank mouth, rounded
-corners, bowed edges), and the feature graphic carries the same piece on
-the brand teal. It also fixes the shelf: long picture names could lose
-their last letter on a phone (Mushroom read as Mushroo), and now every
-name is measured against the longest one and the whole shelf shares one
-size. Same rules as always: no timer, no score, no fail state, no
-reading required, fully offline, no ads, no accounts.
+Status: release 2.0 (versionCode 20) is in Play review for the closed
+testing track. Release 2.0 is the new mark: the launcher icon is one real
+die-cut piece carrying the sailboat, drawn from real puzzle-piece
+references (a short shoulder, a short neck, a round chunky head, a wide
+blank mouth, rounded corners, bowed edges), and the feature graphic
+carries the same piece on the brand teal. It also fixes the shelf: long
+picture names could lose their last letter on a phone (Mushroom read as
+Mushroo), and now every name is measured against the longest one and the
+whole shelf shares one size. Same rules as always: no timer, no score,
+no fail state, no reading required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
