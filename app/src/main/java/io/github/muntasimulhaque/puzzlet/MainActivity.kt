@@ -74,7 +74,6 @@ class MainActivity : ComponentActivity() {
                             shelf = shelf,
                             onChoose = host::play,
                             onChooseAt = host::playAt,
-                            onSound = host::setSound,
                         )
                         is Screen.Playing -> PlayScreen(
                             game = s.game,
@@ -84,8 +83,10 @@ class MainActivity : ComponentActivity() {
                             restartAt = s.restartAt,
                             peeking = s.peeking,
                             celebrating = s.celebrating,
+                            soundOn = shelf.soundOn,
                             actions = playActions(),
                             onPeek = host::setPeek,
+                            onSound = host::setSound,
                             onBack = host::home,
                         )
                     }

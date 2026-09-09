@@ -47,7 +47,7 @@ sealed interface Screen {
     ) : Screen
 }
 
-/** What the shelf needs: the sound switch, the wins, and the count each picture opens at. */
+/** What the app needs from the store: the sound switch, the wins, and the count each picture opens at. */
 data class ShelfState(
     val soundOn: Boolean = true,
     /** The count a parent picked per picture; missing means follow the ladder. */
@@ -261,7 +261,7 @@ class PuzzleHost(app: Application) : ViewModel() {
         _shelf.value = _shelf.value.copy(wins = _shelf.value.wins + (sceneId to total))
     }
 
-    /** The three effects, unless the shelf switch is off. Haptics never stop. */
+    /** The three effects, unless the sound switch is off. Haptics never stop. */
     private fun chime(sfx: Sfx) {
         if (_shelf.value.soundOn) soundBoard.play(sfx)
     }

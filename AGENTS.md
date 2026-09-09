@@ -67,7 +67,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 21, versionName 2.1, cut for
+  and so on. Current release: versionCode 22, versionName 2.2, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -707,6 +707,16 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   signature, so the icon and the game stay one shape family.
   :tools:makeCut renders the cut sheet into build/cut for the owner's
   eyes.
+- D-077 The sound switch moves to the play field (owner-directed: the
+  switch belongs on the puzzle pages, not the home shelf; the owner
+  pointed at the picture coin and left the side to me). The coin sits
+  one step inboard of the picture coin in the play top bar, so the
+  child's coin keeps the right edge and the parent's control stays out
+  of the corner thumb zone. The shelf header keeps the Puzzlet word
+  alone. The switch still persists in DataStore and haptics still never
+  stop. Supersedes the shelf-only placement in D-021, D-046 and D-057,
+  and the shelf-switch phrasing in D-060.
+
 ## Lessons that still bite
 
 - Windows checkouts do not carry the POSIX executable bit, so `gradlew`
@@ -1209,3 +1219,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   and the tree is clean. Standing open item unchanged: piece-level
   TalkBack. Next session picks up from: the 2.1 review verdict and
   tester feedback on the real die-cut pieces.
+- 2026-09-09: The sound switch moves to the play field at the owner's
+  direction (D-077): the coin sits left of the picture coin in the play
+  top bar, the shelf header keeps the Puzzlet word alone. Cut 2.2
+  (versionCode 22) for closed testing. Notes measured at 403 chars, no
+  contact line, delivered in chat and stored in the guide; the full
+  description's shelf line became a switch to turn them off (1334
+  chars). All gates green locally.

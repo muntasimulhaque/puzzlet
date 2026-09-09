@@ -70,12 +70,10 @@ internal fun sceneNameRes(sceneId: String): Int = when (sceneId) {
 }
 
 /**
- * The picture shelf: one quiet name at top with the sound coin docked
- * beside it, then sixteen pictures with their names (D-064, D-072) and one
- * quiet count line each. Tapping a card anywhere opens its cut chooser
- * (D-065, D-070); a pick there plays and remembers. The sound switch lives
- * in the header, never over the pictures and never behind a gate (D-021,
- * D-046, D-057).
+ * The picture shelf: one quiet name at top, then sixteen pictures with
+ * their names (D-064, D-072) and one quiet count line each. Tapping a card
+ * anywhere opens its cut chooser (D-065, D-070); a pick there plays and
+ * remembers. The sound switch lives on the play screen now (D-077).
  *
  * [openChooserFor] starts with one picture's chooser open; it is the
  * capture harness's way to host that state without touch injection.
@@ -85,7 +83,6 @@ fun Gallery(
     shelf: ShelfState,
     onChoose: (String) -> Unit,
     onChooseAt: (String, Int) -> Unit,
-    onSound: (Boolean) -> Unit,
     openChooserFor: String? = null,
 ) {
     var openId by rememberSaveable { mutableStateOf(openChooserFor) }
@@ -95,7 +92,7 @@ fun Gallery(
             .background(PuzzletColors.Paper),
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            ShelfHeader(soundOn = shelf.soundOn, onSound = onSound)
+            ShelfHeader()
             ShelfGrid(
                 shelf = shelf,
                 onOpen = { id -> openId = id },
@@ -196,9 +193,9 @@ private fun rememberNameFontSize(names: List<String>, textWidth: Dp): TextUnit {
     }
 }
 
-/** One calm row: the name on the left, the sound coin docked on the right. */
+/** One calm row: the shelf's word alone. The sound switch plays elsewhere. */
 @Composable
-private fun ShelfHeader(soundOn: Boolean, onSound: (Boolean) -> Unit) {
+private fun ShelfHeader() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -210,9 +207,7 @@ private fun ShelfHeader(soundOn: Boolean, onSound: (Boolean) -> Unit) {
             text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.titleLarge,
             color = PuzzletColors.Ink,
-            modifier = Modifier.weight(1f),
         )
-        SoundCoin(on = soundOn, onToggle = onSound)
     }
 }
 
@@ -277,20 +272,6 @@ private fun QuietCount(pieces: Int) {
         textAlign = TextAlign.Center,
         maxLines = 1,
     )
-}
-
-/** The sound switch: one quiet coin in the header, never over the pictures. */
-@Composable
-private fun SoundCoin(on: Boolean, onToggle: (Boolean) -> Unit, modifier: Modifier = Modifier) {
-    CircleButton(
-        onClick = { onToggle(!on) },
-        background = PuzzletColors.Card,
-        size = 48.dp,
-        label = stringResource(if (on) R.string.sound_on else R.string.sound_off),
-        modifier = modifier,
-    ) {
-        SpeakerIcon(on = on, color = PuzzletColors.Ink)
-    }
 }
 
 /**

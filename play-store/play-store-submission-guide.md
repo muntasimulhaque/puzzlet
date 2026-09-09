@@ -54,7 +54,7 @@ and offline facts live in the full description only.
 Simple, beautiful jigsaw puzzles for ages 3 to 5.
 ```
 
-**Full description** (4000 chars max, measured: 1347). Four facts lead,
+**Full description** (4000 chars max, measured: 1334). Four facts lead,
 because they are the reason a parent installs: what it is, that it is
 safe, that it is open source, and that it asks for nothing. How it plays
 comes after, short enough to scan on a phone. Paragraphs are unwrapped
@@ -68,7 +68,7 @@ Simple by design
 Tap a picture and pick a size: 4, 6, 9, 12, or 16 pieces, each shown as the real cut. Pieces wait in a tray above a blank board, the way a real table looks. Drag a piece near its place and it clicks home. Forgot the picture? Tap the little picture in the top bar, then tap anywhere to put it away. No timer, no score, no fail state, no reading, no tutorial: the layout is the whole lesson.
 
 Made for small hands
-Sixteen calm pictures to choose from: a boat, a house, a balloon, fruit, a lighthouse, an ice cream, a train, a castle, a rocket, a truck, an airplane, flowers, a kite, a windmill, a beach, and a mushroom. Big targets, forgiving drops, three soft sounds, and a switch on the shelf to turn them off. No music, ever.
+Sixteen calm pictures to choose from: a boat, a house, a balloon, fruit, a lighthouse, an ice cream, a train, a castle, a rocket, a truck, an airplane, flowers, a kite, a windmill, a beach, and a mushroom. Big targets, forgiving drops, three soft sounds, and a switch to turn them off. No music, ever.
 
 Safe and private
 No ads. No trackers. No accounts. No in-app purchases. It asks for no permissions at all, not even internet. No data collected, so nothing shared: everything stays on your device.
@@ -142,6 +142,12 @@ external links reachable by a child, no ads.
 versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
+
+## Release notes for closed testing 2.2 (measured: 403 chars)
+
+```
+Puzzlet 2.2 moves the sound switch to where the playing happens. The little speaker now sits beside the picture button on the puzzle screen, so sounds can be turned off or on without leaving the game. The picture shelf is calmer without it: just pictures and names. Everything else is the 2.1 game: real die-cut pieces, sixteen pictures, no ads, no trackers, no permissions asked. Thank you for testing.
+```
 
 ## Release notes for closed testing 2.1 (measured: 473 chars)
 

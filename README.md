@@ -4,16 +4,13 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.1 (versionCode 21) is in Play review for the closed
-testing track.
-Release 2.1 gives the game pieces their real shape: every knob is the
-measured die-cut profile the launcher mark carries, with a soft
-shoulder, a narrow neck, a round head that overhangs it, and base lines
-that bow a little. The old knobs were smooth blobs with no neck. The
-windmill's near corner gained a stone, a bush and two grass tufts, so
-its bottom-right piece is a place, not a green wash. Same rules as
-always: sixteen pictures, no timer, no score, no fail state, no reading
-required, fully offline, no ads, no accounts.
+Status: release 2.2 (versionCode 22) is cut for closed testing.
+Release 2.2 moves the sound switch to the puzzle screen: the little
+speaker now sits beside the picture coin in the play top bar, so sounds
+can be turned off or on without leaving the game. The picture shelf
+keeps its word alone. Same rules as always: sixteen pictures, no timer,
+no score, no fail state, no reading required, fully offline, no ads, no
+accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT

@@ -66,9 +66,11 @@ class PlayActions(
 /**
  * The play field: a shelf above, a board below. The board stays blank, the
  * way a table does, and the picture lives behind one coin in the top bar
- * (D-048): look, then put it away. Each piece is its own tile (one small
- * Canvas per piece), and one tile lives for the whole game (D-055), so a
- * grab, a release and a reorder never rebuild a piece mid flight.
+ * (D-048): look, then put it away. The sound switch shares that bar, one
+ * step inboard of the picture coin (D-077). Each piece is its own tile
+ * (one small Canvas per piece), and one tile lives for the whole game
+ * (D-055), so a grab, a release and a reorder never rebuild a piece mid
+ * flight.
  */
 @Composable
 fun PlayScreen(
@@ -79,8 +81,10 @@ fun PlayScreen(
     restartAt: Long,
     peeking: Boolean,
     celebrating: Boolean,
+    soundOn: Boolean,
     actions: PlayActions,
     onPeek: (Boolean) -> Unit,
+    onSound: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
     var confirming by rememberSaveable { mutableStateOf(false) }
@@ -95,7 +99,7 @@ fun PlayScreen(
     BackHandler(onBack = ::requestBack)
     Box(modifier = Modifier.fillMaxSize().background(PuzzletColors.Paper)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            PlayTopBar(game, peeking, onPeek, ::requestBack)
+            PlayTopBar(game, peeking, soundOn, onPeek, onSound, ::requestBack)
             PlayField(
                 game, draggedId, pulseId, pulseAt, restartAt, peeking, celebrating, actions, onPeek, onBack,
                 Modifier.fillMaxWidth().weight(1f),
@@ -226,12 +230,14 @@ private fun PeekPanel(scene: SceneSpec, onDismiss: () -> Unit) {
     }
 }
 
-/** Back on the left, the picture itself on the right: tap it to look. */
+/** Back on the left; the sound switch and the picture coin on the right. */
 @Composable
 private fun PlayTopBar(
     game: Puzzle,
     peeking: Boolean,
+    soundOn: Boolean,
     onPeek: (Boolean) -> Unit,
+    onSound: (Boolean) -> Unit,
     onBack: () -> Unit,
 ) {
     val scene = remember(game.sceneId) { Scenes.byId(game.sceneId) }
@@ -250,12 +256,30 @@ private fun PlayTopBar(
             BackIcon(color = PuzzletColors.Ink)
         }
         Spacer(Modifier.weight(1f))
+        // The sound switch sits one step inboard of the picture coin, so
+        // the child's coin keeps the right edge and the parent's control
+        // stays out of the corner thumb zone (D-077).
+        SoundCoin(on = soundOn, onToggle = onSound)
+        Spacer(Modifier.width(10.dp))
         // The finish holds the picture up by itself, so the coin steps aside.
         if (game.completed) {
             Spacer(Modifier.size(48.dp))
         } else {
             PeekCoin(scene = scene, peeking = peeking, onPeek = onPeek)
         }
+    }
+}
+
+/** The sound switch: one quiet coin beside the picture coin (D-077). */
+@Composable
+private fun SoundCoin(on: Boolean, onToggle: (Boolean) -> Unit) {
+    CircleButton(
+        onClick = { onToggle(!on) },
+        background = PuzzletColors.Card,
+        size = 48.dp,
+        label = stringResource(if (on) R.string.sound_on else R.string.sound_off),
+    ) {
+        SpeakerIcon(on = on, color = PuzzletColors.Ink)
     }
 }
 
