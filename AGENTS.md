@@ -1374,6 +1374,13 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   stays inside the field so the tinted coin stays visible. The owner then
   set the capture count (D-081): eight screenshots per form factor, 24 in
   all. Cut 2.5 (versionCode 25) for closed testing, notes measured at 478
-  chars, no contact line. All gates green locally. Next session picks up
+  chars, no contact line. All gates green locally and CI green end to
+  end: the build signed and published the AAB and APK, and the capture
+  ran on all three form factors with the new eight-capture set. The
+  verified AAB (APK twin read versionCode 25, versionName 2.5, target 37,
+  package io.github.muntasimulhaque.puzzlet, no permission beyond the
+  androidx core private receiver) sits in play-store/aab/ awaiting
+  submission, and the refreshed 24 screenshots landed in
+  play-store/screenshots/. Next session picks up
   from: the 2.5 review verdict and tester feedback on the picture-colored
   coin.
