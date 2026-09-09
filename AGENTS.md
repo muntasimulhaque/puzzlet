@@ -699,8 +699,8 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   base rising to 1.00 at mid-height); the new one matches the mark's
   measured cross-sections within 0.02 kh, and the game silhouette now
   sits as close to the real 6x8 traced contour as the mark itself does
-  (IoU 0.64 both, against 0.65 for the mark, because that trace is a
-  wide-tab puzzle while the mark is the classic mushroom). The windmill
+  (silhouette IoU 0.64 for the game, 0.65 for the mark, because that
+  trace is a wide-tab puzzle while the mark is the classic mushroom). The windmill
   gained a stone, a bush and two grass tufts in its bottom-right corner:
   the new cut changed that piece's content and the no-flat-piece law
   caught it at 87 percent green. PieceProfileTest pins the cross-section
