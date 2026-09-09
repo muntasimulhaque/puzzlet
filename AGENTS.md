@@ -1225,4 +1225,13 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   (versionCode 22) for closed testing. Notes measured at 403 chars, no
   contact line, delivered in chat and stored in the guide; the full
   description's shelf line became a switch to turn them off (1334
-  chars). All gates green locally.
+  chars). All gates green locally and CI green end to end: the build
+  signed and published the AAB and APK, and the capture ran on all three
+  form factors. The home capture lost the coin and every play capture
+  gained it; the chooser frames came back identical on the tablets and
+  AA-drift only on the phone (mean 3e-08). The verified AAB (APK twin
+  read versionCode 22, versionName 2.2, target 37, package
+  io.github.muntasimulhaque.puzzlet, no permission beyond the androidx
+  core private receiver) sits in play-store/aab/ awaiting submission.
+  README and the guide brought current. Next session picks up from: the
+  owner's eyes on the sound coin beside the picture coin.
