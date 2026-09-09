@@ -21,6 +21,24 @@ and full description, each pasted only when its text changed. Nothing
 lives only in a commit message or a file; the owner reads the chat, not
 the diff.
 
+## The change loop (owner's law)
+
+A request is implemented first, then one question: anything else? The
+build waits for the answer. Nothing is cut, no versionCode moves and no
+CI runs until the owner says the session is done; only then does the
+build happen, once, with the whole session in it. A run of small tweaks
+must not burn a versionCode each on work the owner may still change.
+The session-start fetch and pull stand, and the handoff stands: when the
+build runs, the AAB, the fresh captures and the paste-ready texts arrive
+in chat.
+
+Open question, the owner's call: commit each change as it lands, or one
+commit at the session end. The Releasing section says small commits
+with plain messages, which favors the first; the owner wants to weigh
+that against one clean commit per session. Until the owner decides, the
+commits are held with the build: implement, ask, and commit once the
+owner says there is nothing else.
+
 ## Hard constraints (non-negotiable)
 
 1. **No music.** Effects are synthesized, deterministic, and inharmonic,
@@ -1291,3 +1309,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   core private receiver) sits in play-store/aab/ awaiting submission.
   README and the guide brought current. Next session picks up from: the
   owner's eyes on the equal finish coins.
+- 2026-09-09: The owner set the change loop (a working rule, no D): a
+  request is implemented, then the agent asks whether anything else is
+  wanted; nothing is cut, no versionCode moves and no CI runs until the
+  owner says the session is done, then one build carries the whole
+  session. The commit cadence stays open, per change or per session,
+  the owner's call; until decided, commits are held with the build. The
+  prompt: three owner rounds in one session (2.2, 2.3, 2.4) moved the
+  versionCode three times, twice for a build never submitted.
