@@ -709,8 +709,16 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   eyes.
 - 2026-09-09: Cut 2.1 (versionCode 21) at the owner's word: the game
   pieces are real die-cuts now (D-076). Notes measured at 473 chars, no
-  contact line, delivered in chat and stored in the guide. README, the
-  guide and this file brought current.
+  contact line, delivered in chat and stored in the guide. All gates
+  green locally and CI green end to end: the build signed and published
+  the AAB and APK, and the capture ran on all three form factors. The
+  phone and 7 inch sets refreshed with anti-aliasing-level runner drift
+  (worst mean pixel difference 4.8e-05, a few pixels at piece edges),
+  the 10 inch set came back byte-identical, so the listing kit stands.
+  The verified AAB (APK twin read versionCode 21, versionName 2.1,
+  target 37, package io.github.muntasimulhaque.puzzlet, no permission
+  beyond the androidx core private receiver) sits in play-store/aab/
+  awaiting submission. README, guide and this file brought current.
 
 ## Lessons that still bite
 
