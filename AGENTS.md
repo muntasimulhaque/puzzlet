@@ -1317,3 +1317,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   the owner's call; until decided, commits are held with the build. The
   prompt: three owner rounds in one session (2.2, 2.3, 2.4) moved the
   versionCode three times, twice for a build never submitted.
+- 2026-09-09: Version 2.4 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ and the empty landing folder went
+  with it. README and the guide brought current. Everything is pushed
+  and the tree is clean. Standing open item unchanged: piece-level
+  TalkBack. The commit cadence question from the change loop stays open.
+  Next session picks up from: the 2.4 review verdict and tester feedback
+  on the equal finish coins and the sound switch's new home.
