@@ -719,6 +719,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   target 37, package io.github.muntasimulhaque.puzzlet, no permission
   beyond the androidx core private receiver) sits in play-store/aab/
   awaiting submission. README, guide and this file brought current.
+  The model's vision was then enabled and the result judged with real
+  eyes: the cut sheet, the tray, the board, the chooser tiles and a held
+  piece all read as real die-cut pieces, the seams interlock cleanly,
+  and the windmill corner reads as a calm garden. No further cut round
+  was needed.
 
 ## Lessons that still bite
 
