@@ -24,10 +24,12 @@ private fun flatLine(a: Vec2, b: Vec2): Cubic = Cubic(
  * pieces complementary by design, and the test suite proves it per edge
  * rather than trusting it.
  *
- * Edge shape: a base line, then a two-cubic mushroom knob whose neck is
- * narrower than its head. Position and size are jittered from the seed, so
- * the same puzzle always cuts the same way (AGENTS.md, The game) while
- * different seeds feel hand-cut.
+ * The edge is a real die-cut edge, measured, not invented (D-074, and the
+ * knob's one home is the mark's own profile): gently bowed base lines into
+ * a shoulder flare, a concave taper to a narrow neck, then a round head
+ * that overhangs the neck. Position, size, lean and bow are jittered from
+ * the seed, so the same puzzle always cuts the same way while different
+ * seeds feel hand-cut.
  */
 data class Cubic(val p0: Vec2, val c1: Vec2, val c2: Vec2, val p1: Vec2)
 
@@ -41,11 +43,40 @@ data class PieceShape(
 
 object PieceCut {
 
-    /** Proportions of the knob, as fractions of the knob height. */
-    private const val NECK_HALF = 0.34
-    private const val HEAD_REACH = 0.95
-    private const val KNOB_JITTER = 0.24
-    private const val MID_JITTER = 0.05
+    /** The knob's rise as a share of the smaller cell side. */
+    private const val KNOB_FRAC = 0.28
+    /** How much a knob may differ in size from the board's one knob height. */
+    private const val KNOB_JITTER = 0.20
+    /** How far the knob may sit off the middle of its edge. */
+    private const val MID_JITTER = 0.06
+    /** How far the head may lean off the neck, in knob heights. */
+    private const val LEAN = 0.10
+    /** How much a knob may be slimmer or chunkier than the profile. */
+    private const val WIDTH_JITTER = 0.06
+    /** The gentle bow of a base line, as a share of its own run. */
+    private const val BOW_FRAC = 0.012
+    /** The shortest base line allowed between a corner and a knob. */
+    private const val MIN_BASE = 0.10
+    /** The half-width of the knob's footprint, in knob heights. */
+    private const val JOINT_HALF = 0.706
+
+    /**
+     * The joint: one real die-cut knob in knob-height units, across
+     * positive outward, symmetric about the head. The numbers are the
+     * mark's own profile (tools/MarkPiece.kt, traced from real die-cut
+     * pieces in D-074), with the base line flattened: the shoulders
+     * flare to 1.10 wide, a concave taper falls to the neck (0.52 at
+     * 0.37), the round head swells to 1.05 at 0.65 and domes closed.
+     * Six cubics, footprint -0.706..0.706.
+     */
+    internal val JOINT: List<Cubic> = listOf(
+        Cubic(Vec2(-0.706, 0.000), Vec2(-0.504, 0.025), Vec2(-0.303, 0.151), Vec2(-0.261, 0.370)),
+        Cubic(Vec2(-0.261, 0.370), Vec2(-0.345, 0.496), Vec2(-0.479, 0.529), Vec2(-0.529, 0.664)),
+        Cubic(Vec2(-0.529, 0.664), Vec2(-0.429, 0.950), Vec2(-0.218, 1.000), Vec2(0.000, 1.000)),
+        Cubic(Vec2(0.000, 1.000), Vec2(0.218, 1.000), Vec2(0.429, 0.950), Vec2(0.529, 0.664)),
+        Cubic(Vec2(0.529, 0.664), Vec2(0.479, 0.529), Vec2(0.345, 0.496), Vec2(0.261, 0.370)),
+        Cubic(Vec2(0.261, 0.370), Vec2(0.303, 0.151), Vec2(0.504, 0.025), Vec2(0.706, 0.000)),
+    )
 
     data class Cut(
         val shapes: List<PieceShape>,
@@ -62,119 +93,118 @@ object PieceCut {
         val cellH = boardH / rows
         // One absolute knob height for the whole board: every knob reads at
         // the same physical scale, whatever the cell aspect ratio.
-        val knobH = 0.30 * min(cellW, cellH)
+        val knobH = KNOB_FRAC * min(cellW, cellH)
 
         // Interior edges, generated once each, stored RELATIVE to their start
         // corner: hEdges[r][c] spans (0..cellW, 0) for the line between rows
         // r-1 and r; vEdges[r][c] spans (0, 0..cellH) between cols c-1 and c.
-        // Assembly shifts each side onto its own cell corner.
-        val hEdges: Array<Array<List<Cubic>?>> = Array(rows + 1) { arrayOfNulls(cols) }
-        val vEdges: Array<Array<List<Cubic>?>> = Array(rows) { arrayOfNulls(cols + 1) }
+        // Assembly shifts each side onto its own cell corner. Outer edges
+        // stay flat: the picture's border is straight, as a bought puzzle's.
+        val flatH = listOf(flatLine(Vec2(0.0, 0.0), Vec2(cellW, 0.0)))
+        val flatV = listOf(flatLine(Vec2(0.0, 0.0), Vec2(0.0, cellH)))
+        val hEdges: Array<Array<List<Cubic>>> = Array(rows + 1) { Array(cols) { flatH } }
+        val vEdges: Array<Array<List<Cubic>>> = Array(rows) { Array(cols + 1) { flatV } }
         for (r in 1 until rows) for (c in 0 until cols) {
             hEdges[r][c] = hEdge(0.0, cellW, 0.0, knobH, rnd)
         }
         for (r in 0 until rows) for (c in 1 until cols) {
             vEdges[r][c] = vEdge(0.0, cellH, 0.0, knobH, rnd)
         }
-        val flatH = listOf(flatLine(Vec2(0.0, 0.0), Vec2(cellW, 0.0)))
-        val flatV = listOf(flatLine(Vec2(0.0, 0.0), Vec2(0.0, cellH)))
 
         val shapes = ArrayList<PieceShape>(rows * cols)
         for (r in 0 until rows) for (c in 0 until cols) {
-            val x0 = c * cellW
-            val y0 = r * cellH
-            val chain = ArrayList<Cubic>(24)
-            // Top, left to right.
-            val topEdge: List<Cubic> = hEdges[r][c] ?: flatH
-            for (seg in topEdge) chain.add(seg.shifted(x0, y0))
-            // Right, top to bottom.
-            val rightEdge: List<Cubic> = vEdges[r][c + 1] ?: flatV
-            for (seg in rightEdge) chain.add(seg.shifted(x0 + cellW, y0))
-            // Bottom, right to left.
-            val bottomEdge: List<Cubic> = hEdges[r + 1][c] ?: flatH
-            for (seg in bottomEdge.reversed()) chain.add(seg.reversed().shifted(x0, y0 + cellH))
-            // Left, bottom to top.
-            val leftEdge: List<Cubic> = vEdges[r][c] ?: flatV
-            for (seg in leftEdge.reversed()) chain.add(seg.reversed().shifted(x0, y0))
-
-            val closed = closeAndCheck(chain)
-            val bounds = boundsOf(closed)
-            val local = closed.map { it.shifted(-bounds.minX, -bounds.minY) }
-            shapes.add(
-                PieceShape(
-                    segments = local,
-                    size = Vec2(bounds.w, bounds.h),
-                    offsetInCell = Vec2(bounds.minX - x0, bounds.minY - y0),
-                )
-            )
+            shapes.add(shapeAt(r, c, cellW, cellH, hEdges, vEdges))
         }
         return Cut(shapes, cellW, cellH, knobH)
     }
 
-    /** Horizontal edge from (x0, y) to (x1, y); sign +1 bumps toward -y. */
-    private fun hEdge(x0: Double, x1: Double, y: Double, knobH: Double, rnd: Random): List<Cubic> {
-        val len = x1 - x0
-        val sign = if (rnd.nextBoolean()) 1.0 else -1.0
-        val kh = knobH * (1.0 + (rnd.nextDouble() - 0.5) * KNOB_JITTER)
-        val mid = (x0 + (0.5 + (rnd.nextDouble() - 0.5) * 2 * MID_JITTER) * len)
-            .coerceIn(x0 + 0.24 * len, x1 - 0.24 * len)
-        val bases = listOf(
-            flatLine(Vec2(x0, y), Vec2(mid - NECK_HALF * kh, y)),
-            flatLine(Vec2(mid + NECK_HALF * kh, y), Vec2(x1, y)),
+    /** One piece, chained from its four shared edges and moved to its bbox corner. */
+    private fun shapeAt(
+        r: Int,
+        c: Int,
+        cellW: Double,
+        cellH: Double,
+        hEdges: Array<Array<List<Cubic>>>,
+        vEdges: Array<Array<List<Cubic>>>,
+    ): PieceShape {
+        val x0 = c * cellW
+        val y0 = r * cellH
+        val chain = ArrayList<Cubic>(32)
+        // Top, left to right.
+        for (seg in hEdges[r][c]) chain.add(seg.shifted(x0, y0))
+        // Right, top to bottom.
+        for (seg in vEdges[r][c + 1]) chain.add(seg.shifted(x0 + cellW, y0))
+        // Bottom, right to left.
+        for (seg in hEdges[r + 1][c].reversed()) chain.add(seg.reversed().shifted(x0, y0 + cellH))
+        // Left, bottom to top.
+        for (seg in vEdges[r][c].reversed()) chain.add(seg.reversed().shifted(x0, y0))
+
+        val closed = closeAndCheck(chain)
+        val bounds = boundsOf(closed)
+        val local = closed.map { it.shifted(-bounds.minX, -bounds.minY) }
+        return PieceShape(
+            segments = local,
+            size = Vec2(bounds.w, bounds.h),
+            offsetInCell = Vec2(bounds.minX - x0, bounds.minY - y0),
         )
-        return listOf(bases[0]) + mushroom(mid, y, kh, sign, horizontal = true) + listOf(bases[1])
     }
 
-    /** Vertical edge from (x, y0) to (x, y1); sign +1 bumps toward -x. */
-    private fun vEdge(y0: Double, y1: Double, x: Double, knobH: Double, rnd: Random): List<Cubic> {
-        val len = y1 - y0
-        val sign = if (rnd.nextBoolean()) 1.0 else -1.0
-        val kh = knobH * (1.0 + (rnd.nextDouble() - 0.5) * KNOB_JITTER)
-        val mid = (y0 + (0.5 + (rnd.nextDouble() - 0.5) * 2 * MID_JITTER) * len)
-            .coerceIn(y0 + 0.24 * len, y1 - 0.24 * len)
-        val bases = listOf(
-            flatLine(Vec2(x, y0), Vec2(x, mid - NECK_HALF * kh)),
-            flatLine(Vec2(x, mid + NECK_HALF * kh), Vec2(x, y1)),
-        )
-        return listOf(bases[0]) + mushroom(mid, x, kh, sign, horizontal = false) + listOf(bases[1])
-    }
+    /** Horizontal edge from (x0, y) to (x1, y); a tab bumps toward -y. */
+    private fun hEdge(x0: Double, x1: Double, y: Double, knobH: Double, rnd: Random): List<Cubic> =
+        edge(x1 - x0, knobH, rnd) { along, across -> Vec2(x0 + along, y - across) }
+
+    /** Vertical edge from (x, y0) to (x, y1); a tab bumps toward -x. */
+    private fun vEdge(y0: Double, y1: Double, x: Double, knobH: Double, rnd: Random): List<Cubic> =
+        edge(y1 - y0, knobH, rnd) { along, across -> Vec2(x - across, y0 + along) }
 
     /**
-     * The knob: two cubics from neck-left to neck-right through the head.
-     * In "along/across" coordinates across = the bump direction; sign +1
-     * bumps toward negative across. The head controls reach [HEAD_REACH] x
-     * kh beyond the edge, well past the neck, which is what makes the
-     * silhouette a mushroom and not a bump.
+     * One interior edge, built in edge-local coordinates: [along] runs from
+     * the start corner, [across] is positive outward. Two bowed base lines
+     * carry the shared knob, whose sign, height, width, lean, seat and bows
+     * all come from the seed, so both neighbours see one identical curve.
      */
-    private fun mushroom(mid: Double, base: Double, kh: Double, sign: Double, horizontal: Boolean): List<Cubic> {
-        val neck = NECK_HALF * kh
-        fun pt(along: Double, across: Double): Vec2 =
-            if (horizontal) Vec2(along, base + across * sign) else Vec2(base + across * sign, along)
-
-        val neckL = pt(mid - neck, 0.0)
-        val top = pt(mid, -kh)
-        val neckR = pt(mid + neck, 0.0)
-        val left = Cubic(
-            p0 = neckL,
-            c1 = pt(mid - neck + 0.10 * kh, -0.35 * kh),
-            c2 = pt(mid - HEAD_REACH * kh, -0.45 * kh),
-            p1 = top,
-        )
-        val right = Cubic(
-            p0 = top,
-            c1 = pt(mid + HEAD_REACH * kh, -0.45 * kh),
-            c2 = pt(mid + neck - 0.10 * kh, -0.35 * kh),
-            p1 = neckR,
-        )
-        return listOf(left, right)
+    private fun edge(len: Double, knobH: Double, rnd: Random, map: (Double, Double) -> Vec2): List<Cubic> {
+        val sign = if (rnd.nextBoolean()) 1.0 else -1.0
+        val kh = knobH * (1.0 + (rnd.nextDouble() - 0.5) * KNOB_JITTER)
+        val width = 1.0 + (rnd.nextDouble() - 0.5) * WIDTH_JITTER
+        val lean = (rnd.nextDouble() - 0.5) * 2.0 * LEAN
+        val half = JOINT_HALF * kh * width
+        val want = (0.5 + (rnd.nextDouble() - 0.5) * 2.0 * MID_JITTER) * len
+        val lo = half + MIN_BASE * len
+        val hi = len - half - MIN_BASE * len
+        val mid = if (lo <= hi) want.coerceIn(lo, hi) else len / 2.0
+        val bowA = (rnd.nextDouble() - 0.5) * 2.0 * BOW_FRAC
+        val bowB = (rnd.nextDouble() - 0.5) * 2.0 * BOW_FRAC
+        val out = ArrayList<Cubic>(JOINT.size + 2)
+        out += bowedBase(0.0, mid - half, bowA, map)
+        for (seg in JOINT) {
+            out += Cubic(
+                p0 = map(along(seg.p0, mid, kh, width, lean), across(seg.p0, kh, sign)),
+                c1 = map(along(seg.c1, mid, kh, width, lean), across(seg.c1, kh, sign)),
+                c2 = map(along(seg.c2, mid, kh, width, lean), across(seg.c2, kh, sign)),
+                p1 = map(along(seg.p1, mid, kh, width, lean), across(seg.p1, kh, sign)),
+            )
+        }
+        out += bowedBase(mid + half, len, bowB, map)
+        return out
     }
 
-    private fun flatLine(a: Vec2, b: Vec2): Cubic = Cubic(
-        p0 = a,
-        c1 = a + (b - a) * (1.0 / 3.0),
-        c2 = a + (b - a) * (2.0 / 3.0),
-        p1 = b,
-    )
+    /** Map a profile point: [u] along the edge, [v] outward, both in knob heights. */
+    private fun along(p: Vec2, mid: Double, kh: Double, width: Double, lean: Double) =
+        mid + (p.x + lean * p.y) * kh * width
+
+    private fun across(p: Vec2, kh: Double, sign: Double) = p.y * kh * sign
+
+    /** A base line that bows a hair, so no edge reads as machine straight. */
+    private fun bowedBase(a: Double, b: Double, bend: Double, map: (Double, Double) -> Vec2): Cubic {
+        val run = b - a
+        return Cubic(
+            p0 = map(a, 0.0),
+            c1 = map(a + run / 3.0, bend * run),
+            c2 = map(a + run * 2.0 / 3.0, bend * run),
+            p1 = map(b, 0.0),
+        )
+    }
 
     fun reversed(edge: Cubic) = edge.reversed()
 

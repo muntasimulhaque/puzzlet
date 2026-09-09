@@ -209,6 +209,7 @@ export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"   # not on PATH
 ./gradlew :app:assembleRelease                                   # R8 release (signed when the keystore is present)
 ./gradlew :tools:makeIcons :tools:makeSounds :tools:makeArt      # regenerate after a deliberate design change
 ./gradlew :tools:makeScenes                                      # picture sheet into build/scenes, for review
+./gradlew :tools:makeCut                                         # cut sheet into build/cut, for review
 ```
 
 CI is the loop: `build.yml` gates every push to `main` on tests, lint,
@@ -682,6 +683,30 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   all 16 names at 16 sp against the narrowest two-column card (132 dp),
   so a future name cannot ship clipped. Supersedes the per-name
   auto-size that existed for one afternoon.
+- D-076 The game cut is a real die-cut (owner-directed: the game pieces
+  should look like real puzzle pieces, the way the new mark does; the
+  owner asked for the research-measure-iterate loop until it does). The
+  old edge was a straight base line into a two-cubic mushroom with no
+  shoulder concavity, so the width grew monotonically from base to head
+  and the piece read as a cartoon blob. The cut now carries the mark's
+  own joint profile (tools/MarkPiece.kt, traced from real die-cut pieces
+  in D-074) as six cubics in knob-height units, symmetric, footprint
+  1.41 kh: shoulders flare to 1.10, a concave taper falls to the neck
+  (0.53 at 0.36), the round head swells to 1.05 at 0.65 and domes
+  closed. Base lines bow a hair, and the knob jitters in size, width,
+  seat and lean from the seed; the knob is 0.28 of the smaller cell
+  (was 0.30). The old shape measured no neck at all (width 0.66 at the
+  base rising to 1.00 at mid-height); the new one matches the mark's
+  measured cross-sections within 0.02 kh, and the game silhouette now
+  sits as close to the real 6x8 traced contour as the mark itself does
+  (IoU 0.64 both, against 0.65 for the mark, because that trace is a
+  wide-tab puzzle while the mark is the classic mushroom). The windmill
+  gained a stone, a bush and two grass tufts in its bottom-right corner:
+  the new cut changed that piece's content and the no-flat-piece law
+  caught it at 87 percent green. PieceProfileTest pins the cross-section
+  signature, so the icon and the game stay one shape family.
+  :tools:makeCut renders the cut sheet into build/cut for the owner's
+  eyes.
 
 ## Lessons that still bite
 
@@ -1144,3 +1169,21 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   Standing open item unchanged: piece-level TalkBack. Next session
   picks up from: the 2.0 review verdict and tester feedback on the new
   mark and the shelf name fix.
+- 2026-09-09: The owner asked for the game pieces to look like real
+  jigsaw pieces the way the new mark does, and for the research and
+  compare loop to run until it does. Research: the public-domain piece
+  contours on Wikimedia Commons (the classic contour and a traced 6x8
+  piece) and the mark's own measured profile were cross-sectioned. The
+  diagnosis: the old game knob had no neck (width rose from 0.66 at the
+  base to 1.00 at mid-height), while a real die-cut knob flares at the
+  shoulders, tapers concave to a neck and then overhangs with a round
+  head. The fix (D-076): the mark's profile as the game's joint, six
+  cubics, bowed base lines, jitter in size, width, seat and lean, knob
+  0.28 of the smaller cell. PieceProfileTest pins the measured
+  cross-section signature; the game now matches the mark within 0.02 kh
+  and sits as close to the traced real 6x8 contour as the mark does.
+  The windmill's bottom-right piece went 87 percent green under the new
+  cut and gained a stone, a bush and two grass tufts. :tools:makeCut
+  joined the generators, rendering the cut sheet into build/cut. All
+  gates green locally: core, tools, app release unit tests, full lint,
+  icon and sound pins.

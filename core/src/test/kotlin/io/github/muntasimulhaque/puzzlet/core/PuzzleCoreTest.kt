@@ -64,7 +64,9 @@ class PuzzleCoreTest {
         val rows = 4
         val cols = 3
         val cut = cut(rows, cols)
-        fun segCount(isOuter: Boolean) = if (isOuter) 1 else 4
+        // An interior edge is a bowed base line, the six-cubic knob, and
+        // another bowed base line (PieceCut.JOINT.size + 2).
+        fun segCount(isOuter: Boolean) = if (isOuter) 1 else PieceCut.JOINT.size + 2
 
         for (r in 0 until rows) for (c in 0 until cols) {
             val cellX = c * cut.cellW
@@ -99,18 +101,6 @@ class PuzzleCoreTest {
                 }
             }
         }
-    }
-
-    @Test
-    fun `knobs rise about one knob height above their base line`() {
-        // Piece segments are stored in bbox-local coordinates, so measure the
-        // rise of the top edge's knob relative to its own base line.
-        val cut = cut(3, 3)
-        val topEdge = cut.shapes[4].segments.take(4) // centre piece: base, knob L, knob R, base
-        val ys = topEdge.flatMap { it.pts() }.map { it.y }
-        val rise = ys.max() - ys.min()
-        assertTrue("Knob rise $rise should be near knobH ${cut.knobH}",
-            rise in 0.7 * cut.knobH..1.3 * cut.knobH)
     }
 
     @Test

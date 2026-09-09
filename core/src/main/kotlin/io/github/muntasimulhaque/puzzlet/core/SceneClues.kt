@@ -192,12 +192,24 @@ private fun windmillExtra(): List<SceneShape> {
     val cloud = 0xFFFEFCF8L
     val coral = 0xFFE4572EL
     val honey = 0xFFF0B429L
+    val stone = 0xFFF2E8D4L
+    val leaf = 0xFF4E8C46L
     return buildList {
         add(CircleSpec(Vec2(0.13, 0.14), 0.100, halo))
         addAll(cloud(Vec2(0.14, 0.34), 0.4, cloud))
         for ((p, c) in listOf(Vec2(0.20, 0.88) to coral, Vec2(0.135, 0.955) to honey)) {
             add(CircleSpec(p, 0.014, c))
         }
+        // The near corner of the mill yard: a stone, a bush and two grass
+        // tufts, so the bottom-right piece is a place, not a green wash
+        // (D-050).
+        add(EllipseSpec(Vec2(0.815, 0.905), 0.050, 0.032, stone))
+        add(EllipseSpec(Vec2(0.775, 0.965), 0.032, 0.015, leaf, angleDeg = -16.0))
+        add(EllipseSpec(Vec2(0.800, 0.968), 0.028, 0.013, leaf, angleDeg = 14.0))
+        add(CircleSpec(Vec2(0.905, 0.845), 0.030, leaf))
+        add(CircleSpec(Vec2(0.880, 0.865), 0.024, leaf))
+        add(CircleSpec(Vec2(0.925, 0.865), 0.021, leaf))
+        add(CircleSpec(Vec2(0.905, 0.838), 0.009, coral))
     }
 }
 

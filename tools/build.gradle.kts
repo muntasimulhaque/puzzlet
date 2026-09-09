@@ -74,3 +74,11 @@ tasks.register<JavaExec>("makeScenes") {
     mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeScenesKt"
     args = listOf(rootDir.absolutePath)
 }
+
+tasks.register<JavaExec>("makeCut") {
+    group = "tools"
+    description = "Render the game's real die-cut pieces beside the mark into build/cut, for review."
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeCutKt"
+    args = listOf(rootDir.absolutePath)
+}
