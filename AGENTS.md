@@ -67,7 +67,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 22, versionName 2.2, cut for
+  and so on. Current release: versionCode 23, versionName 2.3, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -715,7 +715,19 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   of the corner thumb zone. The shelf header keeps the Puzzlet word
   alone. The switch still persists in DataStore and haptics still never
   stop. Supersedes the shelf-only placement in D-021, D-046 and D-057,
-  and the shelf-switch phrasing in D-060.
+  and the shelf-switch phrasing in D-060. (Superseded in D-078: the
+  coins swap sides.)
+- D-078 The top bar swap and the brand title (owner's two observations
+  after seeing the 2.2 captures). The sound coin and the picture coin
+  trade places: the picture coin steps inboard and the sound switch
+  takes the right corner, where the shelf used to dock it. One constant
+  now sets every top bar coin to 48 dp (they already measured equal at
+  126 px on the phone capture; the pin keeps them equal), so back,
+  picture and sound can never drift apart. The shelf title steps up
+  from the card name size to Baloo ExtraBold at 36 sp (displaySmall),
+  one clear step above the 28 sp names and still under the 44 sp
+  celebration praise, so the word reads as the brand, not as another
+  picture name. The switch still persists and haptics still never stop.
 
 ## Lessons that still bite
 
@@ -1235,3 +1247,12 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   core private receiver) sits in play-store/aab/ awaiting submission.
   README and the guide brought current. Next session picks up from: the
   owner's eyes on the sound coin beside the picture coin.
+- 2026-09-09: The owner saw the 2.2 captures and filed two observations
+  (D-078): swap the sound and picture coins, and step the shelf title
+  up. The sound switch now takes the right corner, the picture coin
+  steps inboard, one constant pins all three top bar coins at 48 dp,
+  and the Puzzlet word is Baloo ExtraBold 36 sp. 2.2 was never
+  submitted, so it is superseded: cut 2.3 (versionCode 23) for closed
+  testing. Notes measured at 378 chars, no contact line, delivered in
+  chat and stored in the guide. The full description is unchanged.
+  All gates green locally.

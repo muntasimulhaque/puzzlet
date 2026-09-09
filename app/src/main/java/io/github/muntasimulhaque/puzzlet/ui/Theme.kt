@@ -52,6 +52,14 @@ private val BrandTypography = Typography(
         fontSize = 44.sp,
         lineHeight = 50.sp,
     ),
+    // The shelf's brand word: one clear step above the picture names,
+    // still under the celebration praise (D-078).
+    displaySmall = TextStyle(
+        fontFamily = Baloo,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 36.sp,
+        lineHeight = 42.sp,
+    ),
     titleLarge = TextStyle(
         fontFamily = Baloo,
         fontWeight = FontWeight.Bold,

@@ -4,13 +4,11 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.2 (versionCode 22) is cut for closed testing.
-Release 2.2 moves the sound switch to the puzzle screen: the little
-speaker now sits beside the picture coin in the play top bar, so sounds
-can be turned off or on without leaving the game. The picture shelf
-keeps its word alone. Same rules as always: sixteen pictures, no timer,
-no score, no fail state, no reading required, fully offline, no ads, no
-accounts.
+Status: release 2.3 (versionCode 23) is cut for closed testing.
+Release 2.3 puts the sound switch on the puzzle screen, beside the
+picture button, and steps the Puzzlet word up a size on the shelf. Same
+rules as always: sixteen pictures, no timer, no score, no fail state,
+no reading required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT

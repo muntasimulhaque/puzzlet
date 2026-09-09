@@ -66,8 +66,8 @@ class PlayActions(
 /**
  * The play field: a shelf above, a board below. The board stays blank, the
  * way a table does, and the picture lives behind one coin in the top bar
- * (D-048): look, then put it away. The sound switch shares that bar, one
- * step inboard of the picture coin (D-077). Each piece is its own tile
+ * (D-048): look, then put it away. The sound switch shares that bar,
+ * beside the picture coin (D-077, D-078). Each piece is its own tile
  * (one small Canvas per piece), and one tile lives for the whole game
  * (D-055), so a grab, a release and a reorder never rebuild a piece mid
  * flight.
@@ -230,7 +230,11 @@ private fun PeekPanel(scene: SceneSpec, onDismiss: () -> Unit) {
     }
 }
 
-/** Back on the left; the sound switch and the picture coin on the right. */
+/** One size for every coin in the play top bar, so back, picture and
+ *  sound can never drift apart (D-078). */
+private val TOP_BAR_COIN = 48.dp
+
+/** Back on the left; the picture coin and the sound switch on the right. */
 @Composable
 private fun PlayTopBar(
     game: Puzzle,
@@ -251,22 +255,21 @@ private fun PlayTopBar(
         CircleButton(
             onClick = onBack,
             background = PuzzletColors.Card,
+            size = TOP_BAR_COIN,
             label = stringResource(R.string.go_back),
         ) {
             BackIcon(color = PuzzletColors.Ink)
         }
         Spacer(Modifier.weight(1f))
-        // The sound switch sits one step inboard of the picture coin, so
-        // the child's coin keeps the right edge and the parent's control
-        // stays out of the corner thumb zone (D-077).
-        SoundCoin(on = soundOn, onToggle = onSound)
-        Spacer(Modifier.width(10.dp))
-        // The finish holds the picture up by itself, so the coin steps aside.
+        // The picture coin steps inboard and the sound switch takes the
+        // right corner (D-078).
         if (game.completed) {
-            Spacer(Modifier.size(48.dp))
+            Spacer(Modifier.size(TOP_BAR_COIN))
         } else {
             PeekCoin(scene = scene, peeking = peeking, onPeek = onPeek)
         }
+        Spacer(Modifier.width(10.dp))
+        SoundCoin(on = soundOn, onToggle = onSound)
     }
 }
 
@@ -276,7 +279,7 @@ private fun SoundCoin(on: Boolean, onToggle: (Boolean) -> Unit) {
     CircleButton(
         onClick = { onToggle(!on) },
         background = PuzzletColors.Card,
-        size = 48.dp,
+        size = TOP_BAR_COIN,
         label = stringResource(if (on) R.string.sound_on else R.string.sound_off),
     ) {
         SpeakerIcon(on = on, color = PuzzletColors.Ink)
@@ -289,7 +292,7 @@ private fun PeekCoin(scene: SceneSpec, peeking: Boolean, onPeek: (Boolean) -> Un
     CircleButton(
         onClick = { onPeek(!peeking) },
         background = if (peeking) PuzzletColors.TealWash else PuzzletColors.Card,
-        size = 48.dp,
+        size = TOP_BAR_COIN,
         label = label,
     ) {
         ScenePicture(
