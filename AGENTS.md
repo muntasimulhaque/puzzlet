@@ -707,24 +707,6 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   signature, so the icon and the game stay one shape family.
   :tools:makeCut renders the cut sheet into build/cut for the owner's
   eyes.
-- 2026-09-09: Cut 2.1 (versionCode 21) at the owner's word: the game
-  pieces are real die-cuts now (D-076). Notes measured at 473 chars, no
-  contact line, delivered in chat and stored in the guide. All gates
-  green locally and CI green end to end: the build signed and published
-  the AAB and APK, and the capture ran on all three form factors. The
-  phone and 7 inch sets refreshed with anti-aliasing-level runner drift
-  (worst mean pixel difference 4.8e-05, a few pixels at piece edges),
-  the 10 inch set came back byte-identical, so the listing kit stands.
-  The verified AAB (APK twin read versionCode 21, versionName 2.1,
-  target 37, package io.github.muntasimulhaque.puzzlet, no permission
-  beyond the androidx core private receiver) sits in play-store/aab/
-  awaiting submission. README, guide and this file brought current.
-  The model's vision was then enabled and the result judged with real
-  eyes: the cut sheet, the tray, the board, the chooser tiles and a held
-  piece all read as real die-cut pieces, the seams interlock cleanly,
-  and the windmill corner reads as a calm garden. No further cut round
-  was needed.
-
 ## Lessons that still bite
 
 - Windows checkouts do not carry the POSIX executable bit, so `gradlew`
@@ -1204,3 +1186,26 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   joined the generators, rendering the cut sheet into build/cut. All
   gates green locally: core, tools, app release unit tests, full lint,
   icon and sound pins.
+- 2026-09-09: Cut 2.1 (versionCode 21) at the owner's word: the game
+  pieces are real die-cuts now (D-076). Notes measured at 473 chars, no
+  contact line, delivered in chat and stored in the guide. All gates
+  green locally and CI green end to end: the build signed and published
+  the AAB and APK, and the capture ran on all three form factors. The
+  phone and 7 inch sets refreshed with anti-aliasing-level runner drift
+  (worst mean pixel difference 4.8e-05, a few pixels at piece edges),
+  the 10 inch set came back byte-identical, so the listing kit stands.
+  The verified AAB (APK twin read versionCode 21, versionName 2.1,
+  target 37, package io.github.muntasimulhaque.puzzlet, no permission
+  beyond the androidx core private receiver) sat in play-store/aab/
+  awaiting submission. README, guide and this file were brought current.
+  The model's vision was then enabled and the result judged with real
+  eyes: the cut sheet, the tray, the board, the chooser tiles and a held
+  piece all read as real die-cut pieces, the seams interlock cleanly,
+  and the windmill corner reads as a calm garden. No further cut round
+  was needed.
+- 2026-09-09: Version 2.1 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ and the empty landing folder went
+  with it. README and the guide brought current. Everything is pushed
+  and the tree is clean. Standing open item unchanged: piece-level
+  TalkBack. Next session picks up from: the 2.1 review verdict and
+  tester feedback on the real die-cut pieces.

@@ -298,8 +298,9 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    the same check ran green: CI build and capture both succeeded, and
    the APK twin read versionCode 21, versionName 2.1, target 37, package
    io.github.muntasimulhaque.puzzlet, with no permission beyond the
-   androidx core private receiver. 2.1 awaits submission. After
-   submitting a build for review, always delete it from the folder.)
+   androidx core private receiver. 2.1 was submitted for review and the
+   folder was deleted after. After submitting a build for review, always
+   delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
    (type it exactly; it is permanent). Name it from the listing, mark it a Game,
    and set it PAID with a one-time price (a merchant payments profile is

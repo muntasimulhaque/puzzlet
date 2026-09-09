@@ -4,7 +4,8 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.1 (versionCode 21) is cut for closed testing.
+Status: release 2.1 (versionCode 21) is in Play review for the closed
+testing track.
 Release 2.1 gives the game pieces their real shape: every knob is the
 measured die-cut profile the launcher mark carries, with a soft
 shoulder, a narrow neck, a round head that overhangs it, and base lines
