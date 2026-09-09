@@ -327,7 +327,13 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    same check ran green: CI build and capture both succeeded, and the
    APK twin read versionCode 23, versionName 2.3, target 37, package
    io.github.muntasimulhaque.puzzlet, with no permission beyond the
-   androidx core private receiver. The verified 2.3 AAB sits in
+   androidx core private receiver. The verified 2.3 AAB sat in
+   play-store/aab/ awaiting submission; the owner's review of its
+   captures then asked for equal finish coins, so 2.4 superseded it. For
+   2.4 the same check ran green: CI build and capture both succeeded,
+   and the APK twin read versionCode 24, versionName 2.4, target 37,
+   package io.github.muntasimulhaque.puzzlet, with no permission beyond
+   the androidx core private receiver. The verified 2.4 AAB sits in
    play-store/aab/ awaiting submission. After
    submitting a build for review, always
    delete it from the folder.)

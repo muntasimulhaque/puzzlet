@@ -1281,4 +1281,13 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   confirm, and both icons share one 28 dp size. 2.3 is superseded: cut
   2.4 (versionCode 24) for closed testing. Notes measured at 393 chars,
   no contact line, delivered in chat and stored in the guide. All gates
-  green locally.
+  green locally and CI green end to end: the build signed and published
+  the AAB and APK, and the capture ran on all three form factors. Only
+  the celebration frames changed on the phone (mean 0.024); the rest of
+  the phone set came back byte-identical and the tablets drift only at
+  the anti-aliasing level. The verified AAB (APK twin read versionCode
+  24, versionName 2.4, target 37, package
+  io.github.muntasimulhaque.puzzlet, no permission beyond the androidx
+  core private receiver) sits in play-store/aab/ awaiting submission.
+  README and the guide brought current. Next session picks up from: the
+  owner's eyes on the equal finish coins.
