@@ -206,10 +206,10 @@ private fun windmillExtra(): List<SceneShape> {
         add(EllipseSpec(Vec2(0.815, 0.905), 0.050, 0.032, stone))
         add(EllipseSpec(Vec2(0.775, 0.965), 0.032, 0.015, leaf, angleDeg = -16.0))
         add(EllipseSpec(Vec2(0.800, 0.968), 0.028, 0.013, leaf, angleDeg = 14.0))
-        add(CircleSpec(Vec2(0.905, 0.845), 0.030, leaf))
-        add(CircleSpec(Vec2(0.880, 0.865), 0.024, leaf))
-        add(CircleSpec(Vec2(0.925, 0.865), 0.021, leaf))
-        add(CircleSpec(Vec2(0.905, 0.838), 0.009, coral))
+        add(CircleSpec(Vec2(0.905, 0.895), 0.030, leaf))
+        add(CircleSpec(Vec2(0.880, 0.912), 0.023, leaf))
+        add(CircleSpec(Vec2(0.930, 0.912), 0.020, leaf))
+        add(CircleSpec(Vec2(0.905, 0.888), 0.009, coral))
     }
 }
 

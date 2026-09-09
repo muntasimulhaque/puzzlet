@@ -65,8 +65,8 @@ object PieceCut {
      * positive outward, symmetric about the head. The numbers are the
      * mark's own profile (tools/MarkPiece.kt, traced from real die-cut
      * pieces in D-074), with the base line flattened: the shoulders
-     * flare to 1.10 wide, a concave taper falls to the neck (0.52 at
-     * 0.37), the round head swells to 1.05 at 0.65 and domes closed.
+     * flare to 1.10 wide, a concave taper falls to the neck (0.53 at
+     * 0.36), the round head swells to 1.05 at 0.65 and domes closed.
      * Six cubics, footprint -0.706..0.706.
      */
     internal val JOINT: List<Cubic> = listOf(
