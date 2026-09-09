@@ -1,15 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Fully offline app: no permissions at all. -->
 
+    <!-- allowBackup=false already keeps every API level out of cloud backup
+         and device transfer; dataExtractionRules only restates that for
+         Android 12+, so the deprecation warning is silenced, not ignored.
+         English only by design: the layout never mirrors, so the back
+         chevron can never end up on the wrong side in an RTL locale. -->
     <application
         android:allowBackup="false"
         android:usesCleartextTraffic="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/Theme.Puzzlet">
+        android:supportsRtl="false"
+        android:theme="@style/Theme.Puzzlet"
+        tools:ignore="DataExtractionRules,RtlEnabled">
         <activity
             android:name=".MainActivity"
             android:exported="true"

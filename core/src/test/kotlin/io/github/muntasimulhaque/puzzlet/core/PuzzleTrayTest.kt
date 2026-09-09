@@ -25,6 +25,10 @@ class PuzzleTrayTest {
     )
     private val cap = 1470.0
 
+    /** The piece or a loud test failure; no `!!` anywhere in the suite. */
+    private fun Puzzle.pieceOf(id: Int): Piece =
+        requireNotNull(piece(id)) { "piece $id is missing" }
+
     /** The piece as the child actually sees it in the tray: seat plus scaled half-size. */
     private fun visual(piece: Piece, scale: Double): Area {
         val seat = piece.currentCenter
@@ -198,9 +202,9 @@ class PuzzleTrayTest {
     @Test
     fun `redeal keeps the cut, jumbles seats, and clears progress`() {
         var p = createPuzzle("house", 3, 3, fields[1], cap, 5L, 31L)
-        p = drag(p, 0, p.piece(0)!!.home)
+        p = drag(p, 0, p.pieceOf(0).home)
         p = drop(p, 0)
-        assertTrue(p.piece(0)!!.placed)
+        assertTrue(p.pieceOf(0).placed)
         val dealt = redeal(p, 32L)
         assertEquals(0, dealt.placedCount)
         assertTrue(dealt.pieces.none { it.placed })
@@ -218,7 +222,7 @@ class PuzzleTrayTest {
     @Test
     fun `pieceAt is nearest-within-reach and honours the scale hint`() {
         val p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 9L)
-        val a = p.piece(0)!!
+        val a = p.pieceOf(0)
         // Dead centre: even a zero reach grabs it.
         assertEquals(0, pieceAt(p, a.currentCenter, 1.0, 0.0)?.id)
         // Off-centre beyond a hinted reach: no grab.

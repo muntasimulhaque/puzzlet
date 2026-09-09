@@ -6,6 +6,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -34,6 +35,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -70,7 +72,10 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
         Box(
             Modifier
                 .fillMaxSize()
-                .background(PuzzletColors.Ink.copy(alpha = 0.62f)),
+                .background(PuzzletColors.Scrim)
+                // The plate owns the screen: taps that miss the coins land on
+                // the scrim and stop there, never on the top bar underneath.
+                .pointerInput(Unit) { detectTapGestures { } },
         )
         Canvas(Modifier.fillMaxSize()) {
             if (fall.value < 1f) drawConfetti(confetti, fall.value)

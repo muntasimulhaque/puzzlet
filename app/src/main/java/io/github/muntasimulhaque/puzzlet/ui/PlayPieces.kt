@@ -12,7 +12,6 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,13 +19,16 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.GraphicsLayerScope
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerType
@@ -34,7 +36,6 @@ import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.zIndex
 import io.github.muntasimulhaque.puzzlet.core.Area
 import io.github.muntasimulhaque.puzzlet.core.Piece
@@ -43,7 +44,6 @@ import io.github.muntasimulhaque.puzzlet.core.SceneSpec
 import io.github.muntasimulhaque.puzzlet.core.Vec2
 import io.github.muntasimulhaque.puzzlet.core.clampBoxTopLeft
 import kotlinx.coroutines.delay
-import kotlin.math.roundToInt
 
 /** A held piece rides a little larger than the board it is headed for. */
 private const val HELD_SCALE = 1.06f
@@ -183,27 +183,46 @@ private fun PieceNode(
     val target = piece.currentCenter
     val display = remember { Animatable(target.toOffset(), Offset.VectorConverter) }
     val wasHeld = remember { mutableStateOf(false) }
-    val lastRestart = remember { mutableStateOf(restartAt) }
+    val lastRestart = remember { mutableLongStateOf(restartAt) }
     LaunchedEffect(target, restartAt, isHeld) {
         display.follow(target, isHeld, heldCenter, wasHeld, lastRestart, index, restartAt)
     }
     val scale by animateFloatAsState(targetScale, pieceScaleSpec(isHeld), label = "pieceScale")
     val density = LocalDensity.current
-    val wDp = with(density) { (piece.size.x * scale.toDouble()).toFloat().toDp() }
-    val hDp = with(density) { (piece.size.y * scale.toDouble()).toFloat().toDp() }
+    val wDp = with(density) { piece.size.x.toFloat().toDp() }
+    val hDp = with(density) { piece.size.y.toFloat().toDp() }
     Canvas(
         modifier
-            .offset { tileTopLeft(piece, isHeld, heldCenter, display, scale) }
+            // The carry is a draw-phase transform: translation and scale
+            // move the recorded slice, so a drag never relayouts the tile
+            // and never redraws its scene under the finger. The pivot is
+            // the tile's own top-left, not its centre (D-056).
+            .graphicsLayer { placeTile(piece, isHeld, heldCenter, display, scale) }
             .size(wDp, hDp),
     ) {
-        // TransformScope.scale pivots at the scope's centre by default, which
-        // slid every scaled tile down-right off its seat (the tray overflow the
-        // owner saw). The tile is sized and placed for an origin pivot, so the
-        // piece grows from its own top-left and stays centred on its centre.
-        withTransform({ scale(scale, scale, pivot = Offset.Zero) }) {
-            drawSlice(piece, path, scene, board, isHeld)
-        }
+        drawSlice(piece, path, scene, board, isHeld)
     }
+}
+
+/** Where the tile is drawn: centred on the finger, else on the sprung centre. */
+private fun GraphicsLayerScope.placeTile(
+    piece: Piece,
+    isHeld: Boolean,
+    heldCenter: State<Vec2?>,
+    display: Animatable<Offset, AnimationVector2D>,
+    scale: Float,
+) {
+    val center = if (isHeld) {
+        heldCenter.value ?: piece.currentCenter
+    } else {
+        Vec2(display.value.x.toDouble(), display.value.y.toDouble())
+    }
+    val topLeft = center - piece.size * (scale / 2.0)
+    translationX = topLeft.x.toFloat()
+    translationY = topLeft.y.toFloat()
+    scaleX = scale
+    scaleY = scale
+    transformOrigin = TransformOrigin(0f, 0f)
 }
 
 /** The display's march: held means the finger owns it, free means a spring home. */
@@ -239,20 +258,3 @@ private fun pieceScaleSpec(isHeld: Boolean) =
     } else {
         spring(stiffness = 400f, dampingRatio = 0.8f)
     }
-
-/** The tile's top-left: the held centre under the finger, else the sprung centre. */
-private fun tileTopLeft(
-    piece: Piece,
-    isHeld: Boolean,
-    heldCenter: State<Vec2?>,
-    display: Animatable<Offset, AnimationVector2D>,
-    scale: Float,
-): IntOffset {
-    val c = if (isHeld) {
-        heldCenter.value ?: piece.currentCenter
-    } else {
-        Vec2(display.value.x.toDouble(), display.value.y.toDouble())
-    }
-    val topLeft = c - piece.size * (scale.toDouble() / 2.0)
-    return IntOffset(topLeft.x.roundToInt(), topLeft.y.roundToInt())
-}

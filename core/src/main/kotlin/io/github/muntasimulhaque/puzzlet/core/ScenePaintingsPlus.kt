@@ -59,7 +59,7 @@ them on a graded ground so no piece comes out blank.
             add(RoundRectSpec(0.6165, 0.175, 0.007, 0.290, 0.003, ink))
             add(RoundRectSpec(0.505, 0.3165, 0.230, 0.007, 0.003, ink))
         }
-        return SceneSpec("kite", shapes)
+        return SceneSpec("kite", shapes, accent = coral)
     }
 
     /** The kite's tail: three string legs, three bows, one tassel end. */
@@ -152,7 +152,7 @@ them on a graded ground so no piece comes out blank.
                 add(CircleSpec(p, 0.007, paper))
             }
         }
-        return SceneSpec("windmill", shapes)
+        return SceneSpec("windmill", shapes, accent = roof)
     }
 
     /** One tulip: stem, leaf, and the notched cup. */
@@ -228,7 +228,7 @@ them on a graded ground so no piece comes out blank.
             add(RingSpec(Vec2(0.245, 0.905), 0.011, 0.009, 0.005, foam))
             add(RingSpec(Vec2(0.800, 0.935), 0.011, 0.009, 0.005, foam))
         }
-        return SceneSpec("beach", shapes)
+        return SceneSpec("beach", shapes, accent = sandTop)
     }
 
     /** The umbrella canopy: six alternating wedges fanned below the apex. */
@@ -366,7 +366,7 @@ them on a graded ground so no piece comes out blank.
                 add(CircleSpec(p, r, flower))
             }
         }
-        return SceneSpec("mushroom", shapes)
+        return SceneSpec("mushroom", shapes, accent = cap)
     }
 
     /** The small toadstool beside the big one. */

@@ -39,6 +39,16 @@ class LadderTest {
     }
 
     @Test
+    fun `a pick outside the five counts is ignored, not trusted`() {
+        // A stale or corrupt preference (a count the shelf does not offer)
+        // must never reach the shelf line or the play path: both read the
+        // ladder instead, so the marked tile and the deal stay one truth.
+        assertEquals(4, openingCountFor(mapOf("truck" to 7), emptyMap(), "truck"))
+        assertEquals(6, openingCountFor(mapOf("truck" to 0), mapOf("truck" to 1), "truck"))
+        assertEquals(9, openingCountFor(mapOf("truck" to -3), mapOf("truck" to 2), "truck"))
+    }
+
+    @Test
     fun `one picture's win never moves another`() {
         assertEquals(4, openingCountFor(emptyMap(), mapOf("sail" to 2), "truck"))
     }

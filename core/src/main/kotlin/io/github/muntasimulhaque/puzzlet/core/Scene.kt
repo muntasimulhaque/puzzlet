@@ -50,6 +50,14 @@ data class RingSpec(
 data class SceneSpec(
     val id: String,
     val shapes: List<SceneShape>,
+    /**
+     * The picture's own accent: a real colour from its palette, the one
+     * colour that says this picture. It is never drawn directly; the peek
+     * coin's on state is this hue softened into one band, so the button
+     * changes with the picture while the gentleness never does
+     * (core/SceneWash.kt, D-080).
+     */
+    val accent: Long,
 )
 
 object Scenes {

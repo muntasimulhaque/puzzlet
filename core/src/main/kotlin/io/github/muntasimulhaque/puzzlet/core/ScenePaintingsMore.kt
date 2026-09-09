@@ -62,7 +62,7 @@ Every one stands on a graded ground, so no piece comes out blank.
             add(RoundRectSpec(0.0, 0.786, 1.0, 0.014, 0.0, rail))
             add(RoundRectSpec(0.0, 0.878, 1.0, 0.014, 0.0, rail))
         }
-        return SceneSpec("train", shapes)
+        return SceneSpec("train", shapes, accent = honey)
     }
 
 
@@ -133,7 +133,7 @@ Every one stands on a graded ground, so no piece comes out blank.
                 add(CircleSpec(p, 0.012, c))
             }
         }
-        return SceneSpec("castle", shapes)
+        return SceneSpec("castle", shapes, accent = skyTop)
     }
 
 
@@ -203,7 +203,7 @@ Every one stands on a graded ground, so no piece comes out blank.
             add(RingSpec(Vec2(0.215, 0.428), 0.030, 0.026, 0.011, cup))
             add(RoundRectSpec(0.13, 0.38, 0.075, 0.10, 0.02, cup))
         }
-        return SceneSpec("fruit", shapes)
+        return SceneSpec("fruit", shapes, accent = grape)
     }
 
 
@@ -265,5 +265,5 @@ Every one stands on a graded ground, so no piece comes out blank.
                 add(CircleSpec(p, 0.008, wallTop))
             }
         }
-        return SceneSpec("house", shapes)
+        return SceneSpec("house", shapes, accent = hillMid)
     }

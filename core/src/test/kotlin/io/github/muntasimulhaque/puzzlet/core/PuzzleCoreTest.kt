@@ -32,6 +32,10 @@ class PuzzleCoreTest {
     private fun cut(rows: Int, cols: Int, seed: Long = 7L) =
         PieceCut.generate(rows, cols, 600.0, 600.0, seed)
 
+    /** The piece or a loud test failure; no `!!` anywhere in the suite. */
+    private fun Puzzle.pieceOf(id: Int): Piece =
+        requireNotNull(piece(id)) { "piece $id is missing" }
+
     @Test
     fun `every outline closes, chains cleanly, and stays finite, for every seed and difficulty`() {
         for (seed in 1L..25L) for ((rows, cols) in difficulties) {
@@ -109,20 +113,20 @@ class PuzzleCoreTest {
         val tol = p0.snapTolerance
         var p = p0
         for (id in 0 until 3) {
-            p = drag(p, id, p.piece(id)!!.home + Vec2(tol * 0.4, 0.0))
+            p = drag(p, id, p.pieceOf(id).home + Vec2(tol * 0.4, 0.0))
             p = drop(p, id)
-            assertTrue("piece $id should snap", p.piece(id)!!.placed)
+            assertTrue("piece $id should snap", p.pieceOf(id).placed)
             assertFalse(p.completed)
         }
         // Far drop: clamped into the field, still far from home, no snap.
-        p = drag(p, 3, p.piece(3)!!.home + Vec2(tol * 3.0, tol * 3.0))
+        p = drag(p, 3, p.pieceOf(3).home + Vec2(tol * 3.0, tol * 3.0))
         p = drop(p, 3)
-        assertFalse(p.piece(3)!!.placed)
+        assertFalse(p.pieceOf(3).placed)
         assertFalse(p.completed)
         // And now it goes home.
-        p = drag(p, 3, p.piece(3)!!.home)
+        p = drag(p, 3, p.pieceOf(3).home)
         p = drop(p, 3)
-        assertTrue(p.piece(3)!!.placed)
+        assertTrue(p.pieceOf(3).placed)
         assertTrue(p.completed)
         assertEquals(p0.pieces.size, p.placedCount)
     }
@@ -132,13 +136,13 @@ class PuzzleCoreTest {
         val p0 = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 42L)
         val tol = p0.snapTolerance
         // Carried straight from the tray seat to just inside tolerance: snaps.
-        var p = dropAt(p0, 0, p0.piece(0)!!.home + Vec2(tol * 0.4, 0.0))
-        assertTrue(p.piece(0)!!.placed)
+        var p = dropAt(p0, 0, p0.pieceOf(0).home + Vec2(tol * 0.4, 0.0))
+        assertTrue(p.pieceOf(0).placed)
         assertEquals(p0.placedCount + 1, p.placedCount)
         // Carried far: no snap, and the position is clamped inside the field.
         p = dropAt(p0, 0, Vec2(-9000.0, -9000.0))
-        assertFalse(p.piece(0)!!.placed)
-        assertEquals(Vec2(0.0, 0.0), p.piece(0)!!.current)
+        assertFalse(p.pieceOf(0).placed)
+        assertEquals(Vec2(0.0, 0.0), p.pieceOf(0).current)
         // A drop that misses never completes the puzzle.
         assertFalse(p.completed)
     }
@@ -146,7 +150,7 @@ class PuzzleCoreTest {
     @Test
     fun `placed pieces are immune and grab lifts to the top`() {
         var p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 42L)
-        p = drag(p, 0, p.piece(0)!!.home)
+        p = drag(p, 0, p.pieceOf(0).home)
         p = drop(p, 0)
         val afterDrop = p
         // Grabbing a placed piece changes nothing.
@@ -162,9 +166,9 @@ class PuzzleCoreTest {
     @Test
     fun `drag clamps the piece inside the field`() {
         var p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 42L)
-        val size = p.piece(0)!!.size
+        val size = p.pieceOf(0).size
         p = drag(p, 0, Vec2(-500.0, -500.0))
-        val topLeft = p.piece(0)!!.current
+        val topLeft = p.pieceOf(0).current
         assertTrue(topLeft.x >= 0 - 1e-9 && topLeft.y >= 0 - 1e-9)
         assertTrue(topLeft.x + size.x <= 800.0 + 1e-9 && topLeft.y + size.y <= 800.0 + 1e-9)
     }
@@ -183,14 +187,14 @@ class PuzzleCoreTest {
     fun `relayout keeps placed progress and re-seats placed pieces`() {
         var p = createPuzzle("house", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 5L)
         for (id in 0 until 3) {
-            p = drag(p, id, p.piece(id)!!.home)
+            p = drag(p, id, p.pieceOf(id).home)
             p = drop(p, id)
         }
         p = relayout(p, Area(0.0, 0.0, 1200.0, 800.0), 480.0)
         assertEquals(3, p.placedCount)
         assertFalse(p.completed)
         for (id in 0 until 3) {
-            val piece = p.piece(id)!!
+            val piece = p.pieceOf(id)
             assertTrue(piece.placed)
             assertEquals(piece.home, piece.current)
         }
@@ -198,6 +202,14 @@ class PuzzleCoreTest {
             assertTrue(piece.home.x >= p.board.x - 1e-9 && piece.home.y >= p.board.y - 1e-9)
             assertTrue(piece.home.x <= p.board.maxX + 1e-9 && piece.home.y <= p.board.maxY + 1e-9)
         }
+    }
+
+    @Test
+    fun `relayout ignores a degenerate field instead of cutting a zero board`() {
+        val p = createPuzzle("sail", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 5L)
+        assertEquals(p, relayout(p, Area(0.0, 0.0, 0.0, 800.0), 500.0))
+        assertEquals(p, relayout(p, Area(0.0, 0.0, 800.0, 0.0), 500.0))
+        assertEquals(p, relayout(p, Area(0.0, 0.0, 800.0, 800.0), 0.0))
     }
 
     @Test
@@ -215,7 +227,7 @@ class PuzzleCoreTest {
     @Test
     fun `redeal clears progress and re-seats the tray`() {
         var p = createPuzzle("house", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 5L)
-        p = drag(p, 0, p.piece(0)!!.home)
+        p = drag(p, 0, p.pieceOf(0).home)
         p = drop(p, 0)
         p = redeal(p, 99L)
         assertEquals(0, p.placedCount)
@@ -248,13 +260,13 @@ class PuzzleCoreTest {
         val p = restorePuzzle("sail", 3, 3, setOf(0, 4), Area(0.0, 0.0, 800.0, 800.0), 500.0, 3L)
         assertEquals(2, p.placedCount)
         assertFalse(p.completed)
-        assertTrue(p.piece(0)!!.placed)
-        assertTrue(p.piece(4)!!.placed)
-        assertFalse(p.piece(1)!!.placed)
-        assertEquals(p.piece(0)!!.home, p.piece(0)!!.current)
+        assertTrue(p.pieceOf(0).placed)
+        assertTrue(p.pieceOf(4).placed)
+        assertFalse(p.pieceOf(1).placed)
+        assertEquals(p.pieceOf(0).home, p.pieceOf(0).current)
         val fresh = createPuzzle("sail", 3, 3, Area(0.0, 0.0, 800.0, 800.0), 500.0, 3L)
         for (piece in p.pieces.filter { !it.placed }) {
-            assertEquals(fresh.piece(piece.id)!!.current, piece.current)
+            assertEquals(fresh.pieceOf(piece.id).current, piece.current)
         }
         // A full restore completes the picture.
         val all = restorePuzzle("sail", 2, 2, (0 until 4).toSet(), Area(0.0, 0.0, 800.0, 800.0), 600.0, 3L)
@@ -269,7 +281,7 @@ class PuzzleCoreTest {
         assertEquals(first.seats, second.seats)
         val other = restorePuzzle("sail", 3, 3, setOf(0), field, 500.0, 3L, 42L)
         assertTrue("new jumble should differ", first.seats != other.seats)
-        assertEquals(first.piece(0)!!.home, first.piece(0)!!.current)
+        assertEquals(first.pieceOf(0).home, first.pieceOf(0).current)
     }
 
     @Test
@@ -281,13 +293,13 @@ class PuzzleCoreTest {
     @Test
     fun `pieceAt picks the nearest unplaced piece and never a placed one`() {
         var p = createPuzzle("sail", 2, 2, Area(0.0, 0.0, 800.0, 800.0), 600.0, 9L)
-        p = drag(p, 0, p.piece(0)!!.home)
+        p = drag(p, 0, p.pieceOf(0).home)
         p = drop(p, 0)
         p = grab(p, 1)
-        val held = p.piece(1)!!
+        val held = p.pieceOf(1)
         assertEquals(1, pieceAt(p, held.currentCenter, 10.0)?.id)
         // A placed piece is never grabbed, however large the radius.
-        val placed = p.piece(0)!!
+        val placed = p.pieceOf(0)
         for (radius in listOf(1.0, 100.0, 5000.0)) {
             val hit = pieceAt(p, placed.currentCenter, radius)
             assertTrue("placed piece must not be hit", hit?.id != 0)
@@ -320,5 +332,7 @@ class PuzzleCoreTest {
         // Sixteen on the shelf (D-064 grew it to twelve, D-072 to sixteen),
         // and every one must cut fairly.
         assertEquals(16, Scenes.all.size)
+        // And every shipped id resolves: the play field reads its scene by id.
+        for (scene in Scenes.all) assertEquals(scene, Scenes.byId(scene.id))
     }
 }

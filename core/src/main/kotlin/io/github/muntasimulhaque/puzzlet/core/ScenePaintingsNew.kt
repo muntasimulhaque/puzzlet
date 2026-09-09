@@ -57,7 +57,7 @@ graded ground so no piece comes out blank.
                 add(CircleSpec(Vec2(x, 0.755), 0.022, cloud))
             }
         }
-        return SceneSpec("truck", shapes)
+        return SceneSpec("truck", shapes, accent = bed)
     }
 
 
@@ -99,7 +99,7 @@ graded ground so no piece comes out blank.
             for (x in listOf(0.44, 0.50, 0.56, 0.62)) add(CircleSpec(Vec2(x, 0.545), 0.014, glass))
             add(CircleSpec(Vec2(0.652, 0.556), 0.017, ink))
         }
-        return SceneSpec("plane", shapes)
+        return SceneSpec("plane", shapes, accent = skyTop)
     }
 
 
@@ -153,7 +153,7 @@ graded ground so no piece comes out blank.
                 addAll(bloom(Vec2(x, 0.40), r, petal))
             }
         }
-        return SceneSpec("flowers", shapes)
+        return SceneSpec("flowers", shapes, accent = petalB)
     }
 
 
@@ -211,5 +211,5 @@ graded ground so no piece comes out blank.
             add(RoundRectSpec(0.66, 0.90, 0.20, 0.018, 0.009, dish))
             add(EllipseSpec(Vec2(0.65, 0.905), 0.038, 0.026, dish))
         }
-        return SceneSpec("icecream", shapes)
+        return SceneSpec("icecream", shapes, accent = scoopC)
     }

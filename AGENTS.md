@@ -85,7 +85,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 24, versionName 2.4, cut for
+  and so on. Current release: versionCode 25, versionName 2.5, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -168,7 +168,9 @@ follow.
 `Ladder.kt` holds the five counts (4, 6, 9, 12, 16) and the gentle walk
 wins take through the first three of them. `SceneGround.kt` holds the
 graded grounds, the rolling hills and the texture scatter every picture
-stands on; `SceneClues.kt` holds the small per-picture extras.
+stands on; `SceneClues.kt` holds the small per-picture extras;
+`SceneWash.kt` holds the one measured band every picture's own accent
+softens into for the picture coin's on state.
 
 Outside the code, two asset homes: `play-store/` holds the listing kit
 (screenshots in per-form-factor subfolders, feature graphic, store icon,
@@ -228,13 +230,15 @@ export JAVA_HOME="/c/Program Files/Android/Android Studio/jbr"   # not on PATH
 ./gradlew :tools:makeIcons :tools:makeSounds :tools:makeArt      # regenerate after a deliberate design change
 ./gradlew :tools:makeScenes                                      # picture sheet into build/scenes, for review
 ./gradlew :tools:makeCut                                         # cut sheet into build/cut, for review
+./gradlew :tools:makeWashes                                      # coin wash sheet into build/washes, for review
 ```
 
 CI is the loop: `build.yml` gates every push to `main` on tests, lint,
 asset pins, then signs and publishes the AAB and APK to the
 `latest-build` GitHub release. `screenshots.yml` recaptures the store
-screenshots whenever UI files change: the capture set per form factor (phone,
-7", 10"), pinned to API 35. Download the three `store-screenshots-*`
+screenshots whenever UI files change: eight captures per form factor
+(phone, 7", 10"), 24 in all, the Play listing maximum, pinned to API 35.
+Download the three `store-screenshots-*`
 artifacts with `gh run download <run-id> -R muntasimulhaque/puzzlet -D
 <dir>` and strip the form-factor prefix into `play-store/screenshots/`.
 The celebration scene is mid-animation by design, so its pixels wobble a
@@ -756,6 +760,30 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   width is unchanged at 168 dp (was 72 plus 40 plus 56). Supersedes the
   Again 72 to Home 56 size split in D-061; the one shadow and the one
   coin shape stand.
+- D-080 The picture coin wears the picture's own colour (owner-directed).
+  The peek coin's on state used to be one brand wash for every picture
+  (D-070). It now takes the picture's own accent, softened into one
+  measured band: hue from the picture, lightness L* 88 and chroma 13 for
+  every wash, so the rocket's night sky and the ice cream's mint scoop
+  come out equally gentle. Each scene declares its accent as a real
+  colour from its own palette (`SceneSpec.accent`), chosen as the colour
+  that says that picture (the hull, the door, the balloon, the scoop,
+  the night sky), and a core test proves every accent is painted
+  somewhere in its scene and every wash lands in the band with its hue
+  intact. `core/SceneWash.kt` is the one home for the math;
+  `:tools:makeWashes` renders the whole set into `build/washes` for the
+  owner's eyes. The peek panel stays inside the field, so the top bar
+  and the tinted coin stay in view while the child looks. Supersedes
+  the single TealWash on state in D-070.
+- D-081 Eight store captures per form factor (owner-directed). The
+  screenshot harness takes eight screenshots on each of the three form
+  factors, 24 in all, the Play listing maximum: the shelf, four pieces,
+  nine pieces mid-game, a piece in hand, the finish, the picture held
+  up, sixteen pieces, and the cut chooser on a won picture (the marked
+  6 still pinned). The landscape finish, the separate won-chooser
+  capture and the fruit mid-game were dropped; the won-count truth is
+  now carried by the chooser capture itself. The capture set is a
+  listing set first and a drift check second.
 
 ## Lessons that still bite
 
@@ -1324,3 +1352,28 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   TalkBack. The commit cadence question from the change loop stays open.
   Next session picks up from: the 2.4 review verdict and tester feedback
   on the equal finish coins and the sound switch's new home.
+- 2026-09-09: The polish and picture-wash session, one cut at the end.
+  A full audit first: the shelf waits for its saved state so no count
+  flashes wrong, corrupt or stale preferences are ignored in the store
+  and in core, a degenerate window measure can no longer ask the cut for
+  a zero board, the sound board survives a device that refuses a
+  SoundPool and can no longer miss a sample's load, the cut chooser
+  closes on back, the count line under each picture reaches AA contrast,
+  every clickable wears Role.Button, the field announces progress as a
+  polite live region, RTL is pinned off for an English-only layout, and
+  the privacy page now lists what is really stored. The piece carry
+  became a draw-phase layer transform (no relayout, no scene redraw under
+  the finger), the chooser caches its five real cuts per tile size, and
+  the dead wins map, values-night theme, MakeArt tuning params and test
+  !!s were swept. Then the owner's wash round (D-080): each picture
+  declares a real palette accent, the peek coin's on state takes that
+  hue in one measured L* 88 / C* 13 band, and :tools:makeWashes renders
+  the review sheet into build/washes. An automatic area-times-chroma
+  picker was measured and rejected: it chose the hills, the sun and the
+  wood grain instead of the subject in 12 of 16 pictures. The peek panel
+  stays inside the field so the tinted coin stays visible. The owner then
+  set the capture count (D-081): eight screenshots per form factor, 24 in
+  all. Cut 2.5 (versionCode 25) for closed testing, notes measured at 478
+  chars, no contact line. All gates green locally. Next session picks up
+  from: the 2.5 review verdict and tester feedback on the picture-colored
+  coin.

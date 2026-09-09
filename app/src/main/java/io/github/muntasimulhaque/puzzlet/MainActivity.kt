@@ -33,28 +33,14 @@ class MainActivity : ComponentActivity() {
         ViewModelProvider(
             this,
             viewModelFactory {
-                initializer {
-                    val app = checkNotNull(
-                        get(ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY),
-                    )
-                    PuzzleHost(app)
-                }
+                initializer { PuzzleHost(application) }
             },
         )[PuzzleHost::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Debug builds police themselves: disk and network on the main
-        // thread, leaks, unclosed resources. Release builds never see this.
-        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
-            StrictMode.setThreadPolicy(
-                StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build(),
-            )
-            StrictMode.setVmPolicy(
-                StrictMode.VmPolicy.Builder().detectLeakedClosableObjects().detectLeakedSqlLiteObjects().penaltyLog().build(),
-            )
-        }
+        policeDebugBuild()
         keepBarsHidden()
         setContent {
             val screen by host.screen.collectAsStateWithLifecycle()
@@ -64,7 +50,7 @@ class MainActivity : ComponentActivity() {
             // play surfaces and begin to overlap them, which serves nobody, so
             // the whole UI is composed under a bounded density instead.
             val system = LocalDensity.current
-            val capped = remember(system.fontScale) {
+            val capped = remember(system.density, system.fontScale) {
                 Density(density = system.density, fontScale = minOf(system.fontScale, MAX_FONT_SCALE))
             }
             CompositionLocalProvider(LocalDensity provides capped) {
@@ -93,6 +79,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /** Debug builds police themselves: disk and network on the main thread,
+     *  leaks, unclosed resources. Release builds never see this. */
+    private fun policeDebugBuild() {
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE == 0) return
+        StrictMode.setThreadPolicy(
+            StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build(),
+        )
+        StrictMode.setVmPolicy(
+            StrictMode.VmPolicy.Builder().detectLeakedClosableObjects().detectLeakedSqlLiteObjects().penaltyLog().build(),
+        )
     }
 
     private fun playActions() = PlayActions(

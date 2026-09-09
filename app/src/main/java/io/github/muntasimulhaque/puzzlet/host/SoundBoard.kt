@@ -26,7 +26,8 @@ class SoundBoard(context: Context) {
 
     private val app = context.applicationContext
 
-    private val loaded: Map<Sfx, Int>
+    /** Sample ids, filled once during construction and read-only after. */
+    private val loaded = HashMap<Sfx, Int>(3)
     private val readySamples = Collections.synchronizedSet(HashSet<Int>())
 
     /** Requests that arrived before their sample decoded, replayed on load. */
@@ -34,26 +35,30 @@ class SoundBoard(context: Context) {
 
     @Volatile private var released = false
 
-    private val pool = SoundPool.Builder()
-        .setMaxStreams(3)
-        .setAudioAttributes(
-            AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_GAME)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build(),
-        )
-        .build()
+    /**
+     * The pool, or null when the device refuses one (a broken audio HAL,
+     * a denied native allocation). A silent game is a bug; a crashed one
+     * is worse, so every use below goes through the nullable and the app
+     * simply plays on without effects.
+     */
+    private val pool: SoundPool? = runCatching {
+        SoundPool.Builder()
+            .setMaxStreams(3)
+            .setAudioAttributes(
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_GAME)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build(),
+            )
+            .build()
+    }.getOrNull()
 
     init {
-        loaded = mapOf(
-            Sfx.SNAP to loadOrZero(R.raw.sfx_snap),
-            Sfx.TAP to loadOrZero(R.raw.sfx_tap),
-            Sfx.CHIME to loadOrZero(R.raw.sfx_chime),
-        )
-        // Registered after the load calls, so the listener only ever sees
-        // sample ids this map already knows about.
+        // The listener goes in before the loads, so a sample that decodes
+        // on another thread can never be missed; an id whose map entry is
+        // not written yet is still marked ready, which is all play() reads.
         runCatching {
-            pool.setOnLoadCompleteListener { _, sampleId, status ->
+            pool?.setOnLoadCompleteListener { _, sampleId, status ->
                 runCatching {
                     if (status != 0) return@setOnLoadCompleteListener
                     readySamples += sampleId
@@ -63,10 +68,14 @@ class SoundBoard(context: Context) {
                 }
             }
         }
+        loaded[Sfx.SNAP] = loadOrZero(R.raw.sfx_snap)
+        loaded[Sfx.TAP] = loadOrZero(R.raw.sfx_tap)
+        loaded[Sfx.CHIME] = loadOrZero(R.raw.sfx_chime)
     }
 
-    private fun loadOrZero(resId: Int): Int =
-        runCatching { pool.load(app, resId, 1) }.getOrDefault(0)
+    private fun loadOrZero(resId: Int): Int = runCatching {
+        pool?.load(app, resId, 1) ?: 0
+    }.getOrDefault(0)
 
     @Volatile private var lastChimeAt = 0L
 
@@ -90,7 +99,7 @@ class SoundBoard(context: Context) {
         val id = loaded[sfx] ?: return
         if (id == 0) return
         val volume = volumeOf(sfx)
-        runCatching { pool.play(id, volume, volume, 1, 0, 1f) }
+        runCatching { pool?.play(id, volume, volume, 1, 0, 1f) }
     }
 
     private fun volumeOf(sfx: Sfx) = when (sfx) {
@@ -103,7 +112,7 @@ class SoundBoard(context: Context) {
         if (released) return
         released = true
         runCatching { pending.clear() }
-        runCatching { pool.release() }
+        runCatching { pool?.release() }
     }
 
     private companion object {

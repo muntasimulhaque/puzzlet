@@ -194,9 +194,12 @@ fun dropAt(p: Puzzle, id: Int, topLeft: Vec2): Puzzle = drop(drag(p, id, topLeft
 /**
  * The window changed size or shape: rebuild the cut at the new board size
  * and carry the placed pieces to their new slots. Unplaced pieces re-seat in
- * the tray, which is where they live anyway.
+ * the tray, which is where they live anyway. A degenerate measure (a zero
+ * width or height while the window settles) is not a layout: it returns the
+ * puzzle untouched, so the app can never be asked to cut a zero-size board.
  */
 fun relayout(p: Puzzle, field: Area, capPx: Double): Puzzle {
+    if (field.w <= 0.0 || field.h <= 0.0 || capPx <= 0.0) return p
     val fresh = createPuzzle(p.sceneId, p.rows, p.cols, field, capPx, p.seed, p.seatSeed)
     val pieces = fresh.pieces.map { newPiece ->
         val old = p.piece(newPiece.id) ?: return@map newPiece

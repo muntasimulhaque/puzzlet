@@ -36,20 +36,7 @@ object MakeArt {
      * right side, and nothing else competing with it. The mark ground is
      * the brand teal; the name and line colours are the caller's.
      */
-    internal fun featureOn(
-        rootDir: File,
-        inkArgb: Int,
-        softArgb: Int,
-        markSize: Int = 500,
-        markX: Int = 30,
-        markY: Int = 0,
-        nameSize: Float = 122f,
-        nameX: Float = 556f,
-        nameY: Float = 262f,
-        tagSize: Float = 30f,
-        tagX: Float = 558f,
-        tagY: Float = 324f,
-    ): BufferedImage {
+    internal fun featureOn(rootDir: File, inkArgb: Int, softArgb: Int): BufferedImage {
         val w = 1024
         val h = 500
         val image = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
@@ -58,15 +45,16 @@ object MakeArt {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
         g.paint = Color(0xFF0C7A64.toInt(), true)
         g.fill(Rectangle2D.Double(0.0, 0.0, w.toDouble(), h.toDouble()))
+        val markSize = 500
         val mark = BufferedImage(markSize, markSize, BufferedImage.TYPE_INT_ARGB)
         val mg = mark.createGraphics()
         mg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         mg.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
         paintMark(mg, markSize)
         mg.dispose()
-        g.drawImage(mark, markX, markY, null)
-        drawCleanString(g, "Puzzlet", "baloo2_extrabold.ttf", nameSize, inkArgb, nameX, nameY, rootDir)
-        drawCleanString(g, "A calm jigsaw for small hands.", "baloo2_bold.ttf", tagSize, softArgb, tagX, tagY, rootDir)
+        g.drawImage(mark, 30, 0, null)
+        drawCleanString(g, "Puzzlet", "baloo2_extrabold.ttf", 122f, inkArgb, 556f, 262f, rootDir)
+        drawCleanString(g, "A calm jigsaw for small hands.", "baloo2_bold.ttf", 30f, softArgb, 558f, 324f, rootDir)
         g.dispose()
         return image
     }

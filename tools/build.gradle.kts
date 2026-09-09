@@ -82,3 +82,11 @@ tasks.register<JavaExec>("makeCut") {
     mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeCutKt"
     args = listOf(rootDir.absolutePath)
 }
+
+tasks.register<JavaExec>("makeWashes") {
+    group = "tools"
+    description = "Render every picture's accent, its soft coin wash and the coin's on state into build/washes, for review."
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass = "io.github.muntasimulhaque.puzzlet.tools.MakeWashesKt"
+    args = listOf(rootDir.absolutePath)
+}

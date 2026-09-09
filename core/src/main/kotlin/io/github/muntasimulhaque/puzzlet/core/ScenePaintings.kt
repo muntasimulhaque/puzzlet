@@ -60,7 +60,7 @@ because a piece cut from a wash is a piece with nothing on it.
             add(PolygonSpec(listOf(Vec2(0.475, 0.45), Vec2(0.475, 0.645), Vec2(0.33, 0.645)), sun))
             add(PolygonSpec(listOf(Vec2(0.50, 0.355), Vec2(0.50, 0.40), Vec2(0.455, 0.378)), hull))
         }
-        return SceneSpec("sail", shapes)
+        return SceneSpec("sail", shapes, accent = hull)
     }
 
     internal fun cloud(c: Vec2, s: Double, argb: Long): List<SceneShape> = listOf(
@@ -114,7 +114,7 @@ because a piece cut from a wash is a piece with nothing on it.
             add(CircleSpec(Vec2(0.50, 0.40), 0.047, paper))
             add(CircleSpec(Vec2(0.50, 0.40), 0.033, window))
         }
-        return SceneSpec("rocket", shapes)
+        return SceneSpec("rocket", shapes, accent = coral)
     }
 
 
@@ -172,7 +172,7 @@ because a piece cut from a wash is a piece with nothing on it.
             add(CircleSpec(Vec2(0.72, 0.315), 0.028, lamp))
             add(PolygonSpec(listOf(Vec2(0.688, 0.30), Vec2(0.752, 0.30), Vec2(0.72, 0.235)), band))
         }
-        return SceneSpec("lighthouse", shapes)
+        return SceneSpec("lighthouse", shapes, accent = seaDeep)
     }
 
 
@@ -235,5 +235,5 @@ because a piece cut from a wash is a piece with nothing on it.
             add(EllipseSpec(Vec2(0.865, 0.905), 0.105, 0.052, pondRim))
             add(EllipseSpec(Vec2(0.865, 0.908), 0.088, 0.040, pond))
         }
-        return SceneSpec("balloon", shapes)
+        return SceneSpec("balloon", shapes, accent = honey)
     }

@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -35,8 +36,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -101,9 +106,15 @@ fun PlayScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             PlayTopBar(game, peeking, soundOn, onPeek, onSound, ::requestBack)
             PlayField(
-                game, draggedId, pulseId, pulseAt, restartAt, peeking, celebrating, actions, onPeek, onBack,
+                game, draggedId, pulseId, pulseAt, restartAt, peeking, actions, onPeek,
                 Modifier.fillMaxWidth().weight(1f),
             )
+        }
+        // The finish owns the whole screen. The picture panel stays inside
+        // the field, so the top bar and the picture coin's on state stay in
+        // view while the child looks at the picture (D-048, D-080).
+        if (celebrating) {
+            Celebration(game, onAgain = actions.onRestart, onHome = onBack)
         }
         if (confirming) {
             LeaveConfirm(onStay = { confirming = false }, onLeave = onBack)
@@ -119,10 +130,8 @@ private fun PlayField(
     pulseAt: Long,
     restartAt: Long,
     peeking: Boolean,
-    celebrating: Boolean,
     actions: PlayActions,
     onPeek: (Boolean) -> Unit,
-    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints(modifier) {
@@ -145,7 +154,7 @@ private fun PlayField(
         // the field; the game state hears about it once, at release (D-055).
         val heldCenter = remember { mutableStateOf<Vec2?>(null) }
         GestureBoard(
-            game, draggedId, pulseId, pulse.asState(), restartAt, peeking, celebrating, hitPx, heldCenter, actions, onPeek, onBack,
+            game, draggedId, pulseId, pulse.asState(), restartAt, peeking, hitPx, heldCenter, actions, onPeek,
         )
     }
 }
@@ -158,19 +167,22 @@ private fun GestureBoard(
     pulse: State<Float>,
     restartAt: Long,
     peeking: Boolean,
-    celebrating: Boolean,
     hitRadiusPx: Double,
     heldCenter: MutableState<Vec2?>,
     actions: PlayActions,
     onPeek: (Boolean) -> Unit,
-    onBack: () -> Unit,
 ) {
     val scene = remember(game.sceneId) { Scenes.byId(game.sceneId) }
     val progress = stringResource(R.string.puzzle_progress, game.placedCount, game.pieces.size)
     Box(
         Modifier
             .fillMaxSize()
-            .semantics { contentDescription = progress }
+            // The field speaks its progress, and announces each change as a
+            // polite live region, so a TalkBack player hears a piece land.
+            .semantics {
+                contentDescription = progress
+                liveRegion = LiveRegionMode.Polite
+            }
             .fieldGestures(game, peeking, hitRadiusPx, heldCenter, actions),
     ) {
         BoardBackdrop(game, pulseId, pulse)
@@ -178,18 +190,14 @@ private fun GestureBoard(
         if (peeking && !game.completed) {
             PeekPanel(scene, onDismiss = { onPeek(false) })
         }
-        if (celebrating) {
-            Celebration(game, onAgain = actions.onRestart, onHome = onBack)
-        }
     }
 }
 
 /**
  * The finished picture, held up over the field on a deep scrim. Tapping
- * anywhere puts it away: one rule, the biggest target on the screen.
- * The Z index (4) sits above every piece tile (a held piece rides at 2),
- * so the picture covers the whole field: nothing may overlap it while
- * the child looks.
+ * anywhere on the field puts it away: one rule, the biggest target there
+ * is. The top bar stays above the scrim, so the picture coin keeps showing
+ * its own on state (the picture's wash, D-080) while the child looks.
  */
 @Composable
 private fun PeekPanel(scene: SceneSpec, onDismiss: () -> Unit) {
@@ -204,9 +212,9 @@ private fun PeekPanel(scene: SceneSpec, onDismiss: () -> Unit) {
             .zIndex(4f) // above every piece tile (a held piece rides at 2)
             .fillMaxSize()
             .graphicsLayer { alpha = rise.value }
-            .background(PuzzletColors.Ink.copy(alpha = 0.62f))
+            .background(PuzzletColors.Scrim)
             .semantics { contentDescription = label }
-            .clickable(onClick = onDismiss),
+            .clickable(role = Role.Button, onClick = onDismiss),
         contentAlignment = Alignment.Center,
     ) {
         BoxWithConstraints {
@@ -291,14 +299,16 @@ private fun PeekCoin(scene: SceneSpec, peeking: Boolean, onPeek: (Boolean) -> Un
     val label = stringResource(if (peeking) R.string.peek_hide else R.string.peek_show)
     CircleButton(
         onClick = { onPeek(!peeking) },
-        background = if (peeking) PuzzletColors.TealWash else PuzzletColors.Card,
+        background = if (peeking) PuzzletColors.sceneWash(scene.accent) else PuzzletColors.Card,
         size = TOP_BAR_COIN,
         label = label,
     ) {
         ScenePicture(
             spec = scene,
             modifier = Modifier.fillMaxSize().padding(8.dp),
-            cornerRadius = 8.dp,
+            // A circle inside the round coin, so the thumbnail reads as part
+            // of the coin rather than a sticker sitting on it.
+            cornerRadius = 16.dp,
         )
     }
 }
@@ -313,8 +323,8 @@ private fun LeaveConfirm(onStay: () -> Unit, onLeave: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(PuzzletColors.Ink.copy(alpha = 0.62f))
-            .clickable(onClick = onStay),
+            .background(PuzzletColors.Scrim)
+            .clickable(role = Role.Button, onClick = onStay),
         contentAlignment = Alignment.Center,
     ) {
         Column(
@@ -322,7 +332,9 @@ private fun LeaveConfirm(onStay: () -> Unit, onLeave: () -> Unit) {
                 .padding(horizontal = 32.dp)
                 .clip(RoundedCornerShape(28.dp))
                 .background(PuzzletColors.Card)
-                .clickable(onClick = {})
+                // Swallow taps on the card without adding a semantics node:
+                // the pointer input eats them, TalkBack never sees them.
+                .pointerInput(Unit) { detectTapGestures { } }
                 .padding(horizontal = 22.dp, vertical = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -355,7 +367,7 @@ private fun LeaveButtons(onStay: () -> Unit, onLeave: () -> Unit) {
                 .buttonShadow(shape)
                 .clip(shape)
                 .background(PuzzletColors.Teal)
-                .clickable(onClick = onStay)
+                .clickable(role = Role.Button, onClick = onStay)
                 .padding(horizontal = 22.dp, vertical = 12.dp),
             contentAlignment = Alignment.Center,
         ) {
@@ -370,7 +382,7 @@ private fun LeaveButtons(onStay: () -> Unit, onLeave: () -> Unit) {
                 .buttonShadow(shape)
                 .clip(shape)
                 .background(PuzzletColors.Tray)
-                .clickable(onClick = onLeave)
+                .clickable(role = Role.Button, onClick = onLeave)
                 .padding(horizontal = 22.dp, vertical = 12.dp),
             contentAlignment = Alignment.Center,
         ) {

@@ -54,6 +54,14 @@ data class ShelfState(
     val pieces: Map<String, Int> = emptyMap(),
     /** Wins per picture; they walk the ladder up where nobody has picked. */
     val wins: Map<String, Int> = emptyMap(),
+    /**
+     * False until the saved shelf has been read (or its read has failed).
+     * The home screen waits for it, so the counts it shows are the real
+     * ones from the first frame: no flash of ladder values, no card that
+     * plays at a count the child did not see. The harness hosts states
+     * directly and leaves it true.
+     */
+    val loaded: Boolean = true,
 ) {
     /**
      * The count this picture opens at: a parent's pick, else the ladder's
@@ -84,16 +92,25 @@ class PuzzleHost(app: Application) : ViewModel() {
     private val _screen = MutableStateFlow<Screen>(Screen.Home)
     val screen: StateFlow<Screen> = _screen.asStateFlow()
 
-    private val _shelf = MutableStateFlow(ShelfState())
+    private val _shelf = MutableStateFlow(ShelfState(loaded = false))
     val shelf: StateFlow<ShelfState> = _shelf.asStateFlow()
-
-    private val wins = HashMap<String, Int>()
 
     init {
         viewModelScope.launch {
-            val saved = runCatching { store.loadProgress() }.getOrNull() ?: return@launch
-            wins.putAll(saved.wins)
-            _shelf.value = ShelfState(soundOn = saved.soundOn, pieces = saved.chosen, wins = saved.wins)
+            // A failed read is not a broken app: the shelf opens on its
+            // defaults and the game plays, rather than leaving a blank
+            // home screen waiting for a file that will never arrive.
+            val saved = runCatching { store.loadProgress() }.getOrNull()
+            _shelf.value = if (saved == null) {
+                ShelfState(loaded = true)
+            } else {
+                ShelfState(
+                    soundOn = saved.soundOn,
+                    pieces = saved.chosen,
+                    wins = saved.wins,
+                    loaded = true,
+                )
+            }
         }
     }
 
@@ -128,24 +145,22 @@ class PuzzleHost(app: Application) : ViewModel() {
     /**
      * Start a picture. The real field size arrives with the first frame
      * (the play screen measures itself), so a placeholder game is created
-     * here and immediately reshaped by layout().
+     * here and immediately reshaped by layout(). No coroutine: nothing is
+     * read or written for a start, and the screen changes at once.
      */
     private fun start(sceneId: String, step: LadderStep) {
         draggedId = null
-        viewModelScope.launch {
-            val known = wins[sceneId] ?: 0
-            _screen.value = Screen.Playing(
-                createPuzzle(
-                    sceneId = sceneId,
-                    rows = step.rows,
-                    cols = step.cols,
-                    field = Area(0.0, 0.0, 1.0, 1.0),
-                    capPx = 1e6,
-                    seed = cutSeedFor(sceneId, step.rows, step.cols),
-                    seatSeed = Random.Default.nextLong(),
-                ),
-            )
-        }
+        _screen.value = Screen.Playing(
+            createPuzzle(
+                sceneId = sceneId,
+                rows = step.rows,
+                cols = step.cols,
+                field = Area(0.0, 0.0, 1.0, 1.0),
+                capPx = 1e6,
+                seed = cutSeedFor(sceneId, step.rows, step.cols),
+                seatSeed = Random.Default.nextLong(),
+            ),
+        )
     }
 
     /** The count a picture opens at: a parent's pick if there is one, else the ladder's. */
@@ -255,7 +270,6 @@ class PuzzleHost(app: Application) : ViewModel() {
      */
     private suspend fun recordWin(sceneId: String) {
         val total = runCatching { store.addWin(sceneId) }.getOrNull() ?: return
-        wins[sceneId] = total
         // The shelf hears it too: the chooser's marked tile steps up with
         // the ladder immediately, and the card's quiet line tells the truth.
         _shelf.value = _shelf.value.copy(wins = _shelf.value.wins + (sceneId to total))

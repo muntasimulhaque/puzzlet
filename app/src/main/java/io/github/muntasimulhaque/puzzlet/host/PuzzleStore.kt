@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import io.github.muntasimulhaque.puzzlet.core.PIECE_COUNTS
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -34,8 +35,13 @@ class PuzzleStore(private val context: Context) {
         for ((key, value) in prefs.asMap()) {
             if (value !is Int) continue
             val name = key.name
-            if (name.startsWith(WINS)) wins[name.removePrefix(WINS)] = value
-            if (name.startsWith(CHOSEN)) chosen[name.removePrefix(CHOSEN)] = value
+            // A corrupt or stale entry never reaches the shelf: a negative
+            // win count reads as zero, and a piece count the shelf does not
+            // offer is dropped, so the ladder takes over (core/Ladder.kt).
+            if (name.startsWith(WINS)) wins[name.removePrefix(WINS)] = value.coerceAtLeast(0)
+            if (name.startsWith(CHOSEN) && value in PIECE_COUNTS) {
+                chosen[name.removePrefix(CHOSEN)] = value
+            }
         }
         ShelfProgress(wins, chosen, prefs[SOUND_ON] ?: true)
     }.first()

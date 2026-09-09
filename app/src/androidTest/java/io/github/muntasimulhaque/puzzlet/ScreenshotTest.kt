@@ -1,6 +1,5 @@
 package io.github.muntasimulhaque.puzzlet
 
-import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
@@ -18,12 +17,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.muntasimulhaque.puzzlet.core.Area
 import io.github.muntasimulhaque.puzzlet.core.Puzzle
-import io.github.muntasimulhaque.puzzlet.core.Scenes
 import io.github.muntasimulhaque.puzzlet.core.Vec2
 import io.github.muntasimulhaque.puzzlet.core.restorePuzzle
 import io.github.muntasimulhaque.puzzlet.host.Screen
 import io.github.muntasimulhaque.puzzlet.host.ShelfState
-import io.github.muntasimulhaque.puzzlet.ui.CutChooser
 import io.github.muntasimulhaque.puzzlet.ui.Gallery
 import io.github.muntasimulhaque.puzzlet.ui.PlayActions
 import io.github.muntasimulhaque.puzzlet.ui.PlayScreen
@@ -112,106 +109,113 @@ class ScreenshotTest {
         Thread.sleep(SETTLE_MS)
     }
 
+    /**
+     * The eight store captures, the Play listing maximum per form factor
+     * (24 across the three form factors). The set leads with the shelf,
+     * shows the field from four pieces to sixteen, the carry, the finish,
+     * the picture held up, and the cut chooser with its marked size.
+     */
     @Test
     fun captureStoreScreenshots() {
         val outDir = resolveOutDir()
         val scenario = launch()
         lateinit var pane: Pane
         scenario.onActivity { pane = Pane.from(it) }
+        captureShelf(scenario, outDir)
+        capturePlay(scenario, outDir, pane)
+        captureOverlays(scenario, outDir, pane)
+        captureChooser(scenario, outDir)
+        scenario.close()
+    }
 
-        fun shot(name: String, block: @Composable () -> Unit) {
-            push(block)
-            lateinit var bitmap: Bitmap
-            scenario.onActivity { activity -> bitmap = captureWindow(activity) }
-            File(outDir, "$name.png").outputStream().use { out ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
-            }
-        }
-
-        // The shelf: every shipped picture with its name and its counts.
-        shot("01_home") {
+    /** 01: the shelf, every shipped picture with its name and count line. */
+    private fun captureShelf(scenario: ActivityScenario<ComponentActivity>, outDir: File) {
+        shot(scenario, outDir, "01_home") {
             Gallery(ShelfState(), {}, { _, _ -> })
         }
+    }
 
-        // A chunky game, barely begun: four huge sailboat pieces.
+    /** 02, 03, 04 and 07: the field from the first pieces to sixteen. */
+    private fun capturePlay(
+        scenario: ActivityScenario<ComponentActivity>,
+        outDir: File,
+        pane: Pane,
+    ) {
+        // Four huge sailboat pieces, barely begun.
         val four = buildGame(pane, "sail", 2, 2)
-        shot("02_play_4") {
+        shot(scenario, outDir, "02_play_4") {
             PlayScreen(four, null, -1, 0L, 0L, false, false, true, noActions, {}, {}, {})
         }
-
         // Mid-game on the nine-piece house: five of nine placed.
         val nine = buildGame(pane, "house", 3, 3, placed = (0..4).toSet())
-        shot("03_play_9") {
+        shot(scenario, outDir, "03_play_9") {
             PlayScreen(nine, null, -1, 0L, 0L, false, false, true, noActions, {}, {}, {})
         }
-
-        // A piece in hand, carried from the tray toward the board. It must
-        // be a waiting piece: the host never lets a placed piece be held,
-        // and drawing a placed piece twice reads as a glitch.
+        // A waiting piece in hand, carried toward the board. The host never
+        // lets a placed piece be held, and drawing one twice reads as a glitch.
         val dragging = dragState(nine, pieceId = 7, at = Vec2(pane.w * 0.22, pane.h * 0.52))
-        shot("04_play_drag") {
+        shot(scenario, outDir, "04_play_drag") {
             PlayScreen(dragging.game, 7, -1, 0L, 0L, false, false, true, noActions, {}, {}, {})
         }
-
-        // The finish: the picture complete, held up with confetti falling.
-        // One quiet beat on the table comes first in the real game (D-066);
-        // the plate is what this still-life hosts.
-        val done = buildGame(pane, "sail", 2, 2, placed = (0 until 4).toSet())
-        shot("05_celebration") {
-            PlayScreen(done, null, -1, 0L, 0L, false, true, true, noActions, {}, {}, {})
-        }
-
-        // The fruit plate at nine pieces: six placed, texture galore.
-        val fruit = buildGame(pane, "fruit", 3, 3, placed = (0..5).toSet())
-        shot("06_play_fruit") {
-            PlayScreen(fruit, null, -1, 0L, 0L, false, false, true, noActions, {}, {}, {})
-        }
-
-        // Looking at the picture: the board stays blank, the peek panel
-        // holds the whole thing up over it until the child taps away.
-        val peek = buildGame(pane, "sail", 3, 3, placed = (0..1).toSet())
-        shot("07_play_peek") {
-            PlayScreen(peek, null, -1, 0L, 0L, true, false, true, noActions, {}, {}, {})
-        }
-
         // Sixteen pieces: the biggest count the shelf offers.
         val sixteen = buildGame(pane, "balloon", 4, 4, placed = (0..5).toSet())
-        shot("08_play_16") {
+        shot(scenario, outDir, "07_play_16") {
             PlayScreen(sixteen, null, -1, 0L, 0L, false, false, true, noActions, {}, {}, {})
         }
+    }
 
-        // The cut chooser (D-065): the sizes one picture comes in, each tile
-        // the real cut the game will deal. Hosted without touch injection.
-        shot("09_choose") {
-            Gallery(ShelfState(), {}, { _, _ -> }, openChooserFor = "balloon")
+    /** 05 and 06: the finish, and the picture held up over the field. */
+    private fun captureOverlays(
+        scenario: ActivityScenario<ComponentActivity>,
+        outDir: File,
+        pane: Pane,
+    ) {
+        // The finish: complete, held up with confetti falling. One quiet beat
+        // on the table comes first in the real game (D-066); the plate is what
+        // this still-life hosts.
+        val done = buildGame(pane, "sail", 2, 2, placed = (0 until 4).toSet())
+        shot(scenario, outDir, "05_celebration") {
+            PlayScreen(done, null, -1, 0L, 0L, false, true, true, noActions, {}, {}, {})
         }
+        // Looking at the picture: the board stays blank, the panel holds the
+        // whole thing up over the field, and the picture coin keeps its own
+        // wash while the child looks (D-080).
+        val peek = buildGame(pane, "sail", 3, 3, placed = (0..1).toSet())
+        shot(scenario, outDir, "06_play_peek") {
+            PlayScreen(peek, null, -1, 0L, 0L, true, false, true, noActions, {}, {}, {})
+        }
+    }
 
-        // The won chooser: one win on the picture and no parent pick. The
-        // marked tile is the ladder's 6, and tapping it deals 6: the mark
-        // must read exactly what the plain path will play (the
-        // 4-that-opened-6 bug, pinned here). Hosted directly, so the truth
-        // is the plate, not the harness's openChooserFor plumbing.
-        shot("10_choose_won") {
-            CutChooser(
-                scene = Scenes.byId("balloon"),
-                current = 6,
-                onPick = { _ -> },
-                onDismiss = {},
+    /**
+     * 08: the cut chooser on a picture with one win and no parent pick. The
+     * marked tile is the ladder's 6, and tapping it deals 6: the mark must
+     * read exactly what the plain path will play (the 4-that-opened-6 bug,
+     * pinned here).
+     */
+    private fun captureChooser(scenario: ActivityScenario<ComponentActivity>, outDir: File) {
+        shot(scenario, outDir, "08_choose") {
+            Gallery(
+                shelf = ShelfState(wins = mapOf("balloon" to 1)),
+                onChoose = {},
+                onChooseAt = { _, _ -> },
+                openChooserFor = "balloon",
             )
         }
+    }
 
-        // The finish in landscape: the plate reshapes to fit the short
-        // side, picture, praise and both coins all still on it (D-068).
-        scenario.onActivity { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE }
-        settle()
-        lateinit var landPane: Pane
-        scenario.onActivity { landPane = Pane.from(it) }
-        val landDone = buildGame(landPane, "sail", 2, 2, placed = (0 until 4).toSet())
-        shot("11_celebration_land") {
-            PlayScreen(landDone, null, -1, 0L, 0L, false, true, true, noActions, {}, {}, {})
+    /** Render one state, settle it, and copy the window's own pixels out. */
+    private fun shot(
+        scenario: ActivityScenario<ComponentActivity>,
+        outDir: File,
+        name: String,
+        block: @Composable () -> Unit,
+    ) {
+        push(block)
+        lateinit var bitmap: Bitmap
+        scenario.onActivity { activity -> bitmap = captureWindow(activity) }
+        File(outDir, "$name.png").outputStream().use { out ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
         }
-
-        scenario.close()
     }
 
     // -- Fixtures -----------------------------------------------------------

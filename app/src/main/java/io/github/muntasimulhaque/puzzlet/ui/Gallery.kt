@@ -1,5 +1,6 @@
 package io.github.muntasimulhaque.puzzlet.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -85,7 +87,16 @@ fun Gallery(
     onChooseAt: (String, Int) -> Unit,
     openChooserFor: String? = null,
 ) {
+    // The saved shelf arrives in a few milliseconds. Until it does, the home
+    // screen holds the paper ground instead of showing ladder defaults a card
+    // might play at: nothing flashes, and no count is ever wrong on screen.
+    if (!shelf.loaded) {
+        Box(Modifier.fillMaxSize().background(PuzzletColors.Paper))
+        return
+    }
     var openId by rememberSaveable { mutableStateOf(openChooserFor) }
+    // Back is the same answer as tapping the scrim: the chooser closes.
+    BackHandler(enabled = openId != null) { openId = null }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -101,26 +112,42 @@ fun Gallery(
         }
         val openScene = openId?.let { id -> Scenes.all.firstOrNull { it.id == id } }
         if (openScene != null) {
-            // The marked tile is the count the game will actually deal: a
-            // parent's pick, else the ladder's step for this picture's wins.
-            // One value for the mark, the plain path and the card line, so
-            // the marked tile never promises a count the game does not open.
-            val currentCount = shelf.openingCount(openScene.id)
-            CutChooser(
+            SceneChooser(
                 scene = openScene,
-                current = currentCount,
-                onPick = { pieces ->
-                    openId = null
-                    if (pieces == currentCount) {
-                        onChoose(openScene.id)
-                    } else {
-                        onChooseAt(openScene.id, pieces)
-                    }
-                },
+                current = shelf.openingCount(openScene.id),
+                onChoose = onChoose,
+                onChooseAt = onChooseAt,
                 onDismiss = { openId = null },
             )
         }
     }
+}
+
+/**
+ * One picture's cut chooser. The marked tile is the count the game will
+ * actually deal: a parent's pick, else the ladder's step for this picture's
+ * wins. One value for the mark, the plain path and the card line, so the
+ * marked tile never promises a count the game does not open. Tapping the
+ * marked tile plays the plain path, so where nobody has picked, wins still
+ * walk the ladder (D-047, D-065).
+ */
+@Composable
+private fun SceneChooser(
+    scene: SceneSpec,
+    current: Int,
+    onChoose: (String) -> Unit,
+    onChooseAt: (String, Int) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    CutChooser(
+        scene = scene,
+        current = current,
+        onPick = { pieces ->
+            onDismiss()
+            if (pieces == current) onChoose(scene.id) else onChooseAt(scene.id, pieces)
+        },
+        onDismiss = onDismiss,
+    )
 }
 
 @Composable
@@ -148,7 +175,7 @@ private fun ShelfGrid(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            items(Scenes.all) { scene ->
+            items(Scenes.all, key = { it.id }) { scene ->
                 SceneCard(
                     scene = scene,
                     pieces = shelf.openingCount(scene.id),
@@ -226,14 +253,15 @@ private fun SceneCard(
     onOpen: () -> Unit,
 ) {
     val name = stringResource(sceneNameRes(scene.id))
+    val count = stringResource(R.string.pieces_count, pieces)
     val shape = RoundedCornerShape(28.dp)
     Column(
         modifier = Modifier
             .buttonShadow(shape)
             .clip(shape)
             .background(PuzzletColors.Card)
-            .clickable(onClick = onOpen)
-            .semantics { contentDescription = name }
+            .clickable(role = Role.Button, onClick = onOpen)
+            .semantics { contentDescription = "$name, $count" }
             .padding(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -268,7 +296,7 @@ private fun QuietCount(pieces: Int) {
     Text(
         text = stringResource(R.string.pieces_count, pieces),
         style = MaterialTheme.typography.bodyMedium,
-        color = PuzzletColors.Ink.copy(alpha = 0.60f),
+        color = PuzzletColors.Ink.copy(alpha = 0.70f),
         textAlign = TextAlign.Center,
         maxLines = 1,
     )
@@ -307,7 +335,7 @@ fun CircleButton(
             .size(size)
             .clip(CircleShape)
             .background(background)
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
             .then(
                 if (label != null) {
                     Modifier.semantics { contentDescription = label }

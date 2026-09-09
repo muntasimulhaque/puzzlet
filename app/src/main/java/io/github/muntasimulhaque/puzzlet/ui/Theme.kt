@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import io.github.muntasimulhaque.puzzlet.R
+import io.github.muntasimulhaque.puzzlet.core.softWash
 
 /** The toy-box palette. Chosen, not defaulted; see AGENTS.md, Design seeds. */
 object PuzzletColors {
@@ -30,11 +31,18 @@ object PuzzletColors {
      *  shelf is where pieces wait, and pale pieces must stand off it. Still
      *  warm and paper-family, but never a twin of the table below. */
     val Tray = Color(0xFFEBE0CC)
-    /** The brand teal at 20 percent over card: the on state of a coin that
-     *  is holding something up (D-070). Solid teal on a 48 dp coin was a
-     *  dark green ring around a small picture in a light paper world; this
-     *  stays in the teal family and stays in the paper family too. */
-    val TealWash = Color(0xFFCEE3DB)
+    /** One scrim for every layer that stands the world back: the picture
+     *  held up, the cut chooser, the celebration and the leave confirm all
+     *  dim the field by the same ink at the same weight, so a child learns
+     *  one kind of moment. */
+    val Scrim = Ink.copy(alpha = 0.62f)
+
+    /**
+     * The soft coin wash for one picture: the picture's own accent, held in
+     * the one measured band (core/SceneWash.kt), so the peek button's on
+     * state belongs to the picture and every on state is equally gentle.
+     */
+    fun sceneWash(accent: Long): Color = Color(softWash(accent))
 }
 
 // The display face: Baloo 2, bundled offline (OFL text lives in docs/).
