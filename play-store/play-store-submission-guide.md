@@ -143,6 +143,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 2.1 (measured: 473 chars)
+
+```
+Puzzlet 2.1 gives every piece its real shape. Each knob is a measured die-cut knob now: a soft shoulder, a narrow neck, and a round head that overhangs it, with edges that bow a little. The old knobs were smooth blobs with no neck, so the pieces did not read as jigsaw pieces. The windmill corner also gained a stone, a bush and grass, so its last piece is a place, not a green wash. Sixteen pictures, five sizes, no ads, no internet, no permissions. Thank you for testing.
+```
+
 ## Release notes for closed testing 2.0 (measured: 333 chars)
 
 ```
@@ -288,8 +294,9 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    and capture both succeeded, and the APK twin read versionCode 20,
    versionName 2.0, target 37, package io.github.muntasimulhaque.puzzlet,
    with no permission beyond the androidx core private receiver. 2.0
-   awaits submission. After submitting a build for review, always delete
-   it from the folder.)
+   was submitted for review and the folder was deleted after. 2.1 waits
+   for its own check below. After submitting a build for review, always
+   delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
    (type it exactly; it is permanent). Name it from the listing, mark it a Game,
    and set it PAID with a one-time price (a merchant payments profile is

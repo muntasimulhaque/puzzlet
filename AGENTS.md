@@ -67,7 +67,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 20, versionName 2.0, cut for
+  and so on. Current release: versionCode 21, versionName 2.1, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -707,6 +707,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   signature, so the icon and the game stay one shape family.
   :tools:makeCut renders the cut sheet into build/cut for the owner's
   eyes.
+- 2026-09-09: Cut 2.1 (versionCode 21) at the owner's word: the game
+  pieces are real die-cuts now (D-076). Notes measured at 473 chars, no
+  contact line, delivered in chat and stored in the guide. README, the
+  guide and this file brought current.
 
 ## Lessons that still bite
 
