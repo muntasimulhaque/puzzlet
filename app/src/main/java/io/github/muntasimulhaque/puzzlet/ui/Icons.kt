@@ -67,8 +67,8 @@ fun ReplayIcon(modifier: Modifier = Modifier, color: Color, size: androidx.compo
 }
 
 @Composable
-fun MenuIcon(modifier: Modifier = Modifier, color: Color) {
-    GeoIcon(modifier, color) { w, _ ->
+fun MenuIcon(modifier: Modifier = Modifier, color: Color, size: androidx.compose.ui.unit.Dp = 24.dp) {
+    GeoIcon(modifier, color, size) { w, _ ->
         val cell = w * 0.30f
         val gap = w * 0.38f
         for ((dx, dy) in listOf(0f to 0f, 1f to 0f, 0f to 1f, 1f to 1f)) {

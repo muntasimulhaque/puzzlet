@@ -159,35 +159,40 @@ private fun Praise() {
     )
 }
 
-/** Again leads by size; both coins share one baseline for their names. */
+/** One size for both finish coins; Again leads by ground, not size
+ *  (D-079). The Teal and Tray pair is the same primary and secondary
+ *  recipe the leave confirm already uses. */
+private val FINISH_COIN = 64.dp
+
+/** Equal coins; Again leads by the brand teal, the way Stay leads. */
 @Composable
 private fun FinishButtons(onAgain: () -> Unit, onHome: () -> Unit) {
     Row(verticalAlignment = Alignment.Bottom) {
         FinishCoin(
             onClick = onAgain,
-            size = 72.dp,
+            background = PuzzletColors.Teal,
             label = stringResource(R.string.restart),
             text = stringResource(R.string.again),
         ) {
-            ReplayIcon(color = PuzzletColors.Ink, size = 30.dp)
+            ReplayIcon(color = PuzzletColors.Paper, size = 28.dp)
         }
         Spacer(Modifier.width(40.dp))
         FinishCoin(
             onClick = onHome,
-            size = 56.dp,
+            background = PuzzletColors.Tray,
             label = stringResource(R.string.home),
             text = stringResource(R.string.home),
         ) {
-            MenuIcon(color = PuzzletColors.Ink)
+            MenuIcon(color = PuzzletColors.Ink, size = 28.dp)
         }
     }
 }
 
-/** One finish coin: the sound button recipe, Tray ground for a Card plate. */
+/** One finish coin: one size, one shadow, the ground carries the lead. */
 @Composable
 private fun FinishCoin(
     onClick: () -> Unit,
-    size: Dp,
+    background: Color,
     label: String,
     text: String,
     icon: @Composable () -> Unit,
@@ -195,8 +200,8 @@ private fun FinishCoin(
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         CircleButton(
             onClick = onClick,
-            background = PuzzletColors.Tray,
-            size = size,
+            background = background,
+            size = FINISH_COIN,
             label = label,
         ) {
             icon()

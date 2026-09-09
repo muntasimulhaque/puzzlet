@@ -143,6 +143,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 2.4 (measured: 393 chars)
+
+```
+Puzzlet 2.4 makes the two finish buttons equal: Again and Home are now the same size, with Again in teal so it still leads the eye. The sound switch sits on the puzzle screen beside the picture button, and the Puzzlet word on the shelf is a little larger. Everything else is the 2.1 game: real die-cut pieces, sixteen pictures, no ads, no trackers, no permissions asked. Thank you for testing.
+```
+
 ## Release notes for closed testing 2.3 (measured: 378 chars)
 
 ```

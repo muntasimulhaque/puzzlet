@@ -67,7 +67,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 23, versionName 2.3, cut for
+  and so on. Current release: versionCode 24, versionName 2.4, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -728,6 +728,16 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   one clear step above the 28 sp names and still under the 44 sp
   celebration praise, so the word reads as the brand, not as another
   picture name. The switch still persists and haptics still never stop.
+- D-079 The finish coins match (owner-directed: Again and Home must be
+  the same size; if they need telling apart, find a way that stays
+  coherent). Both coins are 64 dp now, one constant, and Again leads by
+  ground instead of size: brand teal with a paper replay mark, Home
+  stays Tray with ink. That is exactly the Stay and Leave recipe the
+  leave confirm already uses, so the primary and secondary pair reads
+  the same at both moments. Both icons share one 28 dp size. The row
+  width is unchanged at 168 dp (was 72 plus 40 plus 56). Supersedes the
+  Again 72 to Home 56 size split in D-061; the one shadow and the one
+  coin shape stand.
 
 ## Lessons that still bite
 
@@ -1265,3 +1275,10 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   core private receiver) sits in play-store/aab/ awaiting submission.
   README and the guide brought current. Next session picks up from: the
   owner's eyes on the swapped coins and the larger shelf word.
+- 2026-09-09: The owner saw the 2.3 captures and asked for equal finish
+  coins (D-079). Again and Home are both 64 dp now; Again leads by the
+  brand teal ground, the same primary recipe as Stay in the leave
+  confirm, and both icons share one 28 dp size. 2.3 is superseded: cut
+  2.4 (versionCode 24) for closed testing. Notes measured at 393 chars,
+  no contact line, delivered in chat and stored in the guide. All gates
+  green locally.
