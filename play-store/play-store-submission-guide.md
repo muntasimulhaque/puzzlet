@@ -349,8 +349,9 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    io.github.muntasimulhaque.puzzlet, with no permission beyond the
    androidx core private receiver. 2.5 is the first build with eight
    captures per form factor (24 in all), and the refreshed set landed in
-   play-store/screenshots/. The verified 2.5 AAB sits in
-   play-store/aab/ awaiting submission. After
+   play-store/screenshots/. The verified 2.5 AAB sat in
+   play-store/aab/ awaiting submission; 2.5 was submitted for review and
+   the folder was deleted after. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet

@@ -1379,8 +1379,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   ran on all three form factors with the new eight-capture set. The
   verified AAB (APK twin read versionCode 25, versionName 2.5, target 37,
   package io.github.muntasimulhaque.puzzlet, no permission beyond the
-  androidx core private receiver) sits in play-store/aab/ awaiting
-  submission, and the refreshed 24 screenshots landed in
-  play-store/screenshots/. Next session picks up
-  from: the 2.5 review verdict and tester feedback on the picture-colored
-  coin.
+  androidx core private receiver) sat in play-store/aab/ awaiting
+  submission; 2.5 was submitted for review and the folder was deleted
+  after. The refreshed 24 screenshots landed in play-store/screenshots/.
+  Session-end housekeeping: the local .gradle and .kotlin caches and the
+  build outputs of core, app and tools are gone; local.properties stays
+  (gitignored, the local SDK path). Everything is pushed and the tree is
+  clean. Next session picks up from: the 2.5 review verdict and tester
+  feedback on the picture-colored coin.
