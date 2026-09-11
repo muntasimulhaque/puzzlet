@@ -85,7 +85,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 26, versionName 2.6, cut for
+  and so on. Current release: versionCode 27, versionName 2.7, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -584,6 +584,7 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   Nothing can interrupt the wait: placed pieces are never hit by a
   grab, and a leave only changes the screen, which the beat's guard
   accepts. The beat is silent on purpose: the chime already played.
+  (Superseded in D-083: the chime rings with the plate.)
 - D-067 The mark, drawn tighter (owner invited the redo). The gap went
   0.17 to 0.26 and the pieces 0.40 to 0.42 of the field: the hover,
   where every knob stops a hair outside its clean socket, the moment
@@ -814,6 +815,17 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   (edge pixels, worst channel delta 85 on 3.4 percent of pixels, mean
   0.11), verified by zoomed crops; capture runs on one boot are
   byte-identical.
+- D-083 The chime rings with the plate (owner-directed: the beat gave
+  the child room to look at the finished picture, but the chime had
+  stayed at the last click). One sound per event now: the final snap
+  gets the knock and the tick exactly like every other piece, the
+  quiet second is truly quiet, and the bell rings as the plate rises,
+  so the celebration has its own voice instead of the sound being
+  spent before it. The latency law in SoundBoard is untouched: it
+  governs the finger's own consequence sounds (tap, snap), while the
+  chime is the celebration's voice and belongs at +1 s. Still one
+  pitched note, still never twice inside 1200 ms. Supersedes the chime
+  placement in D-066; the beat itself stands.
 
 ## Lessons that still bite
 
@@ -1455,3 +1467,11 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   and the tree is clean. Standing open item unchanged: piece-level
   TalkBack. Next session picks up from: the 2.6 review verdict and
   tester feedback on the smoother shelf.
+- 2026-09-11: The owner asked whether the completion chime belongs with
+  the well done plate instead of the last click, now that the plate
+  waits a beat. Diagnosis: the knock and the bell collided at the snap
+  and the reveal stood mute. One sound per event (D-083): the chime
+  moved into celebrateSoon's guard, so it rings as the plate rises, and
+  the quiet second is really quiet. Cut 2.7 (versionCode 27) at the
+  owner's word, notes measured at 470 chars, no contact line, delivered
+  in chat and stored in the guide.

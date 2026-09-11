@@ -221,7 +221,6 @@ class PuzzleHost(app: Application) : ViewModel() {
         if (snapped) {
             chime(Sfx.SNAP)
             if (settled.completed) {
-                chime(Sfx.CHIME)
                 viewModelScope.launch { recordWin(settled.sceneId) }
                 celebrateSoon()
             }
@@ -231,11 +230,14 @@ class PuzzleHost(app: Application) : ViewModel() {
 
     /**
      * The celebration waits one quiet beat: the last piece is just seated,
-     * the ring has played, and the child gets the second the finished
-     * table earns before the plate covers it (D-066). Nothing can interrupt
-     * the wait: placed pieces are never hit by a grab, and a leave only
-     * changes the screen, which the guard below accepts. The chime already
-     * played at the click; the beat itself is silent, on purpose.
+     * the knock and the ring have answered the click, and the child gets
+     * the second the finished table earns before the plate covers it
+     * (D-066). The beat is silent on purpose, and the chime rings with the
+     * plate (D-083): one sound per event, the knock for the piece, the
+     * bell for the celebration, so the breath is never talked over and the
+     * reveal is not mute. Nothing can interrupt the wait: placed pieces
+     * are never hit by a grab, and a leave only changes the screen, which
+     * the guard below accepts.
      */
     private fun celebrateSoon() {
         viewModelScope.launch {
@@ -243,6 +245,7 @@ class PuzzleHost(app: Application) : ViewModel() {
             val s = _screen.value
             if (s is Screen.Playing && s.game.completed) {
                 _screen.value = s.copy(celebrating = true)
+                chime(Sfx.CHIME)
             }
         }
     }
