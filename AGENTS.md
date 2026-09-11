@@ -1474,4 +1474,15 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   moved into celebrateSoon's guard, so it rings as the plate rises, and
   the quiet second is really quiet. Cut 2.7 (versionCode 27) at the
   owner's word, notes measured at 470 chars, no contact line, delivered
-  in chat and stored in the guide.
+  in chat and stored in the guide. All gates green locally: core tests,
+  app release unit tests, full lint, tools tests, icon and sound pins.
+  CI green end to end: the build signed and published the AAB and APK,
+  and the capture ran on all three form factors. The phone and 10 inch
+  sets came back byte-identical, the 7 inch play frames drifted only at
+  the anti-aliasing level (worst channel delta 2 on a handful of edge
+  pixels, as expected from runner noise, the change being host-only), so
+  the listing kit stands. The verified AAB (APK twin read versionCode
+  27, versionName 2.7, target 37, package
+  io.github.muntasimulhaque.puzzlet, no permission beyond the androidx
+  core private receiver) sits in play-store/aab/ awaiting submission.
+  README and the guide brought current.

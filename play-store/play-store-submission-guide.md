@@ -370,7 +370,16 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    androidx core private receiver. 2.6 is the smoothness pass (D-082); its
    verified AAB sat in play-store/aab/ awaiting submission, and the
    refreshed 24 captures landed in play-store/screenshots/. 2.6 was
-   submitted for review and the folder was deleted after. After
+   submitted for review and the folder was deleted after. For 2.7 the
+   same check ran green: CI build and capture both succeeded, and the
+   APK twin read versionCode 27, versionName 2.7, target 37, package
+   io.github.muntasimulhaque.puzzlet, with no permission beyond the
+   androidx core private receiver. 2.7 is the chime placement fix
+   (D-083), a host-only change: phone and 10 inch captures came back
+   byte-identical and the 7 inch set drifted only at the anti-aliasing
+   level (worst channel delta 2 on a handful of edge pixels), so the
+   listing kit stands. Its verified AAB sits in play-store/aab/ awaiting
+   submission. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet

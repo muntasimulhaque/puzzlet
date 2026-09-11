@@ -4,14 +4,14 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.6 (versionCode 26) is in Play review for the closed
-testing track.
-Release 2.6 is a smoothness pass: the picture shelf used to redraw every
-picture on every scroll frame, and now each picture is drawn once and
-reused, so browsing the sixteen pictures feels light and quick. The
-finish screen is smoother too, with the same quiet celebration. Nothing
-about the game changed: same pictures, same real die-cut pieces, same
-calm play. Same rules as always: sixteen pictures,
+Status: release 2.7 (versionCode 27) awaits the closed-testing upload.
+Release 2.7 gives the finish a better rhythm: when the last piece clicks
+home, the finished picture now stays on the table for a quiet second
+before the well done plate appears, and the bell rings with the plate
+instead of at the click. The last piece keeps its snap, the celebration
+gets its chime, and the breath belongs to the child. Nothing else about
+the game changed: same pictures, same real die-cut pieces, same calm
+play. Same rules as always: sixteen pictures,
 no timer, no score, no fail state, no reading required, fully offline, no
 ads, no accounts.
 
