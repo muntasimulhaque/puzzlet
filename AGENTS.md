@@ -1440,5 +1440,12 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   was rejected. Captures versus the old vector path differ only at AA
   level, checked with zoomed crops; the harness set is deterministic to
   the byte on one boot. All gates green: core and app tests, full lint,
-  tools pins. Cut 2.6 (versionCode 26) at the owner's word; notes and
-  captures follow the build.
+  tools pins. Cut 2.6 (versionCode 26) at the owner's word, notes
+  measured at 428 chars, delivered in chat and stored in the guide.
+  CI green end to end: the build signed and published the AAB and APK,
+  and the capture ran on all three form factors. The verified AAB (APK
+  twin read versionCode 26, versionName 2.6, target 37, package
+  io.github.muntasimulhaque.puzzlet, no permission beyond the androidx
+  core private receiver) sits in play-store/aab/ awaiting submission,
+  and the refreshed 24 captures landed in play-store/screenshots/.
+  README, guide and this file brought current.
