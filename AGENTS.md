@@ -1449,3 +1449,9 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   core private receiver) sits in play-store/aab/ awaiting submission,
   and the refreshed 24 captures landed in play-store/screenshots/.
   README, guide and this file brought current.
+- 2026-09-11: Version 2.6 submitted for closed testing review; the AAB
+  was deleted from play-store/aab/ and the empty landing folder went
+  with it. README and the guide brought current. Everything is pushed
+  and the tree is clean. Standing open item unchanged: piece-level
+  TalkBack. Next session picks up from: the 2.6 review verdict and
+  tester feedback on the smoother shelf.

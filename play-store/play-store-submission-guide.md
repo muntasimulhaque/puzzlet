@@ -361,8 +361,10 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    build and capture both succeeded, and the APK twin read versionCode
    26, versionName 2.6, target 37, package
    io.github.muntasimulhaque.puzzlet, with no permission beyond the
-   androidx core private receiver. 2.6 is the smoothness pass (D-082) and
-   the refreshed 24 captures landed in play-store/screenshots/. After
+   androidx core private receiver. 2.6 is the smoothness pass (D-082); its
+   verified AAB sat in play-store/aab/ awaiting submission, and the
+   refreshed 24 captures landed in play-store/screenshots/. 2.6 was
+   submitted for review and the folder was deleted after. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
