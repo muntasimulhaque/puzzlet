@@ -378,8 +378,8 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    (D-083), a host-only change: phone and 10 inch captures came back
    byte-identical and the 7 inch set drifted only at the anti-aliasing
    level (worst channel delta 2 on a handful of edge pixels), so the
-   listing kit stands. Its verified AAB sits in play-store/aab/ awaiting
-   submission. After
+   listing kit stands. 2.7 was submitted for review and the folder was
+   deleted after. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet

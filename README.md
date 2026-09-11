@@ -4,7 +4,8 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.7 (versionCode 27) awaits the closed-testing upload.
+Status: release 2.7 (versionCode 27) is in Play review for the closed
+testing track.
 Release 2.7 gives the finish a better rhythm: when the last piece clicks
 home, the finished picture now stays on the table for a quiet second
 before the well done plate appears, and the bell rings with the plate
