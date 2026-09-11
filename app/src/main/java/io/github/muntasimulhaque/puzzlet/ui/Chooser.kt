@@ -42,6 +42,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import io.github.muntasimulhaque.puzzlet.R
 import io.github.muntasimulhaque.puzzlet.core.PIECE_COUNTS
@@ -49,6 +50,7 @@ import io.github.muntasimulhaque.puzzlet.core.PieceCut
 import io.github.muntasimulhaque.puzzlet.core.SceneSpec
 import io.github.muntasimulhaque.puzzlet.core.cutSeedFor
 import io.github.muntasimulhaque.puzzlet.core.stepForPieces
+import kotlin.math.ceil
 
 /**
  * The cut chooser (D-065): the child taps a picture, and the sizes the
@@ -179,16 +181,18 @@ private fun CutTile(
     }
 }
 
-/** The real cut, scored over the picture; the paths are cached per tile size. */
+/** The real cut, scored over the picture; the scene and paths are cached per tile size. */
 @Composable
 private fun CutPreview(scene: SceneSpec, pieces: Int) {
     Canvas(
         Modifier.fillMaxSize().drawWithCache {
+            val side = ceil(size.width.toDouble()).toInt().coerceAtLeast(1)
+            val image = sceneRaster(scene, side)
             val strokes = cutOverlayPaths(scene, pieces, size.width.toDouble())
             val ink = PuzzletColors.Ink.copy(alpha = 0.34f)
             val score = Stroke(1.6.dp.toPx())
             onDrawBehind {
-                drawScene(scene, size.width.toDouble())
+                drawImage(image = image, dstSize = IntSize(side, side))
                 for (path in strokes) drawPath(path, ink, style = score)
             }
         },

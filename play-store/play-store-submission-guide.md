@@ -145,6 +145,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 2.6 (measured: 428 chars)
+
+```
+Puzzlet 2.6 is a smoothness update. The picture shelf used to redraw every picture on every scroll frame; now each picture is drawn once and reused, so browsing the sixteen pictures feels light and quick, even on older devices. The finish screen is smoother too, with the same quiet celebration. Everything else is the same game: five sizes, real die-cut pieces, no ads, no trackers, no permissions asked. Thank you for testing.
+```
+
 ## Release notes for closed testing 2.5 (measured: 478 chars)
 
 ```

@@ -85,7 +85,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 25, versionName 2.5, cut for
+  and so on. Current release: versionCode 26, versionName 2.6, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -155,6 +155,13 @@ zIndex, so a grab, a release and a reorder never rebuild a piece mid
 flight. While a piece is held, the finger owns it: the field draws from a
 finger state with no recomposition, the clamp comes from core, and the
 game state hears about the carry once, at release (D-055).
+
+Still surfaces do not redraw their pictures: `ui/SceneRaster.kt` holds one
+bounded, size-keyed raster per picture and pixel side, so the shelf cards,
+the peek panel, the picture coin, the celebration plate and the chooser
+tiles composite one image instead of a few hundred shapes a frame (D-082).
+The play field is deliberately not in that store: its tiles stay pure
+vectors, and a carry redraws nothing at all.
 
 Scene content is pure data: `Scene.kt` holds the shape types and the
 registry; `ScenePaintings.kt`, `ScenePaintingsMore.kt`,
@@ -784,6 +791,29 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   capture and the fruit mid-game were dropped; the won-count truth is
   now carried by the chooser capture itself. The capture set is a
   listing set first and a drift check second.
+- D-082 The smoothness pass (owner-directed: the shelf scroll felt slow
+  and nothing in the app may). Measured first, with gfxinfo on the
+  emulator as a relative yardstick: a shelf card was redrawing its whole
+  vector scene on every scroll frame. Pictures that hold still are now
+  rastered once per real draw size into one bounded, size-keyed store
+  (`ui/SceneRaster.kt`, an LruCache sized to a slice of the app heap, a
+  whole shelf fits even on a ten inch tablet): the shelf cards, the peek
+  panel, the picture coin, the celebration plate and the chooser tiles
+  all composite one image. On the same emulator boot, a release shelf
+  fling went from GPU 5.3 ms to 2.2 ms a frame and from 29 to 20 ms total;
+  the store cannot go stale because the key carries the exact side and a
+  size change rebuilds, never stretches. The play field keeps drawing
+  pure vectors, as its law says: a carry still redraws nothing at all,
+  and the region-filter experiment (draw only the shapes a piece can
+  show) was measured, won nothing on a fill-bound field, and was swept.
+  The celebration stopped recomposing its plate every frame: the pop is
+  read inside the picture's layer, and the confetti's triangle and star
+  paths are built once per piece, not per frame. The raster is drawn at
+  ceil px so it always covers the layout box. Pixel proof: the harness
+  captures differ from the old vector path only at antialiasing level
+  (edge pixels, worst channel delta 85 on 3.4 percent of pixels, mean
+  0.11), verified by zoomed crops; capture runs on one boot are
+  byte-identical.
 
 ## Lessons that still bite
 
@@ -818,6 +848,17 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   a short shoulder, a short neck, a round chunky head, a wide blank
   mouth, rounded corners, bowed edges. Fetch the reference, crop it,
   measure it, then draw.
+- A scene is a few hundred vector shapes, and redrawing them per frame
+  is what makes a scrolling shelf stutter. Raster once at the real draw
+  size, key the store by that exact size so nothing goes stale, bound it
+  against the heap, and let frames composite one image. Measure the
+  frame phases (UI, sync, GPU) with gfxinfo framestats, not just the
+  jank percentage: they name which side of the frame is heavy.
+- A tile that draws outside its own layout bounds (the piece shadow
+  hangs below the piece bbox) loses that overdraw the moment the tile is
+  composited offscreen; Compose's CompositingStrategy.Offscreen cut the
+  shadows in the harness captures, so layer caching for the play tiles
+  is out until the shadow has room inside the tile.
 
 ## Standing exercises
 
@@ -1387,3 +1428,17 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   (gitignored, the local SDK path). Everything is pushed and the tree is
   clean. Next session picks up from: the 2.5 review verdict and tester
   feedback on the picture-colored coin.
+- 2026-09-11: The owner reported the shelf scroll feeling slow and asked
+  for buttery smooth everywhere. Measured on the emulator: the shelf's
+  vector cards were the scroll cost, so D-082 rastered every still
+  surface through one bounded size-keyed store, read the celebration
+  pop inside the picture's layer, and prebuilt the confetti shapes. Same
+  boot, release build: shelf fling GPU 5.3 to 2.2 ms a frame, 29 to
+  20 ms total; the play field measured heavier (GPU 17-21 ms during
+  carries) but is fill-bound in vectors; the CompositingStrategy
+  experiment cut its GPU tenfold and also cut the piece shadows, so it
+  was rejected. Captures versus the old vector path differ only at AA
+  level, checked with zoomed crops; the harness set is deterministic to
+  the byte on one boot. All gates green: core and app tests, full lint,
+  tools pins. Cut 2.6 (versionCode 26) at the owner's word; notes and
+  captures follow the build.

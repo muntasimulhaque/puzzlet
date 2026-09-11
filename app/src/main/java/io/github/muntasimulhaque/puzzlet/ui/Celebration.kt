@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,14 +86,14 @@ fun Celebration(game: Puzzle, onAgain: () -> Unit, onHome: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            CelebrationPlate(game = game, pop = pop.value, onAgain = onAgain, onHome = onHome)
+            CelebrationPlate(game = game, pop = pop.asState(), onAgain = onAgain, onHome = onHome)
         }
     }
 }
 
 /** One clean plate: picture, praise, then the two ways onward below it. */
 @Composable
-private fun CelebrationPlate(game: Puzzle, pop: Float, onAgain: () -> Unit, onHome: () -> Unit) {
+private fun CelebrationPlate(game: Puzzle, pop: State<Float>, onAgain: () -> Unit, onHome: () -> Unit) {
     BoxWithConstraints(
         modifier = Modifier
             .padding(horizontal = 24.dp)
@@ -139,15 +140,18 @@ private fun CelebrationPlate(game: Puzzle, pop: Float, onAgain: () -> Unit, onHo
 
 /** The finished picture, popped to its home size and centred. */
 @Composable
-private fun CelebratedPicture(game: Puzzle, side: Dp, pop: Float) {
+private fun CelebratedPicture(game: Puzzle, side: Dp, pop: State<Float>) {
     ScenePicture(
         spec = Scenes.byId(game.sceneId),
         modifier = Modifier
             .width(side)
+            // The pop is read inside the layer, so the spring moves the
+            // picture without recomposing the plate's praise and coins.
             .graphicsLayer {
-                scaleX = pop
-                scaleY = pop
-                alpha = ((pop - 0.5f) / 0.5f).coerceIn(0f, 1f)
+                val value = pop.value
+                scaleX = value
+                scaleY = value
+                alpha = ((value - 0.5f) / 0.5f).coerceIn(0f, 1f)
             },
         cornerRadius = 22.dp,
     )
@@ -240,8 +244,7 @@ private fun DrawScope.drawConfetti(pieces: List<ConfettiPiece>, t: Float) {
                     size = androidx.compose.ui.geometry.Size(p.size.toFloat() * 2, p.size.toFloat() * 2),
                     cornerRadius = androidx.compose.ui.geometry.CornerRadius(2f),
                 )
-                2 -> drawPath(triangle(p.size.toFloat()), p.color.copy(alpha = alpha))
-                else -> drawPath(star(p.size.toFloat()), p.color.copy(alpha = alpha))
+                else -> p.shape?.let { drawPath(it, p.color.copy(alpha = alpha)) }
             }
         }
     }
@@ -273,7 +276,14 @@ private class ConfettiPiece(
     val size: Double,
     val color: Color,
     val kind: Int,
-)
+) {
+    /** Kinds 2 and 3 are a triangle or a star, built once, not per frame. */
+    val shape: Path? = when (kind) {
+        2 -> triangle(size.toFloat())
+        3 -> star(size.toFloat())
+        else -> null
+    }
+}
 
 private fun buildConfetti(seed: Long): List<ConfettiPiece> {
     val rnd = Random(seed + 31)

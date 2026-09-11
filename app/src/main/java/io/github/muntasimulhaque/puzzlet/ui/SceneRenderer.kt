@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -15,6 +16,7 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import io.github.muntasimulhaque.puzzlet.core.CircleSpec
 import io.github.muntasimulhaque.puzzlet.core.EllipseSpec
@@ -22,6 +24,7 @@ import io.github.muntasimulhaque.puzzlet.core.PolygonSpec
 import io.github.muntasimulhaque.puzzlet.core.RingSpec
 import io.github.muntasimulhaque.puzzlet.core.RoundRectSpec
 import io.github.muntasimulhaque.puzzlet.core.SceneSpec
+import kotlin.math.ceil
 
 /**
  * The one renderer for scenes: board, gallery cards, thumbnails, celebration
@@ -106,7 +109,13 @@ private fun Path.addOval(c: Offset, rx: Float, ry: Float) {
     cubicTo(c.x + k * rx, c.y - ry, c.x + rx, c.y - k * ry, c.x + rx, c.y)
 }
 
-/** A square scene picture, clipped to rounded corners. */
+/**
+ * A square scene picture, clipped to rounded corners. The scene is rastered
+ * once per real draw size through [sceneRaster] and every later frame draws
+ * that one image, so a scroll moves pictures instead of redrawing a few
+ * hundred shapes per card. The store is size-keyed and bounded; the play
+ * field itself still draws vectors (see SceneRaster.kt).
+ */
 @Composable
 fun ScenePicture(
     spec: SceneSpec,
@@ -116,8 +125,15 @@ fun ScenePicture(
     Canvas(
         modifier = modifier
             .aspectRatio(1f)
-            .clip(RoundedCornerShape(cornerRadius)),
-    ) {
-        drawScene(spec, size.width.toDouble())
-    }
+            .clip(RoundedCornerShape(cornerRadius))
+            .drawWithCache {
+                // The scene's side is the width; the tile is square by
+                // layout, so width and height agree. Round up: the raster
+                // then always covers the layout box, and the hair of
+                // overdraw is clipped by the card's own rounded corners.
+                val side = ceil(size.width.toDouble()).toInt().coerceAtLeast(1)
+                val image = sceneRaster(spec, side)
+                onDrawBehind { drawImage(image = image, dstSize = IntSize(side, side)) }
+            },
+    ) { }
 }
