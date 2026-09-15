@@ -1194,3 +1194,19 @@ superseded decision in place instead of deleting it.
   deleted after. README and the guide brought current. Next session picks
   up from: the 2.8 review verdict and tester feedback on the tidied
   codebase.
+- 2026-09-15: The working-rules rewrite (owner-directed after reading
+  Matt Pocock's point that markdown mirroring a codebase drifts and burns
+  agent context). AGENTS.md went from 1,520 lines to 272: the game
+  walkthrough and the architecture prose that duplicated code became the
+  intent laws plus a thin map, design constants gave way to pointers
+  (MarkPiece.kt, the theme), and the live release numbers left the file
+  for app/build.gradle.kts and README as sources of truth. What stayed:
+  the session ritual, the change loop, the hard constraints, style,
+  forbidden, shipping, releasing, build commands, the map, a glossary,
+  design laws, lessons and standing items. The full D-001 through D-083
+  log and the entire session log moved verbatim to docs/decisions.md, a
+  new home in docs/, so the decision citations in about 40 source files
+  still resolve. Docs-only: no versionCode and no CI run (both workflows'
+  paths filters exclude AGENTS.md and docs/). Commit d3699ea pushed to
+  main. Next session picks up from: the 2.8 review verdict and tester
+  feedback.
