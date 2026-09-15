@@ -4,7 +4,7 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.8 (versionCode 28) is cut for the closed testing track.
+Status: release 2.8 (versionCode 28) is in Play review for the closed testing track.
 Release 2.8 is a housekeeping release: behind the scenes the interface
 code was split into small, focused modules, so future changes are easier
 and safer to make. Nothing you see or play has changed: the same sixteen

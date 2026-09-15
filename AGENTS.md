@@ -1513,6 +1513,7 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   The verified AAB (APK twin read versionCode 28, versionName 2.8,
   target 37, package io.github.muntasimulhaque.puzzlet, no permission
   beyond the androidx core private receiver) sits in play-store/aab/
-  awaiting submission. README and the guide brought current. Next session
-  picks up from: the 2.8 review verdict and tester feedback on the tidied
+  awaiting submission; 2.8 was submitted for review and the folder was
+  deleted after. README and the guide brought current. Next session picks
+  up from: the 2.8 review verdict and tester feedback on the tidied
   codebase.
