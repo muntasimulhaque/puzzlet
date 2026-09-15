@@ -4,17 +4,13 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.7 (versionCode 27) is in Play review for the closed
-testing track.
-Release 2.7 gives the finish a better rhythm: when the last piece clicks
-home, the finished picture now stays on the table for a quiet second
-before the well done plate appears, and the bell rings with the plate
-instead of at the click. The last piece keeps its snap, the celebration
-gets its chime, and the breath belongs to the child. Nothing else about
-the game changed: same pictures, same real die-cut pieces, same calm
-play. Same rules as always: sixteen pictures,
-no timer, no score, no fail state, no reading required, fully offline, no
-ads, no accounts.
+Status: release 2.8 (versionCode 28) is cut for the closed testing track.
+Release 2.8 is a housekeeping release: behind the scenes the interface
+code was split into small, focused modules, so future changes are easier
+and safer to make. Nothing you see or play has changed: the same sixteen
+pictures, five sizes, real die-cut pieces, the same quiet sounds and calm
+rules. Same rules as always: no timer, no score, no fail state, no
+reading required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT

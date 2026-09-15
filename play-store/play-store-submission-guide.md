@@ -145,6 +145,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for closed testing 2.8 (measured: 377 chars)
+
+```
+Puzzlet 2.8 is a housekeeping release. Behind the scenes, the interface code was split into small, focused modules, so future changes are easier and safer to make. Nothing you see or play has changed: the same sixteen pictures, five sizes, real die-cut pieces, the same quiet sounds and calm rules. No ads, no trackers, no internet, no permissions asked. Thank you for testing.
+```
+
 ## Release notes for closed testing 2.7 (measured: 470 chars)
 
 ```

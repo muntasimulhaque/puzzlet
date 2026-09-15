@@ -85,7 +85,7 @@ prose, no quote marks around phrases, no markdown, no em-dashes.
 - The version walk is the owner's law: `versionCode` only ever increases
   and is never reused; `versionName` is `versionCode` divided by ten, one
   decimal. 1 is 0.1, 2 is 0.2, 9 is 0.9, 10 is 1.0, 11 is 1.1, 12 is 1.2,
-  and so on. Current release: versionCode 27, versionName 2.7, cut for
+  and so on. Current release: versionCode 28, versionName 2.8, cut for
   closed testing.
 - `targetSdk` moves only together with an AGP that supports it.
 - The signing keystore lives OUTSIDE the repo (owner vault) with its base64
@@ -1490,3 +1490,19 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   clean. Standing open item unchanged: piece-level TalkBack. Next
   session picks up from: the 2.7 review verdict and tester feedback on
   the finish rhythm.
+- 2026-09-15: The UI split (owner-directed refactor). Play.kt (396),
+  Gallery.kt (350), Celebration.kt (306), PlayPieces.kt (260), Chooser.kt
+  (220) and PlayDraw.kt (163) were split into focused modules under ui/,
+  the largest now 174 lines; Buttons.kt holds the shared coin recipe and
+  SceneNames.kt the picture-name map. It is a pure move: the multiset of
+  every non-blank, non-import line in the UI package is identical before
+  and after, the only differences being the 12 private to internal
+  keywords cross-file callers need, and no function body was touched.
+  All gates green locally: core and app release unit tests, full lint,
+  tools tests, icon and sound pins, R8 release, and the screenshot
+  harness still compiles. Cut 2.8 (versionCode 28) at the owner's word,
+  notes measured at 377 chars, no contact line, delivered in chat and
+  stored in the guide. Known follow-up, listed not fixed: five functions
+  were already over the 40-line cap (drawScene, ChooserPlate,
+  CelebrationPlate, PlayScreen, Gallery) and were left untouched so the
+  move stays provably pure.
