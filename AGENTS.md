@@ -1505,4 +1505,14 @@ policy is live at `https://muntasimulhaque.github.io/puzzlet/privacy.html`.
   stored in the guide. Known follow-up, listed not fixed: five functions
   were already over the 40-line cap (drawScene, ChooserPlate,
   CelebrationPlate, PlayScreen, Gallery) and were left untouched so the
-  move stays provably pure.
+  move stays provably pure. CI green end to end: the build signed and
+  published the AAB and APK, and the capture ran on all three form
+  factors. The 7 inch and 10 inch sets came back byte-identical and the
+  phone set drifted only at the anti-aliasing level (at most 286 of
+  2,073,600 pixels, max channel delta 4), so the listing kit stands.
+  The verified AAB (APK twin read versionCode 28, versionName 2.8,
+  target 37, package io.github.muntasimulhaque.puzzlet, no permission
+  beyond the androidx core private receiver) sits in play-store/aab/
+  awaiting submission. README and the guide brought current. Next session
+  picks up from: the 2.8 review verdict and tester feedback on the tidied
+  codebase.
