@@ -138,22 +138,26 @@ class PuzzleTrayTest {
     }
 
     @Test
-    fun `the shelf stands where the picture grows, and never over it`() {
+    fun `the shelf takes the axis the field can spare, and never covers the picture`() {
         for ((rows, cols) in difficulties) for (field in fields) {
             val p = createPuzzle("sail", rows, cols, field, cap, 7L)
             val count = rows * cols
-            val above = boardSideFor(field.w, field.h - trayHeightFor(field.h, count), cap)
-            val beside = boardSideFor(field.w - trayWidthFor(field.w, count), field.h, cap)
             assertEquals(
                 "field ${field.w}x${field.h} at ${rows}x$cols picked the wrong stand",
-                above >= beside,
+                field.h > field.w,
                 p.shelfAbove,
             )
-            // The snug shelf only ever hands room back to the picture, so the
-            // board can never be smaller than the stand's own measure.
+            // The picture is at least as big as the other arrangement's own
+            // measure on this field allows. The shelf never costs the child
+            // picture to gain itself a place to stand.
+            val other = if (p.shelfAbove) {
+                boardSideFor(field.w - trayWidthFor(field.w, count), field.h, cap)
+            } else {
+                boardSideFor(field.w, field.h - trayHeightFor(field.h, count), cap)
+            }
             assertTrue(
-                "field ${field.w}x${field.h} at ${rows}x$cols: board ${p.board.w} under ${maxOf(above, beside)}",
-                p.board.w >= maxOf(above, beside) - 1e-6,
+                "field ${field.w}x${field.h} at ${rows}x$cols: board ${p.board.w} under $other",
+                p.board.w >= other - 1e-6,
             )
             // The two zones never overlap, whichever way the shelf stands.
             val clear = if (p.shelfAbove) p.tray.maxY <= p.board.y + 1e-9

@@ -88,7 +88,7 @@ fun createPuzzle(
     // around that, which hands the spare room to the board. The shelf's
     // own stand (above or beside) is measured first, on the real field.
     val count = rows * cols
-    val shelfAbove = shelfAboveFor(field, count, capPx)
+    val shelfAbove = shelfAboveFor(field)
     val share = if (shelfAbove) trayHeightFor(field.h, count) else trayWidthFor(field.w, count)
     val probe = buildField(sceneId, rows, cols, field, capPx, seed, seatSeed, shelfAbove, share)
     val sizes = probe.pieces.map { it.size }

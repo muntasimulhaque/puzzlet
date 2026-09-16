@@ -35,18 +35,23 @@ fun boardSideFor(stageW: Double, stageH: Double, capPx: Double): Double =
 
 /**
  * Where the shelf stands (D-087): above the picture, or beside it. The
- * rule is the child's, not the designer's: whichever arrangement leaves
- * the bigger picture wins, measured on the real field before anything is
- * cut. A phone held upright always wants the shelf above, because a band
- * across a narrow field costs almost no height; a tablet lying down, or a
- * phone turned sideways, wants it beside, because the same band across a
- * wide field would eat more than half the picture.
+ * shelf takes the axis the field can spare. A field taller than it is wide
+ * has width to spare and height to lose, so the shelf goes above and the
+ * picture keeps the width it needs. A field wider than it is tall is the
+ * other way round: the band across the top would eat most of the height
+ * the picture could have had, so the shelf goes beside and the picture
+ * grows into it. On a wide field that is worth about half again the
+ * picture; on a tall field the band is nearly free. A square field counts
+ * as wide, because the strip leaves the picture more room even there.
+ *
+ * This started as a measurement (which arrangement leaves the bigger
+ * board, on the real field). The shape says the same thing without a
+ * prediction: both boards are limited by the field's own width and height
+ * (with the cap on top of both), and the rule above always hands the
+ * picture the better of the two. The tray's grid, gaps, snug pass, jumble
+ * and scale stay the same math on either axis.
  */
-fun shelfAboveFor(field: Area, pieces: Int, capPx: Double): Boolean {
-    val above = boardSideFor(field.w, field.h - trayHeightFor(field.h, pieces), capPx)
-    val beside = boardSideFor(field.w - trayWidthFor(field.w, pieces), field.h, capPx)
-    return above >= beside
-}
+fun shelfAboveFor(field: Area): Boolean = field.h > field.w
 
 /** Where pieces wait: one scale for the whole tray and a seat centre per piece. */
 data class TrayPack(val scale: Double, val seats: List<Vec2>)
