@@ -55,7 +55,7 @@ and offline facts live in the full description only.
 Simple, beautiful jigsaw puzzles for ages 3 to 5.
 ```
 
-**Full description** (4000 chars max, measured: 1731). Five facts lead,
+**Full description** (4000 chars max, measured: 1730). Five facts lead,
 because they are the reason a parent installs: what it is, that it is
 safe, that it is open source, and that it asks for nothing, plus the one
 thing that keeps a small child playing, that the game grows with them.
@@ -153,7 +153,7 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
-## Release notes for closed testing 2.9 (measured: 459 chars)
+## Release notes for closed testing 2.9 (measured: 458 chars)
 
 ```
 Puzzlet 2.9 is the polish release. The finish rises onto the screen instead of appearing, the picture assembles on a real table, and the shelf is calmer: each card is the picture and its name, with one honey star on the pictures your child has finished. Turn a tablet sideways and the pieces now wait beside the picture, so every piece is bigger. TalkBack hears more of the game. No ads, no trackers, no internet, no permissions asked. Thank you for testing.

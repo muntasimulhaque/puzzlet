@@ -1377,8 +1377,8 @@ superseded decision in place instead of deleting it.
   stands as the shipped build. The replacement AAB (2956719 bytes, built
   from b635d19, published 14:33Z) sits in play-store/aab/ awaiting the
   closed testing submission. Store copy brought current in the guide: the
-  full description now carries the ladder and the star (1731 characters,
-  measured), and the 2.9 release notes are stored (459 characters).
+  full description now carries the ladder and the star (1730 characters,
+  measured), and the 2.9 release notes are stored (458 characters).
   Standing open item unchanged: piece-level TalkBack. Next session picks
   up from: the 2.9 review verdict, tester feedback on the calmer shelf and
   the wide field's shelf beside, and the owner's calls on the two offers
