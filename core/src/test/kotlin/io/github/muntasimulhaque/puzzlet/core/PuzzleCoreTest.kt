@@ -118,8 +118,11 @@ class PuzzleCoreTest {
             assertTrue("piece $id should snap", p.pieceOf(id).placed)
             assertFalse(p.completed)
         }
-        // Far drop: clamped into the field, still far from home, no snap.
-        p = drag(p, 3, p.pieceOf(3).home + Vec2(tol * 3.0, tol * 3.0))
+        // Far drop: the opposite corner of the field, clamped back inside it
+        // but still far from home (three tolerances is not necessarily far on
+        // a field whose board nearly fills it, and the clamp can then leave a
+        // piece within reach of its own slot).
+        p = drag(p, 3, Vec2(0.0, 0.0))
         p = drop(p, 3)
         assertFalse(p.pieceOf(3).placed)
         assertFalse(p.completed)

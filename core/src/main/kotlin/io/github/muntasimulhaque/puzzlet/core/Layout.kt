@@ -5,14 +5,15 @@ import kotlin.math.ln
 import kotlin.random.Random
 
 /**
- * The play field's two zones: a tray of waiting pieces on top, the picture
- * assembling below. Pieces wait at tray scale and grow to board scale in
- * hand, so the child's question is the same one a real jigsaw asks: which
- * piece, and where does it go. All pure math, no Android imports, so tests
- * and the screenshot harness agree with the app on every number.
+ * The play field's two zones: a shelf of waiting pieces, the picture
+ * assembling beside it or below it (D-087). Pieces wait at tray scale and
+ * grow to board scale in hand, so the child's question is the same one a
+ * real jigsaw asks: which piece, and where does it go. All pure math, no
+ * Android imports, so tests and the screenshot harness agree with the app
+ * on every number.
  */
 
-/** The tray's vertical share of the field; bigger ladders get a deeper tray. */
+/** The tray's vertical share of the field; bigger ladders get a deeper shelf. */
 fun trayHeightFor(fieldH: Double, pieces: Int): Double = fieldH * when {
     pieces <= 6 -> 0.32
     pieces <= 9 -> 0.36
@@ -20,18 +21,44 @@ fun trayHeightFor(fieldH: Double, pieces: Int): Double = fieldH * when {
     else -> 0.44
 }
 
-/** The board side: generous, never into the tray, capped for tablets. */
-fun boardSideFor(fieldW: Double, fieldH: Double, trayH: Double, capPx: Double): Double =
-    minOf(fieldW * 0.92, (fieldH - trayH) * 0.94, capPx)
+/** The tray's horizontal share when the shelf stands beside the picture. */
+fun trayWidthFor(fieldW: Double, pieces: Int): Double = fieldW * when {
+    pieces <= 6 -> 0.20
+    pieces <= 9 -> 0.22
+    pieces <= 12 -> 0.24
+    else -> 0.26
+}
+
+/** The board side for a stage: generous, never into the tray, capped for tablets. */
+fun boardSideFor(stageW: Double, stageH: Double, capPx: Double): Double =
+    minOf(stageW * 0.92, stageH * 0.94, capPx)
+
+/**
+ * Where the shelf stands (D-087): above the picture, or beside it. The
+ * rule is the child's, not the designer's: whichever arrangement leaves
+ * the bigger picture wins, measured on the real field before anything is
+ * cut. A phone held upright always wants the shelf above, because a band
+ * across a narrow field costs almost no height; a tablet lying down, or a
+ * phone turned sideways, wants it beside, because the same band across a
+ * wide field would eat more than half the picture.
+ */
+fun shelfAboveFor(field: Area, pieces: Int, capPx: Double): Boolean {
+    val above = boardSideFor(field.w, field.h - trayHeightFor(field.h, pieces), capPx)
+    val beside = boardSideFor(field.w - trayWidthFor(field.w, pieces), field.h, capPx)
+    return above >= beside
+}
 
 /** Where pieces wait: one scale for the whole tray and a seat centre per piece. */
 data class TrayPack(val scale: Double, val seats: List<Vec2>)
 
-/** The cell of every seat is the same size, so the gaps read as one grid. */
+/**
+ * The cell of every seat is the same size, so the gaps read as one grid.
+ * The margins are the shelf's own: a little air along its length, a little
+ * more across its thickness, whichever way the shelf stands.
+ */
+private const val TRAY_ALONG = 0.045
+private const val TRAY_DEPTH = 0.07
 private const val TRAY_GAP = 0.13
-/** Breathing room at the tray's sides and its top and bottom (D-043). */
-private const val TRAY_MARGIN_X = 0.045
-private const val TRAY_PAD_Y = 0.07
 /** A tray piece is never drawn larger than the piece it becomes on the board. */
 private const val MAX_TRAY_SCALE = 1.0
 
@@ -51,15 +78,15 @@ private fun gapOf(sizes: List<Vec2>): Double {
 /**
  * The arrangement this tray wants, whatever order the pieces wait in. The
  * same sizes always give the same grid, which is what lets the field decide
- * how tall the shelf is before it knows the jumble (and keeps the cut
+ * how deep the shelf is before it knows the jumble (and keeps the cut
  * stable across jumbles, AGENTS.md, D-041).
  */
-fun trayGridFor(tray: Area, sizes: List<Vec2>): TrayGrid {
+fun trayGridFor(tray: Area, sizes: List<Vec2>, shelfAbove: Boolean = true): TrayGrid {
     require(sizes.isNotEmpty()) { "A tray needs at least one piece" }
     val cell = cellOf(sizes)
     val gap = gapOf(sizes)
-    val usableW = tray.w * (1.0 - 2 * TRAY_MARGIN_X)
-    val usableH = tray.h * (1.0 - 2 * TRAY_PAD_Y)
+    val usableW = tray.w * (1.0 - 2 * (if (shelfAbove) TRAY_ALONG else TRAY_DEPTH))
+    val usableH = tray.h * (1.0 - 2 * (if (shelfAbove) TRAY_DEPTH else TRAY_ALONG))
     return bestGrid(sizes.size, cell.x, cell.y, gap, usableW, usableH)
 }
 
@@ -70,15 +97,22 @@ fun trayGridHeight(grid: TrayGrid, sizes: List<Vec2>): Double {
     return grid.rows * cellH * grid.scale + (grid.rows - 1) * gap * grid.scale
 }
 
+/** How much width an arrangement fills at its own scale. */
+fun trayGridWidth(grid: TrayGrid, sizes: List<Vec2>): Double {
+    val cellW = sizes.maxOf { it.x }
+    val gap = gapOf(sizes)
+    return grid.cols * cellW * grid.scale + (grid.cols - 1) * gap * grid.scale
+}
+
 /**
- * The tray after the pack is known: as tall as the pieces need, with their
- * padding, and never taller than the share the ladder asked for. A snug
- * shelf hands the rest of the field back to the board, so a wide tablet
+ * The shelf after the pack is known: as deep as the pieces need, with their
+ * padding, and never deeper than the share the ladder asked for. A snug
+ * shelf hands the rest of the field back to the board, so a wide screen
  * plays a bigger picture instead of a deeper empty strip.
  */
-fun snugTrayHeight(fieldH: Double, share: Double, used: Double): Double {
-    val wanted = used / (1.0 - 2 * TRAY_PAD_Y)
-    return wanted.coerceIn(fieldH * 0.16, share)
+fun snugTrayExtent(fieldExtent: Double, share: Double, used: Double): Double {
+    val wanted = used / (1.0 - 2 * TRAY_DEPTH)
+    return wanted.coerceIn(fieldExtent * 0.16, share)
 }
 
 /**
@@ -111,13 +145,13 @@ fun shuffledTrayOrder(count: Int, seed: Long): List<Int> {
  * piece's box, so no two pieces can ever touch, and the scale is the most
  * generous that fits the chosen arrangement inside the tray.
  */
-fun trayPack(tray: Area, sizes: List<Vec2>, seed: Long): TrayPack {
+fun trayPack(tray: Area, sizes: List<Vec2>, seed: Long, shelfAbove: Boolean = true): TrayPack {
     require(sizes.isNotEmpty()) { "A tray needs at least one piece" }
     val order = shuffledTrayOrder(sizes.size, seed)
     val cellW = sizes.maxOf { it.x }
     val cellH = sizes.maxOf { it.y }
     val gap = gapOf(sizes)
-    val grid = trayGridFor(tray, sizes)
+    val grid = trayGridFor(tray, sizes, shelfAbove)
     val s = grid.scale
     val stepX = (cellW + gap) * s
     val stepY = (cellH + gap) * s

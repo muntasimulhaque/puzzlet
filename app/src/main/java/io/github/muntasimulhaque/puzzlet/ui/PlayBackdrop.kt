@@ -36,49 +36,79 @@ internal fun BoardBackdrop(
 }
 
 internal fun DrawScope.drawBackdrop(game: Puzzle, pulseId: Int, pulseT: Float) {
-    drawTray(game.tray)
-    drawMat(game.board)
+    drawTray(game.tray, game.shelfAbove)
+    drawBoard(game.board)
     drawPulse(game, pulseId, pulseT)
 }
 
-private fun DrawScope.drawTray(tray: Area) {
-    // The shelf: a warm tray that hangs from under the top bar, its bottom
-    // corners turned off square like a real felt tray, with one soft edge
-    // beneath so it sits a hair above the table. No hairline: the shadow
-    // is the seam now.
-    val r = TRAY_RADIUS.toPx()
-    val x0 = tray.x.toFloat()
-    val x1 = tray.maxX.toFloat()
-    val y0 = tray.y.toFloat()
-    val y1 = tray.maxY.toFloat()
-    val path = Path().apply {
-        moveTo(x0, y0)
-        lineTo(x1, y0)
-        lineTo(x1, y1 - r)
-        arcTo(Rect(x1 - 2f * r, y1 - 2f * r, x1, y1), 0f, 90f, forceMoveTo = false)
-        lineTo(x0 + r, y1)
-        arcTo(Rect(x0, y1 - 2f * r, x0 + 2f * r, y1), 90f, 90f, forceMoveTo = false)
-        close()
-    }
-    val shelfShadow = 2.5.dp.toPx()
-    withTransform({ translate(0f, shelfShadow) }) {
+private val TRAY_RADIUS = 26.dp
+private val TRAY_LIP = 2.5.dp
+
+/**
+ * The shelf: a warm tray that hangs from under the top bar when it stands
+ * above the picture, or from the screen's left edge when it stands beside
+ * it (D-087). Its corners turn off square on the side that faces the
+ * picture, like a real felt tray, and its soft edge falls that same way,
+ * so the shelf reads as one kind of object whichever way the field is
+ * shaped. No hairline: the shadow is the seam now.
+ */
+private fun DrawScope.drawTray(tray: Area, above: Boolean) {
+    val path = trayPath(tray, above, TRAY_RADIUS.toPx())
+    val lip = TRAY_LIP.toPx()
+    withTransform({ if (above) translate(0f, lip) else translate(lip, 0f) }) {
         drawPath(path, PuzzletColors.Ink.copy(alpha = 0.05f))
     }
     drawPath(path, PuzzletColors.Tray)
 }
 
-private val TRAY_RADIUS = 26.dp
-
-private fun DrawScope.drawMat(board: Area) {
-    val mat = 8.dp.toPx()
-    drawRoundRect(
-        PuzzletColors.Ink.copy(alpha = 0.10f),
-        topLeft = Offset((board.x - mat).toFloat(), (board.y - mat).toFloat()),
-        size = Size((board.w + 2 * mat).toFloat(), (board.h + 2 * mat).toFloat()),
-        cornerRadius = CornerRadius(10.dp.toPx()),
-        style = Stroke(width = 2.dp.toPx()),
-    )
+/** The tray's outline: flush on the two edges that meet the screen's own frame. */
+private fun trayPath(tray: Area, above: Boolean, r: Float): Path {
+    val x0 = tray.x.toFloat()
+    val x1 = tray.maxX.toFloat()
+    val y0 = tray.y.toFloat()
+    val y1 = tray.maxY.toFloat()
+    return Path().apply {
+        if (above) {
+            moveTo(x0, y0)
+            lineTo(x1, y0)
+            lineTo(x1, y1 - r)
+            arcTo(Rect(x1 - 2f * r, y1 - 2f * r, x1, y1), 0f, 90f, forceMoveTo = false)
+            lineTo(x0 + r, y1)
+            arcTo(Rect(x0, y1 - 2f * r, x0 + 2f * r, y1), 90f, 90f, forceMoveTo = false)
+            close()
+        } else {
+            moveTo(x0, y0)
+            lineTo(x1 - r, y0)
+            arcTo(Rect(x1 - 2f * r, y0, x1, y0 + 2f * r), 270f, 90f, forceMoveTo = false)
+            lineTo(x1, y1 - r)
+            arcTo(Rect(x1 - 2f * r, y1 - 2f * r, x1, y1), 0f, 90f, forceMoveTo = false)
+            lineTo(x0, y1)
+            close()
+        }
+    }
 }
+
+/**
+ * The table the picture assembles on: one quiet linen square, exactly the
+ * board the pieces snap to, wearing the tray's own soft lip so the two
+ * surfaces are the same kind of thing. It used to be a hairline outline
+ * drawn eight dp outside the board, which showed a frame a piece could not
+ * reach and left the work with no place to happen (D-085). Still no
+ * picture, no slot glow, nothing to copy: a surface, not a hint.
+ */
+private fun DrawScope.drawBoard(board: Area) {
+    val r = BOARD_RADIUS.toPx()
+    val lip = BOARD_LIP.toPx()
+    val topLeft = Offset(board.x.toFloat(), board.y.toFloat())
+    val size = Size(board.w.toFloat(), board.h.toFloat())
+    withTransform({ translate(0f, lip) }) {
+        drawRoundRect(PuzzletColors.Ink.copy(alpha = 0.05f), topLeft, size, CornerRadius(r))
+    }
+    drawRoundRect(PuzzletColors.Board, topLeft, size, CornerRadius(r))
+}
+
+private val BOARD_RADIUS = 24.dp
+private val BOARD_LIP = 2.5.dp
 
 private fun DrawScope.drawPulse(game: Puzzle, pulseId: Int, pulseT: Float) {
     if (pulseId < 0 || pulseT >= 1f) return

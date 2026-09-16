@@ -77,11 +77,24 @@ fun PlayScreen(
         // The finish owns the whole screen. The picture panel stays inside
         // the field, so the top bar and the picture coin's on state stay in
         // view while the child looks at the picture (D-048, D-080).
-        if (celebrating) {
-            Celebration(game, onAgain = actions.onRestart, onHome = onBack)
-        }
-        if (confirming) {
-            LeaveConfirm(onStay = { confirming = false }, onLeave = onBack)
-        }
+        PlayOverlays(celebrating, confirming, game, actions.onRestart, onBack, { confirming = false })
+    }
+}
+
+/** The two moments that cover the field: the finish, and the question. */
+@Composable
+private fun PlayOverlays(
+    celebrating: Boolean,
+    confirming: Boolean,
+    game: Puzzle,
+    onAgain: () -> Unit,
+    onHome: () -> Unit,
+    onStay: () -> Unit,
+) {
+    if (celebrating) {
+        Celebration(game = game, onAgain = onAgain, onHome = onHome)
+    }
+    if (confirming) {
+        LeaveConfirm(onStay = onStay, onLeave = onHome)
     }
 }

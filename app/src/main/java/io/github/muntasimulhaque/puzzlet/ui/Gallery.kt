@@ -55,17 +55,33 @@ fun Gallery(
                 modifier = Modifier.fillMaxWidth().weight(1f),
             )
         }
-        val openScene = openId?.let { id -> Scenes.all.firstOrNull { it.id == id } }
-        if (openScene != null) {
-            SceneChooser(
-                scene = openScene,
-                current = shelf.openingCount(openScene.id),
-                onChoose = onChoose,
-                onChooseAt = onChooseAt,
-                onDismiss = { openId = null },
-            )
-        }
+        ChooserOverlay(
+            openId = openId,
+            shelf = shelf,
+            onChoose = onChoose,
+            onChooseAt = onChooseAt,
+            onDismiss = { openId = null },
+        )
     }
+}
+
+/** The open picture's cut chooser, or nothing at all. */
+@Composable
+private fun ChooserOverlay(
+    openId: String?,
+    shelf: ShelfState,
+    onChoose: (String) -> Unit,
+    onChooseAt: (String, Int) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    val openScene = openId?.let { id -> Scenes.all.firstOrNull { it.id == id } } ?: return
+    SceneChooser(
+        scene = openScene,
+        current = shelf.openingCount(openScene.id),
+        onChoose = onChoose,
+        onChooseAt = onChooseAt,
+        onDismiss = onDismiss,
+    )
 }
 
 /**

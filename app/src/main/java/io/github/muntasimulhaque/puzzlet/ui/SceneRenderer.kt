@@ -35,55 +35,65 @@ import kotlin.math.ceil
 fun DrawScope.drawScene(spec: SceneSpec, side: Double) {
     if (side <= 0.0) return
     for (shape in spec.shapes) {
-        val color = Color(shape.argb)
-        fun px(v: Double) = (v * side).toFloat()
         when (shape) {
-            is CircleSpec -> drawCircle(
-                color,
-                radius = px(shape.radius).coerceAtLeast(0.5f),
-                center = Offset(px(shape.center.x), px(shape.center.y)),
-            )
-            is EllipseSpec -> {
-                val c = Offset(px(shape.center.x), px(shape.center.y))
-                val rx = px(shape.rx).coerceAtLeast(0.5f)
-                val ry = px(shape.ry).coerceAtLeast(0.5f)
-                withTransform({
-                    if (shape.angleDeg != 0.0) rotate(shape.angleDeg.toFloat(), pivot = c)
-                    scale(1f, ry / rx, pivot = c)
-                }) {
-                    drawCircle(color, rx, c)
-                }
-            }
-            is RoundRectSpec -> {
-                val tl = Offset(px(shape.x), px(shape.y))
-                val sz = Size(px(shape.w), px(shape.h))
-                val pivot = Offset(tl.x + sz.width / 2f, tl.y + sz.height / 2f)
-                withTransform({
-                    if (shape.angleDeg != 0.0) rotate(shape.angleDeg.toFloat(), pivot = pivot)
-                }) {
-                    drawRoundRect(color, tl, sz, CornerRadius(px(shape.cornerRadius)))
-                }
-            }
-            is PolygonSpec -> drawPath(polygonPath(shape, side), color)
-            is RingSpec -> {
-                val c = Offset(px(shape.center.x), px(shape.center.y))
-                val rx = px(shape.rx).coerceAtLeast(1f)
-                val ry = px(shape.ry).coerceAtLeast(1f)
-                val shrink = ((shape.rx - shape.thickness) / shape.rx).toFloat()
-                val innerRx = (rx * shrink).coerceIn(rx * 0.25f, rx * 0.9f)
-                val innerRy = ry * (innerRx / rx)
-                val ring = Path().apply {
-                    fillType = PathFillType.EvenOdd
-                    addOval(c, rx, ry)
-                    addOval(c, innerRx, innerRy)
-                }
-                withTransform({
-                    if (shape.angleDeg != 0.0) rotate(shape.angleDeg.toFloat(), pivot = c)
-                }) {
-                    drawPath(ring, color)
-                }
-            }
+            is CircleSpec -> drawCircleSpec(shape, side)
+            is EllipseSpec -> drawEllipseSpec(shape, side)
+            is RoundRectSpec -> drawRoundRectSpec(shape, side)
+            is PolygonSpec -> drawPath(polygonPath(shape, side), Color(shape.argb))
+            is RingSpec -> drawRingSpec(shape, side)
         }
+    }
+}
+
+private fun px(v: Double, side: Double): Float = (v * side).toFloat()
+
+private fun DrawScope.drawCircleSpec(spec: CircleSpec, side: Double) {
+    drawCircle(
+        Color(spec.argb),
+        radius = px(spec.radius, side).coerceAtLeast(0.5f),
+        center = Offset(px(spec.center.x, side), px(spec.center.y, side)),
+    )
+}
+
+private fun DrawScope.drawEllipseSpec(spec: EllipseSpec, side: Double) {
+    val c = Offset(px(spec.center.x, side), px(spec.center.y, side))
+    val rx = px(spec.rx, side).coerceAtLeast(0.5f)
+    val ry = px(spec.ry, side).coerceAtLeast(0.5f)
+    withTransform({
+        if (spec.angleDeg != 0.0) rotate(spec.angleDeg.toFloat(), pivot = c)
+        scale(1f, ry / rx, pivot = c)
+    }) {
+        drawCircle(Color(spec.argb), rx, c)
+    }
+}
+
+private fun DrawScope.drawRoundRectSpec(spec: RoundRectSpec, side: Double) {
+    val tl = Offset(px(spec.x, side), px(spec.y, side))
+    val sz = Size(px(spec.w, side), px(spec.h, side))
+    val pivot = Offset(tl.x + sz.width / 2f, tl.y + sz.height / 2f)
+    withTransform({
+        if (spec.angleDeg != 0.0) rotate(spec.angleDeg.toFloat(), pivot = pivot)
+    }) {
+        drawRoundRect(Color(spec.argb), tl, sz, CornerRadius(px(spec.cornerRadius, side)))
+    }
+}
+
+private fun DrawScope.drawRingSpec(spec: RingSpec, side: Double) {
+    val c = Offset(px(spec.center.x, side), px(spec.center.y, side))
+    val rx = px(spec.rx, side).coerceAtLeast(1f)
+    val ry = px(spec.ry, side).coerceAtLeast(1f)
+    val shrink = ((spec.rx - spec.thickness) / spec.rx).toFloat()
+    val innerRx = (rx * shrink).coerceIn(rx * 0.25f, rx * 0.9f)
+    val innerRy = ry * (innerRx / rx)
+    val ring = Path().apply {
+        fillType = PathFillType.EvenOdd
+        addOval(c, rx, ry)
+        addOval(c, innerRx, innerRy)
+    }
+    withTransform({
+        if (spec.angleDeg != 0.0) rotate(spec.angleDeg.toFloat(), pivot = c)
+    }) {
+        drawPath(ring, Color(spec.argb))
     }
 }
 

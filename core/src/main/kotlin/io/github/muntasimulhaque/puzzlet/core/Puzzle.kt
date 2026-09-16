@@ -49,6 +49,13 @@ data class Puzzle(
     val placedCount: Int,
     val completed: Boolean,
     val snapTolerance: Double,
+    /**
+     * Where the shelf stands (D-087): true above the picture, false beside
+     * it. The field decides on its own shape (core/Layout.kt), and the
+     * field drawing reads it back so the tray's rounded corners always face
+     * the picture and never the screen's edge.
+     */
+    val shelfAbove: Boolean,
 ) {
     fun piece(id: Int): Piece? = pieces.firstOrNull { it.id == id }
 }
@@ -78,17 +85,21 @@ fun createPuzzle(
     require(field.w > 0 && field.h > 0) { "Field must have positive size" }
     // The ladder's share is a ceiling, not a promise: the first pack shows
     // how much shelf the pieces really need, and the second one is built
-    // around that, which hands the spare height to the board.
-    val share = trayHeightFor(field.h, rows * cols)
-    val probe = buildField(sceneId, rows, cols, field, capPx, seed, seatSeed, share)
+    // around that, which hands the spare room to the board. The shelf's
+    // own stand (above or beside) is measured first, on the real field.
+    val count = rows * cols
+    val shelfAbove = shelfAboveFor(field, count, capPx)
+    val share = if (shelfAbove) trayHeightFor(field.h, count) else trayWidthFor(field.w, count)
+    val probe = buildField(sceneId, rows, cols, field, capPx, seed, seatSeed, shelfAbove, share)
     val sizes = probe.pieces.map { it.size }
-    val used = trayGridHeight(trayGridFor(probe.tray, sizes), sizes)
-    val trayH = snugTrayHeight(field.h, share, used)
-    if (trayH >= share - 0.5) return probe
-    return buildField(sceneId, rows, cols, field, capPx, seed, seatSeed, trayH)
+    val grid = trayGridFor(probe.tray, sizes, shelfAbove)
+    val used = if (shelfAbove) trayGridHeight(grid, sizes) else trayGridWidth(grid, sizes)
+    val extent = snugTrayExtent(if (shelfAbove) field.h else field.w, share, used)
+    if (extent >= share - 0.5) return probe
+    return buildField(sceneId, rows, cols, field, capPx, seed, seatSeed, shelfAbove, extent)
 }
 
-/** One field: a tray of that height, the board under it, the cut and seats. */
+/** One field: a shelf standing that way, the board under it, the cut and seats. */
 private fun buildField(
     sceneId: String,
     rows: Int,
@@ -97,37 +108,15 @@ private fun buildField(
     capPx: Double,
     seed: Long,
     seatSeed: Long,
-    trayH: Double,
+    shelfAbove: Boolean,
+    trayExtent: Double,
 ): Puzzle {
-    val tray = Area(field.x, field.y, field.w, trayH)
-    val side = boardSideFor(field.w, field.h, trayH, capPx)
-    val stage = Area(field.x, field.y + trayH, field.w, maxOf(field.h - trayH, 1.0))
+    val (tray, stage) = zones(field, shelfAbove, trayExtent)
+    val side = boardSideFor(stage.w, stage.h, capPx)
     val board = Area(stage.centerX - side / 2.0, stage.centerY - side / 2.0, side, side)
     val cut = PieceCut.generate(rows, cols, side, side, seed)
-    val shapes = cut.shapes
-    val snapTolerance = 0.38 * minOf(cut.cellW, cut.cellH)
-    // Homes first: the cut and the slots never depend on where pieces wait.
-    val homes = shapes.mapIndexed { i, shape ->
-        Vec2(board.x + (i % cols) * cut.cellW, board.y + (i / cols) * cut.cellH) + shape.offsetInCell
-    }
-    // The tray seats every piece above the board, so no piece starts within
-    // reach of its own slot: the thinking guarantee is structural now
-    // (AGENTS.md, D-037). The seating jumbles from seatSeed (D-041), never
-    // serial, while the cut stays stable from seed like a bought puzzle.
-    val pack = trayPack(tray, shapes.map { it.size }, seatSeed)
-    val pieces = shapes.mapIndexed { i, shape ->
-        Piece(
-            id = i,
-            shape = shape,
-            home = homes[i],
-            // No clamp here: the seat is the scaled draw centre, and the
-            // unscaled bbox of a big piece may leave the field. Clamping a
-            // waiting piece would drag it off its seat and into its
-            // neighbours, which the tray tests pin as a bug.
-            current = pack.seats[i] - shape.size * 0.5,
-            placed = false,
-        )
-    }
+    val pack = trayPack(tray, cut.shapes.map { it.size }, seatSeed, shelfAbove)
+    val pieces = cut.shapes.mapIndexed { i, shape -> seat(i, shape, cut, board, cols, pack) }
     return Puzzle(
         sceneId = sceneId,
         rows = rows,
@@ -142,9 +131,47 @@ private fun buildField(
         pieces = pieces,
         placedCount = 0,
         completed = false,
-        snapTolerance = snapTolerance,
+        snapTolerance = 0.38 * minOf(cut.cellW, cut.cellH),
+        shelfAbove = shelfAbove,
     )
 }
+
+/** The two zones a field splits into: the shelf, and the stage it leaves. */
+private fun zones(field: Area, shelfAbove: Boolean, trayExtent: Double): Pair<Area, Area> =
+    if (shelfAbove) {
+        Area(field.x, field.y, field.w, trayExtent) to
+            Area(field.x, field.y + trayExtent, field.w, maxOf(field.h - trayExtent, 1.0))
+    } else {
+        Area(field.x, field.y, trayExtent, field.h) to
+            Area(field.x + trayExtent, field.y, maxOf(field.w - trayExtent, 1.0), field.h)
+    }
+
+/**
+ * One waiting piece: where it belongs on the board, and where it waits.
+ * Homes first, so the cut and the slots never depend on where pieces wait.
+ *
+ * The seat is never clamped: it is the scaled draw centre, and the
+ * unscaled bbox of a big piece may leave the field. Clamping a waiting
+ * piece would drag it off its seat and into its neighbours, which the tray
+ * tests pin as a bug. The shelf holds every piece clear of the board, so
+ * no piece starts within reach of its own slot: the thinking guarantee is
+ * structural (D-037). The seating jumbles from the seat seed (D-041),
+ * never serial, while the cut stays stable like a bought puzzle.
+ */
+private fun seat(
+    i: Int,
+    shape: PieceShape,
+    cut: PieceCut.Cut,
+    board: Area,
+    cols: Int,
+    pack: TrayPack,
+): Piece = Piece(
+    id = i,
+    shape = shape,
+    home = Vec2(board.x + (i % cols) * cut.cellW, board.y + (i / cols) * cut.cellH) + shape.offsetInCell,
+    current = pack.seats[i] - shape.size * 0.5,
+    placed = false,
+)
 
 /** Lift a piece: it becomes the topmost unplaced piece while held. */
 fun grab(p: Puzzle, id: Int): Puzzle {
@@ -214,7 +241,7 @@ fun relayout(p: Puzzle, field: Area, capPx: Double): Puzzle {
 
 /** A fresh jumble after a finish: same cut, new seating, nothing placed. */
 fun redeal(p: Puzzle, seatSeed: Long): Puzzle {
-    val pack = trayPack(p.tray, p.pieces.map { it.size }, seatSeed)
+    val pack = trayPack(p.tray, p.pieces.map { it.size }, seatSeed, p.shelfAbove)
     val pieces = p.pieces.map { piece ->
         piece.copy(placed = false, current = pack.seats[piece.id] - piece.size * 0.5)
     }

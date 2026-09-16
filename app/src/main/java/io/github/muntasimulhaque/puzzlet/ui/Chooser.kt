@@ -2,7 +2,6 @@ package io.github.muntasimulhaque.puzzlet.ui
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,6 +31,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -59,7 +60,7 @@ fun CutChooser(
     // It rises once, quickly: scrim and plate arrive together, the plate
     // a half step up as it comes. Leaving is at once: a tap is an answer.
     val rise = remember { Animatable(0f) }
-    LaunchedEffect(Unit) { rise.animateTo(1f, tween(220, easing = LinearOutSlowInEasing)) }
+    LaunchedEffect(Unit) { rise.animateTo(1f, tween(Motion.ARRIVE_MS, easing = Motion.arrive)) }
     val dismissLabel = stringResource(R.string.close)
     Box(
         modifier = Modifier
@@ -81,6 +82,7 @@ private fun BoxScope.ChooserPlate(
     rise: Animatable<Float, AnimationVector1D>,
     onPick: (Int) -> Unit,
 ) {
+    val name = stringResource(sceneNameRes(scene.id))
     Column(
         modifier = Modifier
             .align(Alignment.BottomCenter)
@@ -91,37 +93,54 @@ private fun BoxScope.ChooserPlate(
             }
             .clip(RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
             .background(PuzzletColors.Card)
+            // The plate names itself for TalkBack, so the five tiles are
+            // heard as five ways to play this picture rather than as five
+            // bare numbers on a nameless sheet (D-084).
+            .semantics { paneTitle = name }
             // Swallow taps on the plate without adding a semantics node.
             .pointerInput(Unit) { detectTapGestures { } }
             .padding(horizontal = 20.dp, vertical = 22.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            text = stringResource(sceneNameRes(scene.id)),
-            style = MaterialTheme.typography.titleLarge,
-            color = PuzzletColors.Ink,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(2.dp))
-        Text(
-            text = stringResource(R.string.choose_prompt),
-            style = MaterialTheme.typography.bodyMedium,
-            color = PuzzletColors.Ink.copy(alpha = 0.72f),
-        )
+        ChooserHeader(name = name)
         Spacer(Modifier.height(14.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            for (pieces in PIECE_COUNTS) {
-                CutTile(
-                    scene = scene,
-                    pieces = pieces,
-                    marked = pieces == current,
-                    onPick = onPick,
-                    modifier = Modifier.weight(1f),
-                )
-            }
+        CutTileRow(scene = scene, current = current, onPick = onPick)
+    }
+}
+
+/** The picture's name and the one question the plate asks. */
+@Composable
+private fun ChooserHeader(name: String) {
+    Text(
+        text = name,
+        style = MaterialTheme.typography.titleLarge,
+        color = PuzzletColors.Ink,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.semantics { heading() },
+    )
+    Spacer(Modifier.height(2.dp))
+    Text(
+        text = stringResource(R.string.choose_prompt),
+        style = MaterialTheme.typography.bodyMedium,
+        color = PuzzletColors.Ink.copy(alpha = 0.72f),
+    )
+}
+
+/** The five real cuts, smallest count first, the coming one marked. */
+@Composable
+private fun CutTileRow(scene: SceneSpec, current: Int, onPick: (Int) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+    ) {
+        for (pieces in PIECE_COUNTS) {
+            CutTile(
+                scene = scene,
+                pieces = pieces,
+                marked = pieces == current,
+                onPick = onPick,
+                modifier = Modifier.weight(1f),
+            )
         }
     }
 }

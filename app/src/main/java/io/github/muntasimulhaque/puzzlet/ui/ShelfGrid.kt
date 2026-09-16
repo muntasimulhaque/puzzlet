@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -57,6 +59,7 @@ internal fun ShelfGrid(
                 SceneCard(
                     scene = scene,
                     pieces = shelf.openingCount(scene.id),
+                    won = (shelf.wins[scene.id] ?: 0) > 0,
                     nameSize = nameSize,
                     onOpen = { onOpen(scene.id) },
                 )
@@ -112,6 +115,9 @@ internal fun ShelfHeader() {
             text = stringResource(R.string.app_name),
             style = MaterialTheme.typography.displaySmall,
             color = PuzzletColors.Ink,
+            // The shelf's one landmark, so a TalkBack parent can jump past
+            // the title instead of swiping through it every time.
+            modifier = Modifier.semantics { heading() },
         )
     }
 }

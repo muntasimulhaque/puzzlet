@@ -15,12 +15,19 @@
          resources, and the counts never reach one (the shelf offers 4, 6,
          9, 12 and 16). Lint's plural suggestion does not apply here. -->
     <string name="pieces_count" tools:ignore="PluralsCandidate">%1$d pieces</string>
+    <!-- One shelf card, spoken as one thing: the name, the count it opens
+         at, and whether the child has finished it. -->
+    <string name="card_desc">%1$s, %2$s</string>
+    <string name="card_desc_won">%1$s, %2$s, finished</string>
+    <!-- One cut tile: five tiles all named "4 pieces" are five identical
+         buttons, so each one names its picture too. -->
+    <string name="cut_tile_desc">%1$s, %2$s</string>
     <string name="choose_prompt">How many pieces?</string>
     <string name="leave_title">Leave this picture?</string>
     <string name="leave_message">Pieces you placed will go back to the tray.</string>
     <string name="stay">Stay</string>
     <string name="leave">Leave</string>
-    <string name="puzzle_progress" tools:ignore="PluralsCandidate">Puzzle, %1$d of %2$d placed</string>
+    <string name="puzzle_progress" tools:ignore="PluralsCandidate">%1$s, %2$d of %3$d pieces placed</string>
     <string name="scene_sail">Sailboat</string>
     <string name="scene_house">House</string>
     <string name="scene_balloon">Balloon</string>

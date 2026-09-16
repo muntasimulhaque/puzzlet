@@ -128,10 +128,20 @@ class ScreenshotTest {
         scenario.close()
     }
 
-    /** 01: the shelf, every shipped picture with its name and count line. */
+    /**
+     * 01: the shelf, every shipped picture with its name, and the honey
+     * star on the two a child has already finished. The harness hosts a
+     * returning child's shelf rather than a brand new one, because that is
+     * the state the listing should show: the same cards, with the one mark
+     * the app keeps.
+     */
     private fun captureShelf(scenario: ActivityScenario<ComponentActivity>, outDir: File) {
         shot(scenario, outDir, "01_home") {
-            Gallery(ShelfState(), {}, { _, _ -> })
+            Gallery(
+                shelf = ShelfState(wins = mapOf("sail" to 1, "fruit" to 1)),
+                onChoose = {},
+                onChooseAt = { _, _ -> },
+            )
         }
     }
 

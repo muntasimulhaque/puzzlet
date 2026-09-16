@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -45,30 +46,24 @@ internal fun CutTile(
     onPick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val label = stringResource(R.string.pieces_count, pieces)
+    // TalkBack hears the picture and the count together: a row of five
+    // buttons all named "4 pieces" is a row of five identical buttons.
+    val label = stringResource(
+        R.string.cut_tile_desc,
+        stringResource(sceneNameRes(scene.id)),
+        stringResource(R.string.pieces_count, pieces),
+    )
     val shape = RoundedCornerShape(18.dp)
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(1f)
-                .clip(shape)
-                .background(PuzzletColors.Tray)
-                .then(
-                    if (marked) {
-                        Modifier.border(3.dp, PuzzletColors.Honey, shape)
-                    } else {
-                        Modifier
-                    },
-                )
-                .semantics {
-                    contentDescription = label
-                    selected = marked
-                }
-                .clickable(role = Role.Button) { onPick(pieces) },
-        ) {
-            CutPreview(scene = scene, pieces = pieces)
-        }
+        CutTileFace(
+            scene = scene,
+            pieces = pieces,
+            marked = marked,
+            label = label,
+            shape = shape,
+            onPick = onPick,
+            modifier = Modifier.fillMaxWidth().aspectRatio(1f),
+        )
         Spacer(Modifier.height(6.dp))
         Text(
             text = pieces.toString(),
@@ -76,6 +71,56 @@ internal fun CutTile(
             color = if (marked) PuzzletColors.Teal else PuzzletColors.Ink.copy(alpha = 0.72f),
         )
     }
+}
+
+/** The cut itself: one real picture, scored the way the game will cut it. */
+@Composable
+private fun CutTileFace(
+    scene: SceneSpec,
+    pieces: Int,
+    marked: Boolean,
+    label: String,
+    shape: Shape,
+    onPick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            // The marked cut lifts off the plate, the same soft shadow every
+            // button in the app wears, so "this is the one you will get"
+            // reads before the ring is even noticed.
+            .then(if (marked) Modifier.buttonShadow(shape, 8.dp) else Modifier)
+            .clip(shape)
+            .background(PuzzletColors.Tray)
+            .then(if (marked) Modifier.border(3.dp, PuzzletColors.Honey, shape) else Modifier)
+            .semantics {
+                contentDescription = label
+                selected = marked
+            }
+            .clickable(role = Role.Button) { onPick(pieces) },
+    ) {
+        CutPreview(scene = scene, pieces = pieces)
+    }
+}
+
+/**
+ * The score's weight is the cut's, not a house number: sixteen pieces on a
+ * 66 dp tile used to be a 1.6 dp ink mesh, which made the biggest count the
+ * least inviting tile on the plate. The line thins and fades as the pieces
+ * shrink, so a dense cut reads as texture over a picture instead of gray
+ * over a picture.
+ */
+private fun scoreWidth(pieces: Int) = when {
+    pieces <= 6 -> 1.6.dp
+    pieces <= 9 -> 1.4.dp
+    pieces <= 12 -> 1.15.dp
+    else -> 0.95.dp
+}
+
+private fun scoreAlpha(pieces: Int): Float = when {
+    pieces <= 9 -> 0.34f
+    pieces <= 12 -> 0.30f
+    else -> 0.26f
 }
 
 /** The real cut, scored over the picture; the scene and paths are cached per tile size. */
@@ -86,8 +131,8 @@ private fun CutPreview(scene: SceneSpec, pieces: Int) {
             val side = ceil(size.width.toDouble()).toInt().coerceAtLeast(1)
             val image = sceneRaster(scene, side)
             val strokes = cutOverlayPaths(scene, pieces, size.width.toDouble())
-            val ink = PuzzletColors.Ink.copy(alpha = 0.34f)
-            val score = Stroke(1.6.dp.toPx())
+            val ink = PuzzletColors.Ink.copy(alpha = scoreAlpha(pieces))
+            val score = Stroke(scoreWidth(pieces).toPx())
             onDrawBehind {
                 drawImage(image = image, dstSize = IntSize(side, side))
                 for (path in strokes) drawPath(path, ink, style = score)

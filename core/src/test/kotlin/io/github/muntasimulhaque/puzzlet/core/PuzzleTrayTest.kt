@@ -1,6 +1,7 @@
 package io.github.muntasimulhaque.puzzlet.core
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import java.lang.Math.abs
 import org.junit.Assert.assertNull
@@ -133,6 +134,45 @@ class PuzzleTrayTest {
                     dist(piece.currentCenter, r.seats[piece.id]) < 1e-6,
                 )
             }
+        }
+    }
+
+    @Test
+    fun `the shelf stands where the picture grows, and never over it`() {
+        for ((rows, cols) in difficulties) for (field in fields) {
+            val p = createPuzzle("sail", rows, cols, field, cap, 7L)
+            val count = rows * cols
+            val above = boardSideFor(field.w, field.h - trayHeightFor(field.h, count), cap)
+            val beside = boardSideFor(field.w - trayWidthFor(field.w, count), field.h, cap)
+            assertEquals(
+                "field ${field.w}x${field.h} at ${rows}x$cols picked the wrong stand",
+                above >= beside,
+                p.shelfAbove,
+            )
+            // The snug shelf only ever hands room back to the picture, so the
+            // board can never be smaller than the stand's own measure.
+            assertTrue(
+                "field ${field.w}x${field.h} at ${rows}x$cols: board ${p.board.w} under ${maxOf(above, beside)}",
+                p.board.w >= maxOf(above, beside) - 1e-6,
+            )
+            // The two zones never overlap, whichever way the shelf stands.
+            val clear = if (p.shelfAbove) p.tray.maxY <= p.board.y + 1e-9
+            else p.tray.maxX <= p.board.x + 1e-9
+            assertTrue("field ${field.w}x${field.h}: the shelf covers the picture", clear)
+        }
+    }
+
+    @Test
+    fun `a wide field gives the child a much bigger picture than a band across it would`() {
+        val wide = Area(0.0, 0.0, 1800.0, 900.0)
+        for ((rows, cols) in difficulties) {
+            val p = createPuzzle("house", rows, cols, wide, cap, 4L)
+            assertFalse("${rows}x$cols on a wide field should stand the shelf beside", p.shelfAbove)
+            val banded = boardSideFor(wide.w, wide.h - trayHeightFor(wide.h, rows * cols), cap)
+            assertTrue(
+                "${rows}x$cols beside gave ${p.board.w.toInt()}, a band would give ${banded.toInt()}",
+                p.board.w > banded * 1.2,
+            )
         }
     }
 

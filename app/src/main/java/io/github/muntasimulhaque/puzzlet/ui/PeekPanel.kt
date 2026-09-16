@@ -1,7 +1,6 @@
 package io.github.muntasimulhaque.puzzlet.ui
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,7 +39,7 @@ internal fun PeekPanel(scene: SceneSpec, onDismiss: () -> Unit) {
     // grows a half step into place. It leaves when asked, at once: a tap is
     // an answer, not a request.
     val rise = remember { Animatable(0f) }
-    LaunchedEffect(Unit) { rise.animateTo(1f, tween(200, easing = LinearOutSlowInEasing)) }
+    LaunchedEffect(Unit) { rise.animateTo(1f, tween(Motion.ARRIVE_MS, easing = Motion.arrive)) }
     Box(
         modifier = Modifier
             .zIndex(4f) // above every piece tile (a held piece rides at 2)

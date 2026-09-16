@@ -2,10 +2,8 @@ package io.github.muntasimulhaque.puzzlet.ui
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector2D
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
@@ -35,6 +33,9 @@ import kotlinx.coroutines.delay
 
 /** A held piece rides a little larger than the board it is headed for. */
 private const val HELD_SCALE = 1.06f
+
+/** The restart pour-back: each piece a beat behind the one before it. */
+private const val RESTART_STAGGER_MS = 18L
 
 /**
  * One node per piece for the whole game (D-055): a piece keeps its node
@@ -161,14 +162,14 @@ private suspend fun Animatable<Offset, AnimationVector2D>.follow(
     }
     val restarted = restartAt != lastRestart.value
     lastRestart.value = restartAt
-    if (restarted) delay(index * 18L)
-    animateTo(target.toOffset(), spring(stiffness = 400f, dampingRatio = 0.8f))
+    if (restarted) delay(index * RESTART_STAGGER_MS)
+    animateTo(target.toOffset(), Motion.settle())
 }
 
 /** A held piece grows under the finger on one quick tween; free pieces spring. */
 private fun pieceScaleSpec(isHeld: Boolean) =
     if (isHeld) {
-        tween<Float>(130, easing = LinearOutSlowInEasing)
+        tween<Float>(Motion.LIFT_MS, easing = Motion.arrive)
     } else {
-        spring(stiffness = 400f, dampingRatio = 0.8f)
+        Motion.settle<Float>()
     }

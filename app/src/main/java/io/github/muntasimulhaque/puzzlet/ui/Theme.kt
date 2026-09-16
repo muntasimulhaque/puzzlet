@@ -31,6 +31,14 @@ object PuzzletColors {
      *  shelf is where pieces wait, and pale pieces must stand off it. Still
      *  warm and paper-family, but never a twin of the table below. */
     val Tray = Color(0xFFEBE0CC)
+    /**
+     * The board: the quiet linen square the picture assembles on. A real
+     * surface, one step under the paper and one step above the tray, so a
+     * piece sits on something rather than floating on the page, and the
+     * frame a child sees is the frame the snap rule uses (D-085). No
+     * picture is ever drawn on it: a table is only a table.
+     */
+    val Board = Color(0xFFF2EBE0)
     /** One scrim for every layer that stands the world back: the picture
      *  held up, the cut chooser, the celebration and the leave confirm all
      *  dim the field by the same ink at the same weight, so a child learns

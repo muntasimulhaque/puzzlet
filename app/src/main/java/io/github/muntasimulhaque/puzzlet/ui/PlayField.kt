@@ -1,7 +1,6 @@
 package io.github.muntasimulhaque.puzzlet.ui
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -51,7 +50,7 @@ internal fun PlayField(
         LaunchedEffect(pulseAt) {
             if (pulseId >= 0) {
                 pulse.snapTo(0f)
-                pulse.animateTo(1f, tween(380, easing = LinearOutSlowInEasing))
+                pulse.animateTo(1f, tween(Motion.PULSE_MS, easing = Motion.arrive))
             }
         }
         // The held piece's centre, written straight from the pointer. It is
@@ -78,7 +77,12 @@ private fun GestureBoard(
     onPeek: (Boolean) -> Unit,
 ) {
     val scene = remember(game.sceneId) { Scenes.byId(game.sceneId) }
-    val progress = stringResource(R.string.puzzle_progress, game.placedCount, game.pieces.size)
+    val progress = stringResource(
+        R.string.puzzle_progress,
+        stringResource(sceneNameRes(game.sceneId)),
+        game.placedCount,
+        game.pieces.size,
+    )
     Box(
         Modifier
             .fillMaxSize()
