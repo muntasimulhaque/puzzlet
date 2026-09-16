@@ -1397,4 +1397,14 @@ superseded decision in place instead of deleting it.
   Forbidden list and standing item carry the new wording. Docs only: no
   code changed, so the 2.9 AAB in play-store/aab/ stands exactly as
   verified, and neither workflow runs for AGENTS.md or docs/. Next
-  session picks up from the 2.9 submission and its review verdict.
+  session picks up from the 2.9 submission and its review verdict.- 2026-09-16: Version 2.9 submitted for closed testing review. The verified
+  AAB was deleted from play-store/aab/ and the empty folder went with it,
+  so a stale build can never be uploaded twice; the CI release still holds
+  the matching AAB and APK if the build is ever needed again. README, the
+  submission guide and this log were brought current, and the listing copy
+  was corrected to the honest measured counts (1730 characters for the
+  full description, 458 for the 2.9 notes; both had counted a trailing
+  newline). Everything is pushed and the tree is clean. Next session picks
+  up from: the 2.9 review verdict and tester feedback on the calmer shelf,
+  the honey star, the finish that rises, and the shelf that stands beside
+  the picture on a wide screen.

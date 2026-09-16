@@ -418,7 +418,8 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    b635d19), and the second CI run proved it behaviour-preserving: all 24
    captures came back byte-identical, so the listing kit stands as the
    shipped build. The verified AAB (2956719 bytes, built from b635d19)
-   sits in play-store/aab/ awaiting the closed testing submission. After
+   sits in play-store/aab/; 2.9 was submitted for review and the folder
+   was deleted after. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
