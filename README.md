@@ -4,12 +4,16 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.8 (versionCode 28) is in Play review for the closed testing track.
-Release 2.8 is a housekeeping release: behind the scenes the interface
-code was split into small, focused modules, so future changes are easier
-and safer to make. Nothing you see or play has changed: the same sixteen
-pictures, five sizes, real die-cut pieces, the same quiet sounds and calm
-rules. Same rules as always: no timer, no score, no fail state, no
+Status: release 2.9 (versionCode 29) is built, signed and verified, with
+the AAB in `play-store/aab/` awaiting the closed testing submission.
+Release 2.9 is the polish release: one motion vocabulary, and a finish
+that rises onto the screen instead of appearing; a real linen table under
+the picture; a calmer shelf where each card is the picture and its name,
+with one honey star on a picture that has been finished; and a shelf that
+stands beside the picture on a wide screen, so the picture is about half
+again bigger there. The accessibility gaps the renders exposed are
+closed, and underneath it is the same game as ever: sixteen pictures,
+five sizes, real die-cut pieces, no timer, no score, no fail state, no
 reading required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
@@ -31,9 +35,12 @@ cut the real way the game will deal it at 4, 6, 9, 12 or 16 pieces, the
 count each opens at marked in honey. A three-year-old picks by look;
 the numeral under each tile speaks to the parent. Tapping a tile plays
 at once and remembers it; where nobody has picked, a win grows a
-picture from 4 to 6 to 9 pieces. Pieces wait in a tray above a blank
-board: a touch lifts a piece with a soft tap, and it clicks home when
-carried near its place, with a spring, a soft knock and a haptic tick.
+picture from 4 to 6 to 9 pieces, and a finished picture keeps one quiet
+star on its shelf card. Pieces wait in a tray above an empty board on a
+tall screen, and beside it on a wide one, whichever leaves the bigger
+picture: a touch lifts a piece with a soft tap, and it
+clicks home when carried near its place, with a spring, a soft knock and
+a haptic tick.
 Forgotten the picture? The coin in the top bar holds it up, and tapping
 anywhere puts it away. Leaving a started picture asks first. Finish,
 and the table holds the completed picture for one quiet second before

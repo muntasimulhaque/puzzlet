@@ -55,24 +55,28 @@ and offline facts live in the full description only.
 Simple, beautiful jigsaw puzzles for ages 3 to 5.
 ```
 
-**Full description** (4000 chars max, measured: 1334). Four facts lead,
+**Full description** (4000 chars max, measured: 1731). Five facts lead,
 because they are the reason a parent installs: what it is, that it is
-safe, that it is open source, and that it asks for nothing. How it plays
-comes after, short enough to scan on a phone. Paragraphs are unwrapped
-on purpose: Play keeps the line breaks, so one line per paragraph pastes
-as a clean block.
+safe, that it is open source, and that it asks for nothing, plus the one
+thing that keeps a small child playing, that the game grows with them.
+How it plays comes after, short enough to scan on a phone. Paragraphs are
+unwrapped on purpose: Play keeps the line breaks, so one line per
+paragraph pastes as a clean block.
 
 ```
 Puzzlet is a simple, beautiful jigsaw puzzle game for children aged 3 to 5. One picture, a few chunky pieces, and a soft click when a piece finds its place.
 
 Simple by design
-Tap a picture and pick a size: 4, 6, 9, 12, or 16 pieces, each shown as the real cut. Pieces wait in a tray above a blank board, the way a real table looks. Drag a piece near its place and it clicks home. Forgot the picture? Tap the little picture in the top bar, then tap anywhere to put it away. No timer, no score, no fail state, no reading, no tutorial: the layout is the whole lesson.
+Tap a picture and pick a size: 4, 6, 9, 12, or 16 pieces, each shown as the real cut. Pieces wait in a tray beside or above a blank board, the way a real table looks. Drag a piece near its place and it clicks home. Forgot the picture? Tap the little picture in the top bar, then tap anywhere to put it away. No timer, no score, no fail state, no reading, no tutorial: the layout is the whole lesson.
+
+Grows with your child
+Every picture starts at 4 pieces, and finishing it deals 6 next time, then 9, so the game gets a little harder exactly when your child is ready. A parent can pick any size on any picture, and that pick sticks. A finished picture keeps one quiet star on the shelf, so a child can see at a glance which ones they have done.
 
 Made for small hands
 Sixteen calm pictures to choose from: a boat, a house, a balloon, fruit, a lighthouse, an ice cream, a train, a castle, a rocket, a truck, an airplane, flowers, a kite, a windmill, a beach, and a mushroom. Big targets, forgiving drops, three soft sounds, and a switch to turn them off. No music, ever.
 
 Safe and private
-No ads. No trackers. No accounts. No in-app purchases. It asks for no permissions at all, not even internet. No data collected, so nothing shared: everything stays on your device.
+No ads. No trackers. No accounts. No in-app purchases. It asks for no permissions at all, not even internet, so it works anywhere, connection or not. No data collected, so nothing shared: everything stays on your device.
 
 Open source
 Puzzlet is open source under the MIT license, made by a parent for parents who want the calm kind of screen time. The source code is available on GitHub. Pay once and play forever.
@@ -97,7 +101,11 @@ change and refreshed into those same subfolders in the same session. Eight
 captures per form factor, 24 in all, the Play listing maximum. Upload each
 subfolder's PNGs to its Play Console slot, in filename order (01_home first,
 and 08_choose last); a Families-reviewed listing should match what ships.
-To look at every picture before
+The shelf capture hosts a returning child's shelf, not a brand new one: two
+finished pictures carry the honey star, which is the state the listing
+should show. The 10 inch set is a tablet lying down, where the shelf
+stands beside the picture rather than above it, so those captures show the
+side shelf and the bigger picture it buys. To look at every picture before
 a content change, run
 `:tools:makeScenes`, which writes a sheet into `build/scenes` (never
 committed), and `:tools:makeWashes` for every picture's accent and its coin
@@ -144,6 +152,12 @@ external links reachable by a child, no ads.
 versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
+
+## Release notes for closed testing 2.9 (measured: 459 chars)
+
+```
+Puzzlet 2.9 is the polish release. The finish rises onto the screen instead of appearing, the picture assembles on a real table, and the shelf is calmer: each card is the picture and its name, with one honey star on the pictures your child has finished. Turn a tablet sideways and the pieces now wait beside the picture, so every piece is bigger. TalkBack hears more of the game. No ads, no trackers, no internet, no permissions asked. Thank you for testing.
+```
 
 ## Release notes for closed testing 2.8 (measured: 377 chars)
 
@@ -393,7 +407,18 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    byte-identical, and the phone set drifted only at the anti-aliasing
    level (at most 286 of 2,073,600 pixels, max channel delta 4), so the
    listing kit stands. 2.8 was submitted for review and the folder was
-   deleted after. After
+   deleted after. For 2.9 the same check ran green: CI build and capture
+   both succeeded, and the APK twin read versionCode 29, versionName 2.9,
+   target 37, package io.github.muntasimulhaque.puzzlet, with no
+   permission beyond the androidx core private receiver, and the AAB
+   verified as signed. 2.9 is the polish pass (D-084 to D-087): the
+   refreshed 24 captures landed in play-store/screenshots/, and the CI
+   phone set matched the local review render byte for byte. The stand
+   rule was then revised from a measurement to the field's shape (commit
+   b635d19), and the second CI run proved it behaviour-preserving: all 24
+   captures came back byte-identical, so the listing kit stands as the
+   shipped build. The verified AAB (2956719 bytes, built from b635d19)
+   sits in play-store/aab/ awaiting the closed testing submission. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet

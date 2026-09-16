@@ -555,6 +555,83 @@ superseded decision in place instead of deleting it.
   chime is the celebration's voice and belongs at +1 s. Still one
   pitched note, still never twice inside 1200 ms. Supersedes the chime
   placement in D-066; the beat itself stands.
+- D-084 One motion vocabulary, and the celebration earns its arrival
+  (owner-directed: everything about the app should feel smooth, and as
+  polished as Apple or Google would ship it). Every surface used to pick
+  its own numbers: the chooser rose in 220 ms, the picture panel in 200,
+  the held piece grew in 130, and the celebration plate simply appeared,
+  which made the app's proudest moment its only unanimated one. The whole
+  vocabulary now lives in `ui/Motion.kt`: a 220 ms arrival on one curve,
+  a 140 ms lift, a 380 ms landing ring, and one settle spring. The plate
+  arrives as one gesture: the scrim fades on the front half of the same
+  spring, the plate rises the last 30 dp while it grows the last hair and
+  fades in, and the finished picture settles inside it from 0.92. Compose
+  scales all of it by the system animation setting, so a child who runs
+  with animations off still gets every state, instantly. The same pass
+  closed the accessibility gaps the renders exposed: the shelf word is a
+  heading, the chooser plate names itself and its title is a heading, the
+  five cut tiles speak the picture with the count (five buttons all named
+  "4 pieces" were five identical buttons), the leave card names itself
+  and its scrim is a tap target instead of a nameless Button, the play
+  field speaks the picture's own name in its progress, and the praise is
+  announced through the view when a screen reader is listening. Piece
+  level play stays the honest open item.
+- D-085 The board is a surface (the table the picture assembles on). The
+  board used to be a 2 dp ink outline drawn 8 dp outside the snap frame,
+  so the frame a child could see was not the frame a piece answered to,
+  and the place where the work happens had no ground at all. The board is
+  now a real surface: a filled linen round rect (`PuzzletColors.Board`,
+  one step under the paper and one above the tray) at exactly the board's
+  own bounds, wearing the tray's soft lip. Paper, linen board and warm
+  tray now read as one value ladder from page to table to shelf. Still no
+  picture drawn on it and no slot glow (D-048 stands): a surface, not a
+  hint. Up close, the assembled picture's square corner covers the mat's
+  rounded corner and its paper rim hides the joint, so the board reads
+  whole at every stage of the game.
+- D-086 The shelf card keeps a picture, a name, and one star. The quiet
+  count line under every name said "4 pieces" sixteen times: unreadable
+  noise to the child who cannot read, and redundant to the parent who
+  can, because the count that matters is the one in the chooser, where it
+  is a numeral under the real cut and where a pick can be made. The card
+  is the picture and the name now, and the shelf is measurably calmer.
+  In the line's place the card keeps one record: a honey star, edged in
+  card white, on the lower corner of any picture finished at least once.
+  It sits on the ground corner because every scene keeps its calmer
+  ground at the bottom, so the badge never lands on a sun or a moon. It
+  counts nothing, it can never go down, and it is the child's own answer
+  to which ones have I done. TalkBack still hears the count on the whole
+  card, plus the word finished. The store's shelf capture now hosts a
+  returning child's shelf (two finished pictures) rather than a brand new
+  one, because the mark is part of what ships. The card's count line
+  leaves D-064 and D-072 standing for the chooser and the spoken card.
+- D-087 The shelf stands where the picture grows. On a wide field the
+  tray has always been a band across the top, and that band cost the
+  child most of the screen: on a tablet lying down, or a phone turned
+  sideways, a band across the full width eats more than half the height
+  the picture could have used, and it leaves the tray's own pieces
+  stretched far apart in an almost empty strip. The shelf now takes the
+  axis the field can spare (core/Layout.kt, `shelfAboveFor`): a field
+  taller than it is wide keeps its scarce width for the picture and puts
+  the shelf above, a field wider than it is tall keeps its scarce height
+  and puts the shelf beside, and a square field counts as wide. A phone
+  held upright still gets the shelf above, which is why every portrait
+  capture comes back byte-identical; a wide field gets the shelf beside,
+  and the picture grows by about half, with every piece in it. The shelf
+  wears the same felt and the same soft edge, rounded on the side that
+  faces the picture; the tray grid, gaps, snug pass, jumble and scale are
+  the same math on the other axis. The seam between the two zones stays
+  structural: the tests still prove that no waiting piece ever sits
+  within snap tolerance of its own slot, whichever way the shelf stands,
+  that the two zones never overlap, and that the chosen stand never costs
+  the child picture. The rule was first written as a measurement (which
+  arrangement leaves the bigger board) and revised the same session: the
+  measurement compared the two boards before the snug pass, so on a
+  screen where the board cap binds, a ten inch tablet lying down, the
+  choice came out of a prediction error and not a difference a child
+  could feel. The shape says the same thing with no prediction, because
+  both boards are limited by the field's own width and height. Behaviour
+  is unchanged on every form factor, proven by capture. Supersedes the
+  band-only reading of D-037 and D-051; the tray itself is unchanged.
 
 
 ## Session log
@@ -1210,3 +1287,76 @@ superseded decision in place instead of deleting it.
   paths filters exclude AGENTS.md and docs/). Commit d3699ea pushed to
   main. Next session picks up from: the 2.8 review verdict and tester
   feedback.
+- 2026-09-16: The polish pass (owner-directed: make this the best app it
+  can be, with the UI, UX, accessibility, type, color, mark, store listing
+  and motion all held to the standard Apple and Google ship, and buttery
+  smooth throughout). The session opened with an audit of every surface
+  against the brief, then implemented four decisions: D-084 (one motion
+  vocabulary, and the celebration arrives on it), D-085 (the board is a
+  real linen surface at exactly the snap frame, not an outline drawn 8 dp
+  outside it), D-086 (the shelf card drops the sixteen-times-repeated
+  count line and keeps one honey star on a finished picture), and D-087
+  (the shelf stands where the picture grows: above a narrow field, beside
+  a wide one, worth about half again the picture on a tablet lying down).
+  Alongside
+  them: the cut chooser's score thins and fades as the pieces shrink, so
+  the 16 tile stops reading as a gray mesh; the marked tile lifts off the
+  plate; the accessibility gaps the renders exposed are closed (headings,
+  the chooser plate's own name, cut tiles that speak the picture with the
+  count, a leave card that names itself and a scrim that is no longer a
+  nameless Button, the picture's own name in the field's spoken progress,
+  and the praise announced through the view when a screen reader is
+  listening); and the five functions that were left over the 40-line cap
+  in the 2.8 UI split (drawScene, ChooserPlate, CelebrationPlate,
+  PlayScreen, Gallery) are all under it now, closing that known follow-up.
+  One core test needed a real fix rather than a patch: the far-drop case
+  in "drop snaps within tolerance" dropped a piece three tolerances from
+  home, which stopped being far on a field whose board now nearly fills
+  it, so it drops at the opposite corner instead, which is far on any
+  field.
+  Verification: the local API 35 emulator (pixel_2, the CI phone profile)
+  reproduced the committed phone captures byte for byte before any change,
+  so every before/after pair is one device and one boot; after the pure
+  refactors, four captures came back byte-identical again; and after the
+  shelf's stand was added, all eight portrait captures came back
+  byte-identical, which is the proof that an upright field is untouched to
+  the pixel. The wide field was reviewed the same way, at a 1920 x 1080
+  override: the shelf stands beside the picture and the picture grows by
+  about half, with the tray keeping its felt, its lip and its even grid on
+  the other axis. New core tests pin the stand rule, the picture-size
+  guarantee and the overlap guarantee. Gates all green locally: core
+  tests (including the new ones), app release unit tests, full lint
+  (clean, no warnings), tools tests, icon and sound pins, and the R8
+  release assemble. Review images for the owner live in build/review/
+  (the gitignored scratch folder): sheet_portrait_before.png and
+  sheet_portrait_after.png show all eight portrait captures side by side,
+  sheet_wide_before_tablet10.png and sheet_wide_after.png show the wide
+  field, and the numbered folders hold the full resolution sets.
+- 2026-09-16: Cut 2.9 (versionCode 29), the owner's word after the polish
+  pass. Commit c0a8ab3 carried the whole session: D-084 through D-087, the
+  chooser's finer score, the accessibility sweep, the under-cap
+  refactors, the two new core tests and the store capture that now hosts a
+  returning child's shelf. CI green end to end: the build signed and
+  published the AAB and APK, and the capture ran on all three form
+  factors. The verified AAB and its APK twin read versionCode 29,
+  versionName 2.9, target 37, package io.github.muntasimulhaque.puzzlet,
+  with no permission beyond the androidx core private receiver, and the
+  AAB verified as signed. The refreshed 24 captures landed in
+  play-store/screenshots/; the CI phone set matched the local render byte
+  for byte, which is the proof that the local review was the shipped
+  picture. Then the stand rule was revised (commit b635d19): the first
+  version measured the two arrangements before the snug pass, and a ten
+  inch tablet lying down showed the flaw, a choice made by a prediction
+  error where the board cap binds both ways. The rule is the field's
+  shape now, and the second CI run proved it behaviour-preserving: all 24
+  captures came back byte-identical to the first run, so the listing kit
+  stands as the shipped build. The replacement AAB (2956719 bytes, built
+  from b635d19, published 14:33Z) sits in play-store/aab/ awaiting the
+  closed testing submission. Store copy brought current in the guide: the
+  full description now carries the ladder and the star (1731 characters,
+  measured), and the 2.9 release notes are stored (459 characters).
+  Standing open item unchanged: piece-level TalkBack. Next session picks
+  up from: the 2.9 review verdict, tester feedback on the calmer shelf and
+  the wide field's shelf beside, and the owner's calls on the two offers
+  (store screenshot captions, and whether the 40-line cap should be
+  enforced on the scene builders and the tools).
