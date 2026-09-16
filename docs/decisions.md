@@ -632,6 +632,30 @@ superseded decision in place instead of deleting it.
   both boards are limited by the field's own width and height. Behaviour
   is unchanged on every form factor, proven by capture. Supersedes the
   band-only reading of D-037 and D-051; the tray itself is unchanged.
+- D-088 The owner's three calls after the 2.9 build. One: no captions on
+  the store screenshots. They stay raw pictures of the app, which is what
+  the listing has always shown; a line of marketing type over the app was
+  offered and declined. Two: piece level TalkBack is declined, not
+  deferred. The field already speaks the picture, the progress and the
+  praise, and every button has a name, so the outside of the game works
+  with a screen reader; what stays out of reach is picking a piece up and
+  placing it, because pieces are pictures. The only way to make that
+  playable without sight is a place-it-for-me action, and that hands the
+  child the answer to the game's one question, so the app does not
+  pretend to support it. This replaces the standing open item: it is a
+  decision now, with its reason written down, not a gap waiting to be
+  filled. Three: the hard 40 line function cap came out of AGENTS.md. It
+  was the one rule in the file the code did not keep (fifteen of the
+  sixteen picture builders run 41 to 73 lines, plus the tools' review
+  sheets, the Java2D scene twin, the sound writer and
+  MainActivity.onCreate), and a rule broken in twenty places teaches
+  everyone to ignore rules. What replaced it: files still cap at 400
+  lines, which the tree really honors (the largest is 387), and a
+  function past about 40 lines is a smell to check, not a crime, with a
+  picture's shape list called out as data that may run long. The one
+  function the polish pass had pushed over the old line
+  (Puzzle.buildField) was split anyway, and the five the 2.8 split left
+  over are under it too.
 
 
 ## Session log
@@ -1360,3 +1384,17 @@ superseded decision in place instead of deleting it.
   the wide field's shelf beside, and the owner's calls on the two offers
   (store screenshot captions, and whether the 40-line cap should be
   enforced on the scene builders and the tools).
+- 2026-09-16: The owner's calls, and one rule retired. Three answers
+  after seeing 2.9: no captions on the store screenshots, they stay raw
+  pictures of the app; no piece level TalkBack, declined with its reason
+  written down rather than left as a gap; and the hard 40 line function
+  cap comes out of AGENTS.md (all three in D-088). The cap was the one
+  rule in the file the code did not keep, and a rule broken in twenty
+  places teaches everyone to ignore rules. What stands in its place:
+  files still cap at 400 lines, which the tree honors (the largest is
+  387), and a function past about 40 lines is a smell to check, with a
+  picture's data list called out as legitimately long. AGENTS.md's
+  Forbidden list and standing item carry the new wording. Docs only: no
+  code changed, so the 2.9 AAB in play-store/aab/ stands exactly as
+  verified, and neither workflow runs for AGENTS.md or docs/. Next
+  session picks up from the 2.9 submission and its review verdict.

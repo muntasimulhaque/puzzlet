@@ -88,7 +88,9 @@ change or one commit per session. That question is still open.
 4. No `!!`, no unchecked casts, no swallowed exceptions.
 5. No network code, no WebView, no third-party SDKs. AndroidX and Kotlin
    only; each new dependency is proposed here first.
-6. No file over 400 lines, no function over 40. Split early.
+6. No file over 400 lines. Functions stay small: one job each, split
+   early, and ask whether a function past about 40 lines is really two.
+   A picture's shape list is data, not logic, and may run long.
 7. No `Co-Authored-By` trailer or any AI attribution in a commit
    message. One person writes this app and the history should say so.
 
@@ -272,6 +274,8 @@ play-store/                listing kit, screenshots per form factor, aab/
 ## Standing items
 
 - Goal audit before every store release (see Releasing).
-- Every icon button carries a TalkBack label. Piece-level TalkBack
-  remains the honest open item.
+- Every icon button carries a TalkBack label. The field speaks the
+  picture, the progress and the praise; pieces stay unfocusable, because
+  a picture jigsaw is a looking game and a place-it-for-me action would
+  hand the child the answer (D-088).
 - Human eyes on the mark and the captures before upload.
