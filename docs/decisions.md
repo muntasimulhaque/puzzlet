@@ -1429,4 +1429,13 @@ superseded decision in place instead of deleting it.
   die-cut pieces, a blank board, the picture behind one coin, no timer,
   no score, no fail state, no ads, no trackers, no permissions, paid
   once, open source), each under the field at 252 and 264 characters,
-  measured the same way.
+  measured the same way. Page 3 followed: the changes the test caused,
+  told as what testers asked for and got (a sound switch, sizes from 4 to
+  16 pieces, the picture behind one coin rather than drawn on the board)
+  and what they reported and got fixed (a tapped 4 that dealt one size
+  up, long shelf names clipped at the last letter); and the readiness
+  call, taken from three signals (the last builds brought no new
+  problems, only polish; every gate green, unit tests, full lint, a
+  signed release build and zero permissions in the merged manifest; and
+  the audit against the brief, no ads, no trackers, no internet, no
+  permissions). Counts measured: 287 and 297.

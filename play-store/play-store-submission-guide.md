@@ -189,6 +189,22 @@ Children aged 3 to 5 and the parents who choose their screen time. For the child
 A real jigsaw for small children, not a mini game: pieces are measured die-cut shapes, the board is blank like a table, and the picture hides behind one coin. No timer, no score, no fail state. No ads, no trackers, no permissions, paid once, open source under MIT.
 ```
 
+Page 3, the changes the test caused and the readiness call. Counts
+measured: 287, 297.
+
+**What changes did you make to your game based on what you learned
+during your closed test?**
+
+```
+Tester feedback shaped the builds across the whole test. Requested and added: a sound switch, sizes from 4 to 16 pieces, and the picture behind one coin instead of drawn on the board. Reported and fixed: a tapped 4 that dealt one size up, and long shelf names clipped at the last letter.
+```
+
+**How did you decide that your game is ready for production?**
+
+```
+Readiness was a judgement from three signals. The last builds brought no new problems, only polish. Every gate was green: unit tests, full lint, a signed release build, zero permissions in the merged manifest. And the audit against the brief held: no ads, no trackers, no internet, no permissions.
+```
+
 ## Version walk (the law)
 
 `versionName` steps 0.1 per release, in lockstep with `versionCode`:
