@@ -146,6 +146,34 @@ external links reachable by a child, no ads.
 
 **Government apps / Financial features / Health**: No to all.
 
+## Production access: the closed testing answers
+
+The three questions the console asks a personal account before it grants
+production access, after 12 testers and 14 days of closed testing. Paste
+one at a time; each is under the 300-character field. Counts measured:
+244, 295, 287.
+
+**How did you recruit users for your closed test? For example, did you
+ask friends and family, or use a paid testing provider?**
+
+```
+Family and friends, invited personally and added to a Google Group used as the tester list. Most are parents of children aged 3 to 5. Each tester got a free copy through a Play promo code, then the opt-in link. No paid testing service was used.
+```
+
+**Describe the engagement you received from testers during your closed
+test.**
+
+```
+Twelve testers stayed opted in and kept the app installed for all 14 days. With no trackers and no permissions there is no in-app analytics; engagement comes from tester reports and the builds they asked for. Every feature got used: all five piece counts, the peek, the sound switch, the finish.
+```
+
+**Provide a summary of the feedback that you received from testers.
+Include how you collected the feedback.**
+
+```
+Collected by email and in person, one point per message, plus my own play sessions. It shaped roughly twenty builds, 0.1 to 2.9: a sound switch, names no longer clipped on the shelf, a tapped 4 always deals 4 pieces, a finish screen that fits every screen, and bigger pieces on a tablet.
+```
+
 ## Version walk (the law)
 
 `versionName` steps 0.1 per release, in lockstep with `versionCode`:

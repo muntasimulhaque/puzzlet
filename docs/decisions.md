@@ -1408,3 +1408,18 @@ superseded decision in place instead of deleting it.
   up from: the 2.9 review verdict and tester feedback on the calmer shelf,
   the honey star, the finish that rises, and the shelf that stands beside
   the picture on a wide screen.
+- 2026-09-24: The closed testing period ended (twelve testers, fourteen
+  days) and the production access application was drafted. The console's
+  three questions, how testers were recruited, the engagement they gave,
+  and a summary of their feedback and how it was collected, are answered
+  in plain prose, each under the 300-character field with the count
+  measured rather than assumed (244, 295, 287), and stored in the
+  submission guide as its own section beside the other console answers.
+  The answers describe the test as it ran: family and friends on a Google
+  Group tester list, each given a single-use Play promo code, twelve
+  testers opted in and installed for the full fourteen days, and feedback
+  by email and in person that shaped the twenty builds from 0.1 to 2.9,
+  from the sound switch and the unclipped shelf names to the tapped 4, the
+  finish plate that fits every screen and the bigger pieces on a tablet.
+  Docs only: no code, no versionCode, so neither workflow runs for the
+  guide or this log.
