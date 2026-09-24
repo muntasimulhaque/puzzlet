@@ -174,6 +174,21 @@ Include how you collected the feedback.**
 Collected by email and in person, one point per message, plus my own play sessions. It shaped roughly twenty builds, 0.1 to 2.9: a sound switch, names no longer clipped on the shelf, a tapped 4 always deals 4 pieces, a finish screen that fits every screen, and bigger pieces on a tablet.
 ```
 
+Page 2 of the same application, the audience and the pitch. Counts
+measured: 252, 264.
+
+**Who is the intended audience of your game?**
+
+```
+Children aged 3 to 5 and the parents who choose their screen time. For the child: no reading, no timer, no way to lose, one picture at a table. For the parent: paid once, fully offline, no ads, no trackers, no accounts, no permissions asked by the app.
+```
+
+**Describe what makes your game stand out.**
+
+```
+A real jigsaw for small children, not a mini game: pieces are measured die-cut shapes, the board is blank like a table, and the picture hides behind one coin. No timer, no score, no fail state. No ads, no trackers, no permissions, paid once, open source under MIT.
+```
+
 ## Version walk (the law)
 
 `versionName` steps 0.1 per release, in lockstep with `versionCode`:

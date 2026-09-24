@@ -1422,4 +1422,11 @@ superseded decision in place instead of deleting it.
   from the sound switch and the unclipped shelf names to the tapped 4, the
   finish plate that fits every screen and the bigger pieces on a tablet.
   Docs only: no code, no versionCode, so neither workflow runs for the
-  guide or this log.
+  guide or this log. Page 2 of the same application drafted and stored
+  beside them, the intended audience (children 3 to 5 and the parents who
+  choose their screen time, stated for the child and for the parent in
+  turn) and what makes the game stand out (a real jigsaw, measured
+  die-cut pieces, a blank board, the picture behind one coin, no timer,
+  no score, no fail state, no ads, no trackers, no permissions, paid
+  once, open source), each under the field at 252 and 264 characters,
+  measured the same way.
