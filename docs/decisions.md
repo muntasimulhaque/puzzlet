@@ -1439,3 +1439,15 @@ superseded decision in place instead of deleting it.
   signed release build and zero permissions in the merged manifest; and
   the audit against the brief, no ads, no trackers, no internet, no
   permissions). Counts measured: 287 and 297.
+- 2026-09-24, later: The production access application was submitted, all
+  seven answers pasted as drafted and stored above. Closed testing ended
+  at twelve testers over fourteen days with 2.9 as the build on the
+  track, and the aab folder was already empty, so nothing awaited upload
+  and nothing was deleted. README brought current: 2.9 is the closed
+  testing build and the walk to production now waits on Google's verdict.
+  The guide records the submission date on the answers themselves, so a
+  follow up question from Google can be answered in the same words. Next
+  session picks up from the production verdict, and from whatever the
+  first production release needs: a fresh cut or a promotion of 2.9, the
+  price, the notes for the production track, and the goal audit against
+  the brief that every store release owes.

@@ -4,8 +4,10 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.9 (versionCode 29) is in Play review for the closed
-testing track.
+Status: release 2.9 (versionCode 29) is the closed testing build, twelve
+testers for fourteen days, and the production access application went in
+on 2026-09-24, so the walk to production waits on Google's verdict, not
+on this repo.
 Release 2.9 is the polish release: one motion vocabulary, and a finish
 that rises onto the screen instead of appearing; a real linen table under
 the picture; a calmer shelf where each card is the picture and its name,

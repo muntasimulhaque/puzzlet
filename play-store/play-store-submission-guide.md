@@ -149,8 +149,11 @@ external links reachable by a child, no ads.
 ## Production access: the closed testing answers
 
 The three questions the console asks a personal account before it grants
-production access, after 12 testers and 14 days of closed testing. Paste
-one at a time; each is under the 300-character field. Counts measured:
+production access, after 12 testers and 14 days of closed testing, then
+the two on page 2 (and the two on page 3 that follow). Submitted
+2026-09-24 exactly as the blocks below read; kept here so a later
+question from Google can be answered in the same words. Paste one at a
+time; each is under the 300-character field. Page 1 counts measured:
 244, 295, 287.
 
 **How did you recruit users for your closed test? For example, did you
