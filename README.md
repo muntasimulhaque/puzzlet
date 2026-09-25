@@ -4,18 +4,18 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 3.0 (versionCode 30) is the production build. The closed
-test ran twelve testers for fourteen days and the production access
-application went in on 2026-09-24; 3.0 is the build cut for the store.
-The game is 2.9 unchanged (no app or core source moved since the 2.9
-build): the polish release with one motion vocabulary, a finish that
-rises onto the screen, a real linen table under the picture, a calmer
-shelf where each card is the picture and its name with one honey star on
-a finished picture, and a shelf that stands beside the picture on a wide
-screen. What 3.0 carries is the feature graphic fix: Play crops the
-1024 x 500 on some surfaces and the owner's phone sliced the tail off
-the name, so every element now sits inside the cutoff-safe box and a
-`:tools` test holds it there.
+Status: release 3.0 (versionCode 30) was submitted to Play for review on
+2026-09-25, so the store listing waits on Google's verdict, not on this
+repo. The closed test ran twelve testers for fourteen days and the
+production access application went in on 2026-09-24. The game is 2.9
+unchanged (no app or core source moved since the 2.9 build): the polish
+release with one motion vocabulary, a finish that rises onto the screen,
+a real linen table under the picture, a calmer shelf where each card is
+the picture and its name with one honey star on a finished picture, and a
+shelf that stands beside the picture on a wide screen. What 3.0 carries
+is the feature graphic fix: Play crops the 1024 x 500 on some surfaces
+and the owner's phone sliced the tail off the name, so every element now
+sits inside the cutoff-safe box and a `:tools` test holds it there.
 Underneath it is the same game as ever: sixteen pictures, five sizes,
 real die-cut pieces, no timer, no score, no fail state, no reading
 required, fully offline, no ads, no accounts.
@@ -25,7 +25,8 @@ required, fully offline, no ads, no accounts.
 - **Privacy policy:** [online](https://muntasimulhaque.github.io/puzzlet/privacy.html) · [in this repo](docs/privacy.html)
 - **Signed build for the store upload:** `play-store/aab/app-release.aab`
   (downloaded there after each push, deleted after submission; the folder
-  is gone while nothing awaits upload)
+  is gone while nothing awaits upload, and it is gone now that 3.0 is in
+  review)
 
 ## The game
 

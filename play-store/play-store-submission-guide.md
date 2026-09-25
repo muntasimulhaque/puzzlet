@@ -504,8 +504,10 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    app/build.gradle.kts is in its paths, and all 24 captures came back
    byte-identical to the committed set, which is the proof that the
    listing kit is the shipped build. The verified AAB (2956717 bytes,
-   built from c70d48b) sits in play-store/aab/ and stays there until the
-   owner submits it. After
+   built from c70d48b) sat in play-store/aab/ until the owner submitted
+   3.0 for review on 2026-09-25; the folder was then deleted, so a stale
+   build can never be uploaded twice. The CI release still holds the
+   matching AAB and APK if the build is ever needed again. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet

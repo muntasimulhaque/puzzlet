@@ -1506,3 +1506,11 @@ superseded decision in place instead of deleting it.
   and this log are current. Next session picks up from the production
   submission and whatever the console answers: the price, the tester
   promo codes, and the rollout.
+- 2026-09-25, later: Version 3.0 was submitted to Play for review. Per the
+  folder rule the verified AAB was deleted from play-store/aab/ and the
+  empty folder went with it, so a stale build can never be uploaded twice;
+  the latest-build release still holds the matching AAB and APK if the
+  build is ever needed again. README brought current: 3.0 is in review and
+  the store listing waits on Google's verdict. Next session picks up from
+  the review verdict, and from whatever the first live listing needs: the
+  price check, the tester promo codes, and the rollout.
