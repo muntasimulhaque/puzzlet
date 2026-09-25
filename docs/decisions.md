@@ -1490,3 +1490,19 @@ superseded decision in place instead of deleting it.
   child look rather than read. Release notes measured at 391 characters,
   no contact line. CI owns the signed AAB and APK; the guide records the
   cut and the notes, and the aab folder waits for the download.
+- 2026-09-25: Cut 3.0 (c70d48b) landed and CI proved it end to end. Build
+  run 36105321436 signed and published the AAB and APK to latest-build;
+  capture run 36105321400 rendered on all three form factors and all 24
+  captures came back byte-identical to the committed set, so the listing
+  kit is the shipped build. The AAB reads versionCode 30, versionName
+  3.0, target 37, package io.github.muntasimulhaque.puzzlet, one merged
+  permission (the androidx core private receiver), and both the AAB and
+  the APK verify as signed by the Puzzlet upload key, SHA-256
+  0e10ca11...4adceb. The verified AAB, 2956717 bytes, sits in
+  play-store/aab/ for the owner to submit; the folder is deleted after
+  submission. Release notes for the production track measured at 391
+  chars and stored in the guide beside the earlier sets. The guide's
+  step by step record now carries the 3.0 check and the guide, README
+  and this log are current. Next session picks up from the production
+  submission and whatever the console answers: the price, the tester
+  promo codes, and the rollout.

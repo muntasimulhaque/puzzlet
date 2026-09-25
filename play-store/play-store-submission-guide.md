@@ -492,18 +492,20 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    captures came back byte-identical, so the listing kit stands as the
    shipped build. The verified AAB (2956719 bytes, built from b635d19)
    sits in play-store/aab/; 2.9 was submitted for review and the folder
-   was deleted after. For 3.0 the same check runs green: CI build and
-   capture both succeeded, and the APK twin read versionCode 30,
-   versionName 3.0, target 37, package
+   was deleted after. For 3.0 the same check ran green: CI build and
+   capture both succeeded (run 36105321436 and 36105321400), and the APK
+   twin read versionCode 30, versionName 3.0, target 37, package
    io.github.muntasimulhaque.puzzlet, with no permission beyond the
-   androidx core private receiver, and the AAB verified as signed. 3.0 is
+   androidx core private receiver, and both the AAB and the APK verified
+   as signed by the Puzzlet upload key (SHA-256 0e10ca11...4adceb). 3.0 is
    the production cut: no app or core source moved since the 2.9 build,
    so the game is 2.9 and the release carries the feature-graphic fix
    (D-089, the safe-box law and its test). CI runs the capture because
-   app/build.gradle.kts is in its paths, so the 24 screenshots come back
-   refreshed even though the UI did not move; the verified AAB is
-   downloaded into play-store/aab/ and stays there until the owner
-   submits it. After
+   app/build.gradle.kts is in its paths, and all 24 captures came back
+   byte-identical to the committed set, which is the proof that the
+   listing kit is the shipped build. The verified AAB (2956717 bytes,
+   built from c70d48b) sits in play-store/aab/ and stays there until the
+   owner submits it. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet
