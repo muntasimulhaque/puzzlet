@@ -4,24 +4,26 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 2.9 (versionCode 29) is the closed testing build, twelve
-testers for fourteen days, and the production access application went in
-on 2026-09-24, so the walk to production waits on Google's verdict, not
-on this repo.
-Release 2.9 is the polish release: one motion vocabulary, and a finish
-that rises onto the screen instead of appearing; a real linen table under
-the picture; a calmer shelf where each card is the picture and its name,
-with one honey star on a picture that has been finished; and a shelf that
-stands beside the picture on a wide screen, so the picture is about half
-again bigger there. The accessibility gaps the renders exposed are
-closed, and underneath it is the same game as ever: sixteen pictures,
-five sizes, real die-cut pieces, no timer, no score, no fail state, no
-reading required, fully offline, no ads, no accounts.
+Status: release 3.0 (versionCode 30) is the production build. The closed
+test ran twelve testers for fourteen days and the production access
+application went in on 2026-09-24; 3.0 is the build cut for the store.
+The game is 2.9 unchanged (no app or core source moved since the 2.9
+build): the polish release with one motion vocabulary, a finish that
+rises onto the screen, a real linen table under the picture, a calmer
+shelf where each card is the picture and its name with one honey star on
+a finished picture, and a shelf that stands beside the picture on a wide
+screen. What 3.0 carries is the feature graphic fix: Play crops the
+1024 x 500 on some surfaces and the owner's phone sliced the tail off
+the name, so every element now sits inside the cutoff-safe box and a
+`:tools` test holds it there.
+Underneath it is the same game as ever: sixteen pictures, five sizes,
+real die-cut pieces, no timer, no score, no fail state, no reading
+required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
 - **Privacy policy:** [online](https://muntasimulhaque.github.io/puzzlet/privacy.html) · [in this repo](docs/privacy.html)
-- **Signed build for the closed testing upload:** `play-store/aab/app-release.aab`
+- **Signed build for the store upload:** `play-store/aab/app-release.aab`
   (downloaded there after each push, deleted after submission; the folder
   is gone while nothing awaits upload)
 
@@ -81,8 +83,10 @@ the regenerated files):
 ./gradlew :tools:makeIcons :tools:makeSounds :tools:makeArt
 ```
 
-`:tools:makeScenes` draws every picture into `build/scenes` for review.
-It is scratch, never committed: the repo keeps no candidates folder.
+`:tools:makeScenes` draws every picture into `build/scenes` for review,
+and `:tools:makeFeatureTakes` draws feature-graphic candidates with their
+harsh crops and a sheet each into `build/feature-takes`. Both are
+scratch, never committed: the repo keeps no candidates folder.
 
 CI is the loop: `build.yml` gates every push to `main` on the tests,
 lint and the asset pins, then signs and publishes the AAB and APK to the
@@ -108,7 +112,7 @@ and left) keep the boat whole: the blanks bite sky and water, never the
 boat. The paper rim and the soft shadow are the app's own die-cut. The
 mark reaches the 66 dp safe circle on purpose, so it is as large as a
 launcher will show it. The feature graphic carries the same piece on the
-brand teal, with the name given the whole right side and nothing behind
-it. Both are drawn from code by `:tools:makeIcons` and `:tools:makeArt`,
-never hand-edited, and `checkIcons` fails the build if a committed PNG
-ever drifts.
+brand teal, with the name beside it and nothing behind it, every element
+inside the cutoff-safe box so no Play surface can crop it. Both are drawn
+from code by `:tools:makeIcons` and `:tools:makeArt`, never hand-edited,
+and `checkIcons` fails the build if a committed PNG ever drifts.

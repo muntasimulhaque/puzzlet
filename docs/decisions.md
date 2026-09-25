@@ -1451,3 +1451,42 @@ superseded decision in place instead of deleting it.
   first production release needs: a fresh cut or a promotion of 2.9, the
   price, the notes for the production track, and the goal audit against
   the brief that every store release owes.
+- D-089 The feature graphic stops being croppable (owner-directed: the
+  Play app cropped the 1024 x 500 to a card and sliced the tail off the
+  name; the screenshot showed Puzzlet cut mid-word). Play's own help page
+  says to keep the focal point and key elements out of the cutoff zones
+  and publishes an example that measures a 15 percent inset on all four
+  sides; the card the owner hit cropped about 6.5 percent a side, and a
+  4:3 card takes 17.4 percent off each side. The law is now a center box
+  inset 18 percent from the sides and 16 percent from the top and bottom,
+  every element inside it, ground teal to every edge so a rounded corner
+  crop only rounds teal, and the file written as 24-bit PNG with no alpha
+  rather than opaque ARGB with a channel Play does not want. The old art
+  spanned x=158 to 960 of 1024 and broke that box; the shipped
+  composition is the same drawing, same mark, same name, same line, just
+  fitted: the fitter scales the lockup to fill the box and lands it
+  centered, so the design keeps its proportions at every size. The law
+  lives in tools/StoreArt.kt with MakeArtTest pinning it in :tools:test
+  (size, no alpha, ink inside the box, the box filled on its tighter
+  axis, and the 4:3 card keeping the whole lockup). Four takes were
+  rendered as images and judged against the crops; the shipped art is
+  the current design fitted, and the other three (piece above, name
+  first, name only) stay in the takes task for the owner's nod. New
+  review task :tools:makeFeatureTakes draws the current banner plus
+  candidates with their 4:3 and 3:1 crops and one labeled sheet each,
+  into build/feature-takes, never committed.
+- D-090 Cut 3.0 (versionCode 30), the production release. The owner's
+  word came after the store-art session: go for play release. No app or
+  core source moved since the 2.9 build (the diff from b635d19 to the cut
+  touches only tools, docs and the store PNGs), so 3.0 ships the 2.9 game
+  with the D-089 banner fix, which is exactly what a store release needs:
+  the listing art was the one thing a shopper could see broken. The goal
+  audit against the brief ran clean before the cut: no music (the three
+  effects are generated and pinned), no animate beings (scene data drawn
+  from inanimate subjects only), no internet and one merged permission
+  (the androidx core private receiver, documented in the manifest),
+  no ads or trackers or billing in the dependencies, paid once, native,
+  open source, three form factors captured, and a game that makes the
+  child look rather than read. Release notes measured at 391 characters,
+  no contact line. CI owns the signed AAB and APK; the guide records the
+  cut and the notes, and the aab folder waits for the download.

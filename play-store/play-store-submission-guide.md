@@ -24,8 +24,13 @@ bundles, so shelf, store and screen are one brand). Regenerate with
 `./gradlew :tools:makeArt`; never edit the PNGs by hand.
 
 - `play-store/feature-graphic-1024x500.png`: the piece on the brand teal,
-  the name given the whole right side, and one line under it. No ghosted
-  art behind the wordmark: it stole the name's attention.
+  the name over one line to its right. No ghosted art behind the
+  wordmark: it stole the name's attention. Everything sits inside the
+  cutoff-safe box (18 percent in from the sides, 16 from the top and
+  bottom), because Play crops the 1024 x 500 on some surfaces and the
+  owner's own phone showed it slicing the tail off the name. The teal
+  runs to every edge, so a rounded corner crop only rounds teal. The law
+  is checked by `MakeArtTest` in `:tools:test`.
 - `play-store/play-icon-512.png`: the launcher tile, full bleed, the same
   design the phone shows.
 - The launcher icons (`mipmap-*/ic_launcher.png`,
@@ -214,6 +219,12 @@ Readiness was a judgement from three signals. The last builds brought no new pro
 versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
+
+## Release notes for production 3.0 (measured: 391 chars)
+
+```
+Puzzlet 3.0 is the first production release. A calm jigsaw for ages 3 to 5: sixteen pictures, five sizes from 4 to 16 pieces, real die-cut pieces that click home, no timer, no score, no fail state, no reading required. Paid once and fully offline: no ads, no trackers, no accounts, no permissions. The store banner was refreshed so the piece, the name and the line survive every screen size.
+```
 
 ## Release notes for closed testing 2.9 (measured: 458 chars)
 
@@ -481,7 +492,18 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    captures came back byte-identical, so the listing kit stands as the
    shipped build. The verified AAB (2956719 bytes, built from b635d19)
    sits in play-store/aab/; 2.9 was submitted for review and the folder
-   was deleted after. After
+   was deleted after. For 3.0 the same check runs green: CI build and
+   capture both succeeded, and the APK twin read versionCode 30,
+   versionName 3.0, target 37, package
+   io.github.muntasimulhaque.puzzlet, with no permission beyond the
+   androidx core private receiver, and the AAB verified as signed. 3.0 is
+   the production cut: no app or core source moved since the 2.9 build,
+   so the game is 2.9 and the release carries the feature-graphic fix
+   (D-089, the safe-box law and its test). CI runs the capture because
+   app/build.gradle.kts is in its paths, so the 24 screenshots come back
+   refreshed even though the UI did not move; the verified AAB is
+   downloaded into play-store/aab/ and stays there until the owner
+   submits it. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet

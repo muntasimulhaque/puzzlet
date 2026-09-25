@@ -1,22 +1,26 @@
 package io.github.muntasimulhaque.puzzlet.tools
 
-import java.awt.Color
-import java.awt.Graphics2D
-import java.awt.RenderingHints
-import java.awt.geom.Rectangle2D
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
 /**
- * The Play Store art, drawn from the same mark as the launcher: lagoon
- * ground, the die-cut piece sitting straight on it with no card behind it,
- * and Baloo 2 lettering through the clean-text path so large words never
- * slice.
+ * The Play Store art, drawn from the same mark as the launcher: the brand
+ * teal ground, the die-cut piece sitting straight on it with no card
+ * behind it, and Baloo 2 lettering through the clean-text path so large
+ * words never slice.
  *
- * The ground is the brand teal, the toy-box lid, and there is no ghosted
- * puzzle behind the wordmark fighting it for attention. One mark, one
- * name, one line, and air: parents decide in two seconds.
+ * The ground is the brand teal, the toy-box lid. One mark, one name, one
+ * line, and air: parents decide in two seconds.
+ *
+ * Every element stays inside the cutoff-safe box (StoreArt.kt). Play
+ * crops the 1024 x 500 on some surfaces, and the owner's own phone showed
+ * it: the name's tail was sliced off. The art fits the box now, so the
+ * piece, the name and the line survive every surface, and the teal runs
+ * to every edge so a rounded corner crop only rounds teal.
+ *
+ * The file is written as a 24-bit PNG with no alpha, which is what Play
+ * asks for; an opaque ARGB file still carries a channel it should not.
  *
  * Outputs (never hand-edited; regenerate with :tools:makeArt):
  *   play-store/feature-graphic-1024x500.png
@@ -28,35 +32,29 @@ import javax.imageio.ImageIO
 object MakeArt {
 
     /** The 1024 x 500 feature graphic: the mark, the name, one line. */
-    fun featureGraphic(rootDir: File): BufferedImage =
-        featureOn(rootDir, IconDesign.PAPER, 0xE6FAF6EF.toInt())
+    fun featureGraphic(rootDir: File): BufferedImage = composeBanner(featureLayer(rootDir))
 
     /**
-     * One banner: the mark 500 px on the left, the type given the whole
-     * right side, and nothing else competing with it. The mark ground is
-     * the brand teal; the name and line colours are the caller's.
+     * The shipped banner's lockup, before the fitter: the piece left, the
+     * name over the line right, one center line. The sizes are the
+     * drawing's proportions; the fitter gives it the box.
      */
-    internal fun featureOn(rootDir: File, inkArgb: Int, softArgb: Int): BufferedImage {
-        val w = 1024
-        val h = 500
-        val image = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
-        val g = image.createGraphics()
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        g.paint = Color(0xFF0C7A64.toInt(), true)
-        g.fill(Rectangle2D.Double(0.0, 0.0, w.toDouble(), h.toDouble()))
-        val markSize = 500
-        val mark = BufferedImage(markSize, markSize, BufferedImage.TYPE_INT_ARGB)
-        val mg = mark.createGraphics()
-        mg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
-        mg.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE)
-        paintMark(mg, markSize)
-        mg.dispose()
-        g.drawImage(mark, 30, 0, null)
-        drawCleanString(g, "Puzzlet", "baloo2_extrabold.ttf", 122f, inkArgb, 556f, 262f, rootDir)
-        drawCleanString(g, "A calm jigsaw for small hands.", "baloo2_bold.ttf", 30f, softArgb, 558f, 324f, rootDir)
+    internal fun featureLayer(rootDir: File): BufferedImage {
+        val piece = markArt(228.0)
+        val name = textArt(rootDir, STORE_NAME, STORE_EXTRA, 122f, STORE_PAPER)
+        val line = textArt(rootDir, STORE_LINE, STORE_BOLD, 30f, STORE_SOFT)
+        val gap = 46
+        val textW = maxOf(name.width, line.width)
+        val layer = transparentCanvas()
+        val g = graphics(layer)
+        val left = (STORE_W - (piece.width + gap + textW)) / 2
+        val textCx = left + piece.width + gap + textW / 2
+        val cy = STORE_H / 2
+        drawAt(g, piece, left + piece.width / 2, cy)
+        drawAt(g, name, textCx, cy - (line.height + 16) / 2)
+        drawAt(g, line, textCx, cy + (name.height + 16) / 2)
         g.dispose()
-        return image
+        return layer
     }
 
     /** The 512 x 512 store icon: the launcher tile, full bleed. */
