@@ -1550,3 +1550,16 @@ superseded decision in place instead of deleting it.
   guide. CI owns the signed AAB and APK; the aab folder waits for the
   download, and the folder is deleted the moment the build is submitted,
   so a stale build can never go up twice.
+- 2026-09-27: Cut 3.1 (726d7f7) landed and CI proved it end to end. Build
+  run 36305167615 signed and published the AAB and APK to latest-build;
+  capture run 36305167553 rendered on all three form factors. The APK twin
+  read versionCode 31, versionName 3.1, target 37, package
+  io.github.muntasimulhaque.puzzlet, one merged permission (the androidx
+  core private receiver), and the AAB verified as signed by the Puzzlet
+  upload key, SHA-256 0e10ca11...4adceb. All 24 captures came back
+  byte-identical to the committed listing kit, which is the proof that the
+  D-091 fix is sound-only and the store art stands. The verified AAB
+  (2957288 bytes) sits in play-store/aab/ for the owner to submit as the
+  first public release; the folder is deleted after submission. Next
+  session picks up from the production submission and the live listing:
+  the price, the rollout, and any first reviews.
