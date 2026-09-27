@@ -1563,3 +1563,13 @@ superseded decision in place instead of deleting it.
   first public release; the folder is deleted after submission. Next
   session picks up from the production submission and the live listing:
   the price, the rollout, and any first reviews.
+- 2026-09-27, later: Version 3.1 was submitted to Play for review as the
+  first public release, after production access was granted off the closed
+  test. Per the folder rule the verified AAB was deleted from
+  play-store/aab/ and the empty folder went with it, so a stale build can
+  never be uploaded twice; the latest-build release still holds the
+  matching AAB and APK if the build is ever needed again. README and the
+  guide brought current: 3.1 is in review and the store listing waits on
+  Google's verdict. Next session picks up from the review verdict and the
+  first live listing: the price check, the rollout, and any first
+  reviews.

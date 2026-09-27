@@ -513,7 +513,23 @@ Second closed-testing build of Puzzlet. Eight pictures, each cut into 4 to 24 pi
    built from c70d48b) sat in play-store/aab/ until the owner submitted
    3.0 for review on 2026-09-25; the folder was then deleted, so a stale
    build can never be uploaded twice. The CI release still holds the
-   matching AAB and APK if the build is ever needed again. After
+   matching AAB and APK if the build is ever needed again. For 3.1 the
+   same check ran green: CI build and capture both succeeded (run
+   36305167615 and 36305167553), and the APK twin read versionCode 31,
+   versionName 3.1, target 37, package
+   io.github.muntasimulhaque.puzzlet, with no permission beyond the
+   androidx core private receiver, and the AAB verified as signed by the
+   Puzzlet upload key (SHA-256 0e10ca11...4adceb). 3.1 is the first public
+   release: no core or gameplay source moved, so the game is 3.0 and the
+   build carries the D-091 sound fix, which silences the Compose 1.12
+   platform click that ignored the app's own switch. All 24 captures came
+   back byte-identical to the committed set, which is the proof that the
+   fix is sound-only and the listing kit is the shipped build. The
+   verified AAB (2957288 bytes, built from 726d7f7) sat in play-store/aab/
+   until the owner submitted 3.1 for review on 2026-09-27; the folder was
+   then deleted, so a stale build can never be uploaded twice. The CI
+   release still holds the matching AAB and APK if the build is ever
+   needed again. After
    submitting a build for review, always
    delete it from the folder.)
 2. Play Console: create the app. The package name is io.github.muntasimulhaque.puzzlet

@@ -4,23 +4,25 @@ A calm jigsaw puzzle game for ages 3 to 5. One child, one picture, pieces
 that click home. Native Android, paid once, fully offline: no ads, no
 trackers, no accounts, no network.
 
-Status: release 3.1 (versionCode 31) is the first public release. Google
-granted production access on the closed test, so 3.1 is the build that
-ships to everyone. It is the 3.0 game with one fix: Compose 1.12 added a
-platform click sound on every tappable control, and that sound ignored
-the app's own switch, so tapping after turning sound off still clicked.
-The whole UI now silences the platform click, so with sound off the app
-is truly silent and only Puzzlet's own three generated effects ever play.
-The game itself is unchanged: sixteen pictures, five sizes, real die-cut
-pieces, no timer, no score, no fail state, no reading required, fully
-offline, no ads, no accounts.
+Status: release 3.1 (versionCode 31) was submitted to Play for review on
+2026-09-27, so the first public listing waits on Google's verdict, not on
+this repo. Google had already granted production access off the closed
+test, so this is the build that ships to everyone. It is the 3.0 game with
+one fix: Compose 1.12 added a platform click sound on every tappable
+control, and that sound ignored the app's own switch, so tapping after
+turning sound off still clicked. The whole UI now silences the platform
+click, so with sound off the app is truly silent and only Puzzlet's own
+three generated effects ever play. The game itself is unchanged: sixteen
+pictures, five sizes, real die-cut pieces, no timer, no score, no fail
+state, no reading required, fully offline, no ads, no accounts.
 
 - **Play Store package:** `io.github.muntasimulhaque.puzzlet`
 - **License:** MIT
 - **Privacy policy:** [online](https://muntasimulhaque.github.io/puzzlet/privacy.html) · [in this repo](docs/privacy.html)
 - **Signed build for the store upload:** `play-store/aab/app-release.aab`
   (downloaded there after each push, deleted after submission; the folder
-  is gone while nothing awaits upload)
+  is gone while nothing awaits upload, and it is gone now that 3.1 is in
+  review)
 
 ## The game
 
