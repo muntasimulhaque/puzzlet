@@ -220,6 +220,12 @@ versionCode 1 is 0.1, versionCode 2 is 0.2, versionCode 10 is 1.0,
 versionCode 11 is 1.1, and so on. Never reuse a versionCode. The first
 store appearance (closed testing) is versionCode 1, versionName 0.1.
 
+## Release notes for production 3.1 (measured: 394 chars)
+
+```
+Puzzlet 3.1 is the first public release. A calm jigsaw for ages 3 to 5: sixteen pictures, five sizes from 4 to 16 pieces, real die-cut pieces that click home, no timer, no score, no fail state, no reading required. This build also finishes the sound switch: with sound off, the app is now completely silent. Paid once and fully offline, with no ads, no trackers, no accounts and no permissions.
+```
+
 ## Release notes for production 3.0 (measured: 391 chars)
 
 ```

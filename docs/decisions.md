@@ -1514,3 +1514,39 @@ superseded decision in place instead of deleting it.
   the store listing waits on Google's verdict. Next session picks up from
   the review verdict, and from whatever the first live listing needs: the
   price check, the tester promo codes, and the rollout.
+- D-091 The platform click sound is silenced (owner-reported bug: after
+  turning sound off, tapping and dragging still made a sound). Diagnosis:
+  the app's own three effects all pass through PuzzleHost.chime, which
+  honors the switch, so the extra sound was never ours. Compose 1.12.0
+  (the 2026.08.00 BOM) added platform click sounds on every clickable:
+  performClick calls playClickSound, which reads LocalSoundEffect, which
+  the Android host provides as AndroidSoundEffect, which calls
+  View.playSoundEffect(SoundEffectConstants.CLICK). That path is gated by
+  the device's system Touch sounds, not by the app switch, so it clicked
+  after sound was turned off. PuzzletTheme now wraps the whole tree in
+  SoundEffectOnInteraction(enabled = false), so every control plays no
+  platform sound whether the switch is on or off; Puzzlet's own tap, snap
+  and chime are untouched. One framework path is left open on purpose:
+  AndroidComposeViewNavigationSoundEffect answers keyboard and D-pad
+  focus, not touch, and would need a process-wide flag plus an R8 rule to
+  kill, so it stays until a device with hardware focus needs it gone.
+  This class of bug is invisible to the pixel capture harness: sound is
+  not a bitmap, so there is no automated regression guard, only the code
+  comment; a real guard would be an instrumented check on LocalSoundEffect
+  or a manual step, listed here rather than faked.
+- D-092 Cut 3.1 (versionCode 31), the first public release. Google
+  granted production access off the closed test, and the owner's word was
+  go for play release. 3.0 was already built and submitted, but it carried
+  the D-091 sound bug, so 3.1 ships the same game with the platform click
+  silenced. No core or gameplay source moved: the diff from ba839eb to the
+  cut is Theme.kt, the version walk, README, the guide and this log. The
+  goal audit against the brief ran clean again: no music (three generated,
+  pinned, inharmonic effects, one pitched chime), no animate beings (scene
+  data is inanimate only), zero declared permissions (one app-private
+  androidx receiver merged, documented), no ads, trackers, network or
+  billing in the dependencies, paid once, native, open source, three form
+  factors captured, and a game that makes the child look rather than read.
+  Release notes measured at 394 characters, no contact line, stored in the
+  guide. CI owns the signed AAB and APK; the aab folder waits for the
+  download, and the folder is deleted the moment the build is submitted,
+  so a stale build can never go up twice.

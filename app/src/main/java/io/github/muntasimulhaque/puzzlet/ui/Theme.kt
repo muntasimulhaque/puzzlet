@@ -8,6 +8,7 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.SoundEffectOnInteraction
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -125,9 +126,17 @@ fun PuzzletTheme(content: @Composable () -> Unit) {
         colorScheme = BrandScheme,
         typography = BrandTypography,
     ) {
-        CompositionLocalProvider(
-            LocalIndication provides ripple(color = PuzzletColors.Ink.copy(alpha = 0.10f)),
-            content = content,
-        )
+        // Compose 1.12 plays the platform click sound on every clickable by
+        // default. That sound is not ours: :tools never generated it, it
+        // ignores the app's own switch, and it is the one generic Material
+        // default a child would hear after sound was turned off. The app
+        // has its own three effects, so the platform click is silenced for
+        // the whole tree, on or off.
+        SoundEffectOnInteraction(enabled = false) {
+            CompositionLocalProvider(
+                LocalIndication provides ripple(color = PuzzletColors.Ink.copy(alpha = 0.10f)),
+                content = content,
+            )
+        }
     }
 }
